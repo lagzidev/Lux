@@ -24,7 +24,6 @@ namespace LuxEngine
         const float maxFallVelocity = 32f;
 
         protected bool jumping;
-        public static bool applyGravity = false;
 
         public override void Initialize()
         {
@@ -57,18 +56,9 @@ namespace LuxEngine
 
             position.Y += velocity.Y;
 
-            if (applyGravity)
-            {
-                ApplyGravity(map);
-            }
-
             // Deaccelerate
             velocity.X = TendToZero(velocity.X, decel);
-
-            if (!applyGravity)
-            {
-                velocity.Y = TendToZero(velocity.Y, decel);
-            }
+            velocity.Y = TendToZero(velocity.Y, decel);
         }
 
         private void ApplyGravity(Map map)
@@ -154,7 +144,7 @@ namespace LuxEngine
             Rectangle futureBoundingBox = BoundingBox;
 
             int maxX = (int)maxSpeed;
-            int maxY = applyGravity ? (int)jumpVelocity : (int)maxSpeed;
+            int maxY = (int)maxSpeed;
 
             if (axis == Axis.X)
             {
@@ -170,17 +160,14 @@ namespace LuxEngine
             }
             else if (axis == Axis.Y)
             {
-                if (!applyGravity || applyGravity && velocity.Y != gravity)
+                if (velocity.Y > 0)
                 {
-                    if (velocity.Y > 0)
-                    {
-                        futureBoundingBox.Y += maxY;
-                    }
+                    futureBoundingBox.Y += maxY;
+                }
 
-                    if (velocity.Y < 0)
-                    {
-                        futureBoundingBox.Y -= maxY;
-                    }
+                if (velocity.Y < 0)
+                {
+                    futureBoundingBox.Y -= maxY;
                 }
             }
 
@@ -189,18 +176,7 @@ namespace LuxEngine
             // Wall collision detected
             if (wallCollision != Rectangle.Empty)
             {
-                // Landing
-                if (applyGravity && velocity.Y >= gravity
-                    && (futureBoundingBox.Bottom > wallCollision.Top - maxSpeed)
-                    && (futureBoundingBox.Bottom <= wallCollision.Top + velocity.Y))
-                {
-                    LandResponse(wallCollision);
-                    return true;
-                }
-                else
-                {
-                    return true;
-                }
+                return true;
             }
 
             // Check for object coliision

@@ -21,7 +21,7 @@ namespace LuxEngine
         static private float zoom;
         static private Rectangle screenRect;
        
-        static public bool updateYAxis = false; //Should the camera move along on the y axis?
+        static public bool updateYAxis = true; //Should the camera move along on the y axis?
         static public bool updateXAxis = true; //Should the camera move along on the x axis?
 
         public static void Initialize()

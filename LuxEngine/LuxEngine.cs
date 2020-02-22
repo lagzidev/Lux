@@ -3,21 +3,13 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using LuxEngine.Utils;
 
 namespace LuxEngine
 {
     public class LuxEngine : Game
     {
         public string Title;
-        GraphicsManager graphics;
-
-        // screen size
-        public static int Width { get; private set; }
-        public static int Height { get; private set; }
-
-        // util
-        public static Color ClearColor;
+        GraphicsDeviceManager graphics;
 
         SpriteBatch spriteBatch;
 
@@ -27,12 +19,12 @@ namespace LuxEngine
         public LuxEngine(int width, int height, int windowWidth, int windowHeight, string windowTitle, bool fullscreen)
         {
             Title = Window.Title = windowTitle;
-            Width = width;
-            Height = height;
-            ClearColor = Color.Black;
-            graphics = new GraphicsManager(this, windowWidth, windowHeight, fullscreen);
-
+            graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = @"Content";
+
+            Resolution.Init(ref graphics);
+            Resolution.SetVirtualResolution(width, height); // Resolution our assets are based in
+            Resolution.SetResolution(windowWidth, windowHeight, fullscreen);
         }
 
         /// <summary>
@@ -41,6 +33,7 @@ namespace LuxEngine
         protected override void Initialize()
         {
             base.Initialize();
+            Camera.Initialize();
         }
 
         /// <summary>
@@ -62,8 +55,9 @@ namespace LuxEngine
         protected override void Update(GameTime gameTime)
         {
             Input.Update();
-
+            //map.Update(objects);
             UpdateObjects();
+            UpdateCamera();
 
             //Update the things FNA handles for us underneath the hood:
             base.Update(gameTime);
@@ -77,7 +71,17 @@ namespace LuxEngine
             //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
             GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+            Resolution.BeginDraw();
+
+            spriteBatch.Begin(
+                SpriteSortMode.BackToFront,
+                BlendState.AlphaBlend,
+                SamplerState.LinearClamp,
+                DepthStencilState.Default,
+                RasterizerState.CullNone,
+                null,
+                Camera.GetTransformMatrix());
+
             DrawObjects();
             map.DrawWalls(spriteBatch);
             spriteBatch.End();
@@ -120,6 +124,17 @@ namespace LuxEngine
             {
                 objects[i].Draw(spriteBatch);
             }
+        }
+
+        private void UpdateCamera()
+        {
+            if (0 == objects.Count)
+            {
+                return;
+            }
+
+            // objects[0] is the player
+            Camera.Update(objects[0].position);
         }
     }
 }

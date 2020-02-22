@@ -14,7 +14,7 @@ namespace LuxEngine
 
         public int mapWidth = 15;
         public int mapHeight = 9;
-        public int titleSize = 128;
+        public int tileSize = 32;
 
         public Map()
         {

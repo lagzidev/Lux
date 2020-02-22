@@ -6,7 +6,6 @@ This engine is based on the [FNA framework](https://github.com/FNA-XNA/FNA).
 * Add a content management system to automatically change the content file's properties (e.g. Copy to output directory = Copy if newer)
 
 ## Useful Material
-==================
 * [Game programming patterns book](http://gameprogrammingpatterns.com/contents.html) - Really great book for game engine design.
 
 * [FNA Tutorial series](https://gist.github.com/flibitijibibo/1ce4b7899b3cf1805a420330f0d2faf3#the-first-download) - A great comprehensive learning resource for new FNA users.
@@ -16,7 +15,6 @@ This engine is based on the [FNA framework](https://github.com/FNA-XNA/FNA).
 * [Introduction to MonoGame](https://docs.microsoft.com/en-us/xamarin/graphics-games/monogame/introduction/) - by Microsoft.
 
 ## Useful Libraries
-==================
 * [FNA-Template](https://github.com/AndrewRussellNet/FNA-Template) - A simple template for FNA game projects. This was useful only as a reference for creating this project from scratch. This [YouTube video](https://www.youtube.com/watch?v=lNw-9S_GdW8) explains how to use this project.
 
 * [awesome-monogame](https://github.com/aloisdeniel/awesome-monogame) - A hand-picked bookmark collection of libraries for building games with Monogame (many work with FNA as well).
@@ -26,8 +24,7 @@ This engine is based on the [FNA framework](https://github.com/FNA-XNA/FNA).
 * [NEZ](https://github.com/prime31/Nez) - a free 2D focused framework that works with MonoGame and FNA.
 
 ## Troubleshooting
-(Linux/macOS) Setting the library path for debugging
-----------------------------------------------------
+### (Linux/macOS) Setting the library path for debugging
 
 In order to run in the debugger on Visual Studio for Mac or MonoDevelop, you will need to add an environment variable:
 

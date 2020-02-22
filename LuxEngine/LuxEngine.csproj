@@ -35,7 +35,6 @@
     <Compile Include="Player.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Character.cs" />
-    <Compile Include="Utils\GraphicsManager.cs" />
     <Compile Include="Scene.cs" />
   </ItemGroup>
   <ItemGroup>

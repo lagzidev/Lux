@@ -46,23 +46,13 @@ namespace LuxEngine
                 MoveLeft();
             }
 
-            if (Character.applyGravity)
+            if (Input.IsKeyDown(Keys.Down))
             {
-                if (Input.IsKeyDown(Keys.Up))
-                {
-                    Jump(map);
-                }
+                MoveDown();
             }
-            else
+            else if (Input.IsKeyDown(Keys.Up))
             {
-                if (Input.IsKeyDown(Keys.Down))
-                {
-                    MoveDown();
-                }
-                else if (Input.IsKeyDown(Keys.Up))
-                {
-                    MoveUp();
-                }
+                MoveUp();
             }
         }
     }
