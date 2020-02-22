@@ -9,12 +9,12 @@ namespace LuxEngine
 {
     public class Map
     {
-        public List<Wall> walls = new List<Wall>();
+        public List<Wall> Walls = new List<Wall>();
         Texture2D wallImage;
 
-        public int mapWidth = 15;
-        public int mapHeight = 9;
-        public int tileSize = 32;
+        public int MapWidth = 15;
+        public int MapHeight = 9;
+        public int TileSize = 32;
 
         public Map()
         {
@@ -27,11 +27,11 @@ namespace LuxEngine
 
         public Rectangle CheckCollision(Rectangle input)
         {
-            for (int i = 0; i < walls.Count; i++)
+            for (int i = 0; i < Walls.Count; i++)
             {
-                if (walls[i] != null && walls[i].rectangle.Intersects(input))
+                if (Walls[i] != null && Walls[i].rectangle.Intersects(input))
                 {
-                    return walls[i].rectangle;
+                    return Walls[i].rectangle;
                 }
             }
 
@@ -40,11 +40,11 @@ namespace LuxEngine
 
         public void DrawWalls(SpriteBatch spriteBatch)
         {
-            for (int i = 0; i < walls.Count; i++)
+            for (int i = 0; i < Walls.Count; i++)
             {
-                if (walls[i] != null && walls[i].active == true)
+                if (Walls[i] != null && Walls[i].active == true)
                 {
-                    spriteBatch.Draw(wallImage, new Vector2(walls[i].rectangle.X, walls[i].rectangle.Y), walls[i].rectangle, Color.Green, 0f, Vector2.Zero, 1f, SpriteEffects.None, .7f);
+                    spriteBatch.Draw(wallImage, new Vector2(Walls[i].rectangle.X, Walls[i].rectangle.Y), Walls[i].rectangle, Color.Green, 0f, Vector2.Zero, 1f, SpriteEffects.None, .7f);
                 }
             }
         }

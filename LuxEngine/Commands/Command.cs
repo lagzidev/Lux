@@ -1,9 +1,9 @@
 ﻿using System;
 namespace LuxEngine
 {
-    public class Scene
+    public abstract class Command
     {
-        public Scene()
+        public virtual void Execute()
         {
         }
     }

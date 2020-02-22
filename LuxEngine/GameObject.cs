@@ -11,14 +11,14 @@ namespace LuxEngine
     {
         protected Texture2D image;
         protected Vector2 center;
-        public Vector2 position;
-        public Color drawColor = Color.White;
-        public float scale = 1f;
-        public float rotation = 0f;
-        public float layerDepth = .5f;
-        public bool active = true;
+        public Vector2 Position;
+        public Color DrawColor = Color.White;
+        public float Scale = 1f;
+        public float Rotation = 0f;
+        public float LayerDepth = .5f;
+        public bool Active = true;
 
-        public bool collidable = true;
+        public bool Collidable = true;
         protected int boundingBoxWidth, boundingBoxHeight;
         protected Vector2 boundingBoxOffset;
         Texture2D boundingBoxImage;
@@ -29,7 +29,7 @@ namespace LuxEngine
         {
             get
             {
-                return new Rectangle((int)(position.X + boundingBoxOffset.X), (int)(position.Y + boundingBoxOffset.Y), boundingBoxWidth, boundingBoxHeight);
+                return new Rectangle((int)(Position.X + boundingBoxOffset.X), (int)(Position.Y + boundingBoxOffset.Y), boundingBoxWidth, boundingBoxHeight);
             }
         }
 
@@ -67,7 +67,7 @@ namespace LuxEngine
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            if (!active)
+            if (!Active)
             {
                 return;
             }
@@ -79,7 +79,7 @@ namespace LuxEngine
 
             if (image != null)
             {
-                spriteBatch.Draw(image, position, null, drawColor, rotation, Vector2.Zero, scale, SpriteEffects.None, layerDepth);
+                spriteBatch.Draw(image, Position, null, DrawColor, Rotation, Vector2.Zero, Scale, SpriteEffects.None, LayerDepth);
             }
         }
 

@@ -11,10 +11,10 @@ namespace LuxEngine
         public string Title;
         GraphicsDeviceManager graphics;
 
-        SpriteBatch spriteBatch;
+        SpriteBatch SpriteBatch;
 
-        public List<GameObject> objects = new List<GameObject>();
-        public Map map = new Map();
+        public List<GameObject> Objects = new List<GameObject>();
+        public Map Map = new Map();
 
         public LuxEngine(int width, int height, int windowWidth, int windowHeight, string windowTitle, bool fullscreen)
         {
@@ -42,8 +42,8 @@ namespace LuxEngine
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            map.Load(Content);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            Map.Load(Content);
             LoadLevel();
         }
 
@@ -73,7 +73,7 @@ namespace LuxEngine
 
             Resolution.BeginDraw();
 
-            spriteBatch.Begin(
+            SpriteBatch.Begin(
                 SpriteSortMode.BackToFront,
                 BlendState.AlphaBlend,
                 SamplerState.LinearClamp,
@@ -83,8 +83,8 @@ namespace LuxEngine
                 Camera.GetTransformMatrix());
 
             DrawObjects();
-            map.DrawWalls(spriteBatch);
-            spriteBatch.End();
+            Map.DrawWalls(SpriteBatch);
+            SpriteBatch.End();
 
             //Draw the things FNA handles for us underneath the hood:
             base.Draw(gameTime);
@@ -92,49 +92,49 @@ namespace LuxEngine
 
         public void LoadLevel()
         {
-            objects.Add(new Player(new Vector2(640, 360)));
+            Objects.Add(new Player(new Vector2(640, 360)));
 
             // Add walls
-            map.walls.Add(new Wall(new Rectangle(256, 256, 256, 256)));
-            map.walls.Add(new Wall(new Rectangle(0, 650, 1280, 128)));
+            Map.Walls.Add(new Wall(new Rectangle(256, 256, 256, 256)));
+            Map.Walls.Add(new Wall(new Rectangle(0, 650, 1280, 128)));
 
             LoadObjects();
         }
 
         public void LoadObjects()
         {
-            for (int i = 0; i < objects.Count; i++)
+            for (int i = 0; i < Objects.Count; i++)
             {
-                objects[i].Initialize();
-                objects[i].Load(Content);
+                Objects[i].Initialize();
+                Objects[i].Load(Content);
             }
         }
 
         public void UpdateObjects()
         {
-            for (int i = 0; i < objects.Count; i++)
+            for (int i = 0; i < Objects.Count; i++)
             {
-                objects[i].Update(objects, map);
+                Objects[i].Update(Objects, Map);
             }
         }
 
         public void DrawObjects()
         {
-            for (int i = 0; i < objects.Count; i++)
+            for (int i = 0; i < Objects.Count; i++)
             {
-                objects[i].Draw(spriteBatch);
+                Objects[i].Draw(SpriteBatch);
             }
         }
 
         private void UpdateCamera()
         {
-            if (0 == objects.Count)
+            if (0 == Objects.Count)
             {
                 return;
             }
 
             // objects[0] is the player
-            Camera.Update(objects[0].position);
+            Camera.Update(Objects[0].Position);
         }
     }
 }

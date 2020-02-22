@@ -17,17 +17,17 @@ namespace LuxEngine
     {
         static private Matrix transformMatrix; //A transformation matrix containing info on our position, how much we are rotated and zoomed etc.
         static private Vector2 position;
-        static public float rotation;
+        static public float Rotation;
         static private float zoom;
         static private Rectangle screenRect;
        
-        static public bool updateYAxis = true; //Should the camera move along on the y axis?
-        static public bool updateXAxis = true; //Should the camera move along on the x axis?
+        static public bool UpdateYAxis = true; //Should the camera move along on the y axis?
+        static public bool UpdateXAxis = true; //Should the camera move along on the x axis?
 
         public static void Initialize()
         {
             zoom = 1.0f;
-            rotation = 0.0f;
+            Rotation = 0.0f;
 
             //Start the camera at the center of the screen:
             position = new Vector2(Resolution.VirtualWidth / 2, Resolution.VirtualHeight / 2);
@@ -59,10 +59,10 @@ namespace LuxEngine
         private static void UpdateMovement(Vector2 follow)
         {
             //Make the camera center on and follow the position:
-            if (updateXAxis == true)
+            if (UpdateXAxis == true)
                 position.X += ((follow.X - position.X)); //Camera will follow the position passed in
 
-            if (updateYAxis == true)
+            if (UpdateYAxis == true)
                 position.Y += ((follow.Y - position.Y)); //Camera will follow the position passed in
         }
 
@@ -72,9 +72,9 @@ namespace LuxEngine
         public static void LookAt(Vector2 lookAt)
         {
             //Immediately looks at the vector passed in:
-            if (updateXAxis == true)
+            if (UpdateXAxis == true)
                 position.X = lookAt.X;
-            if (updateYAxis == true)
+            if (UpdateYAxis == true)
                 position.Y = lookAt.Y;
         }
 
@@ -84,7 +84,7 @@ namespace LuxEngine
             //we'll calculate them once each frame and store them... when someone needs these variables we will simply return the stored variable instead of re cauclating them every time.
 
             //Calculate the camera transform matrix:
-            transformMatrix = Matrix.CreateTranslation(new Vector3(-position, 0)) * Matrix.CreateRotationZ(rotation) *
+            transformMatrix = Matrix.CreateTranslation(new Vector3(-position, 0)) * Matrix.CreateRotationZ(Rotation) *
                         Matrix.CreateScale(new Vector3(zoom, zoom, 1)) * Matrix.CreateTranslation(new Vector3(Resolution.VirtualWidth
                             * 0.5f, Resolution.VirtualHeight * 0.5f, 0));
 

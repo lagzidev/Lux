@@ -6,18 +6,34 @@ using Microsoft.Xna.Framework.Input;
 
 namespace LuxEngine
 {
-    public class Character : GameObject
+    public enum MoveDirection
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
+
+    public enum MoveSpeed
+    {
+        Walk = 4,
+        Run = 10,
+
+        Max // Always last
+    }
+
+    public class Character : AnimatedObject
     {
         protected enum Axis
         {
             X, Y
         }
 
-        public Vector2 velocity;
+        public Vector2 Velocity;
+        MoveSpeed currentSpeed;
 
         protected float decel = 1.2f;
         protected float accel = .78f;
-        protected float maxSpeed = 5f;
 
         const float gravity = 1f;
         const float jumpVelocity = 16f;
@@ -27,7 +43,7 @@ namespace LuxEngine
 
         public override void Initialize()
         {
-            velocity = Vector2.Zero;
+            Velocity = Vector2.Zero;
             jumping = false;
             base.Initialize();
         }
@@ -41,131 +57,124 @@ namespace LuxEngine
         private void UpdateMovement(List<GameObject> objects, Map map)
         {
             // X Axis
-            if (velocity.X != 0 && CheckCollisions(map, objects, Axis.X))
+            if (Velocity.X != 0 && CheckCollisions(map, objects, Axis.X))
             {
-                velocity.X = 0;
+                Velocity.X = 0;
             }
 
-            position.X += velocity.X;
+            Position.X += Velocity.X;
 
             // Y Axis
-            if (velocity.Y != 0 && CheckCollisions(map, objects, Axis.Y))
+            if (Velocity.Y != 0 && CheckCollisions(map, objects, Axis.Y))
             {
-                velocity.Y = 0;
+                Velocity.Y = 0;
             }
 
-            position.Y += velocity.Y;
+            Position.Y += Velocity.Y;
 
             // Deaccelerate
-            velocity.X = TendToZero(velocity.X, decel);
-            velocity.Y = TendToZero(velocity.Y, decel);
+            Velocity.X = TendToZero(Velocity.X, decel);
+            Velocity.Y = TendToZero(Velocity.Y, decel);
         }
 
-        private void ApplyGravity(Map map)
+        public void Move(MoveDirection direction, MoveSpeed speed)
         {
-            if (jumping || OnGround(map) == Rectangle.Empty)
+            currentSpeed = speed;
+            switch (direction)
             {
-                velocity.Y += gravity;
-            }
-
-            if (velocity.Y > maxFallVelocity)
-            {
-                velocity.Y = maxFallVelocity;
+                case MoveDirection.Up:
+                    MoveUp(speed);
+                    break;
+                case MoveDirection.Down:
+                    MoveDown(speed);
+                    break;
+                case MoveDirection.Left:
+                    MoveLeft(speed);
+                    break;
+                case MoveDirection.Right:
+                    MoveRight(speed);
+                    break;
+                default:
+                    // TODO: Log error
+                    break;
             }
         }
 
-        protected void MoveRight()
+        protected void MoveRight(MoveSpeed speed)
         {
-            velocity.X += accel + decel;
+            Velocity.X += accel + decel;
 
-            if (velocity.X > maxSpeed)
+            if (Velocity.X > (int)speed)
             {
-                velocity.X = maxSpeed;
+                Velocity.X = (int)speed;
             }
 
             direction.X = 1;
         }
 
-        protected void MoveLeft()
+        protected void MoveLeft(MoveSpeed speed)
         {
-            velocity.X -= accel + decel;
+            Velocity.X -= accel + decel;
 
-            if (velocity.X < -maxSpeed)
+            if (Velocity.X < -(int)speed)
             {
-                velocity.X = -maxSpeed;
+                Velocity.X = -(int)speed;
             }
 
             direction.X = -1;
         }
 
-        protected void MoveDown()
+        protected void MoveDown(MoveSpeed speed)
         {
-            velocity.Y += accel + decel;
+            Velocity.Y += accel + decel;
 
-            if (velocity.Y > maxSpeed)
+            if (Velocity.Y > (int)speed)
             {
-                velocity.Y = maxSpeed;
+                Velocity.Y = (int)speed;
             }
 
             direction.Y = 1;
         }
 
-        protected void MoveUp()
+        protected void MoveUp(MoveSpeed speed)
         {
-            velocity.Y -= accel + decel;
+            Velocity.Y -= accel + decel;
 
-            if (velocity.Y < -maxSpeed)
+            if (Velocity.Y < -(int)speed)
             {
-                velocity.Y = -maxSpeed;
+                Velocity.Y = -(int)speed;
             }
 
             direction.Y = -1;
-        }
-
-        protected bool Jump(Map map)
-        {
-            if (jumping)
-            {
-                return false;
-            }
-
-            // Are we on ground
-            if (0 == velocity.Y && OnGround(map) != Rectangle.Empty)
-            {
-                velocity.Y -= jumpVelocity;
-                jumping = true;
-            }
-
-            return false;
         }
 
         protected virtual bool CheckCollisions(Map map, List<GameObject> objects, Axis axis)
         {
             Rectangle futureBoundingBox = BoundingBox;
 
-            int maxX = (int)maxSpeed;
-            int maxY = (int)maxSpeed;
+            int maxX = (int)currentSpeed;
+            int maxY = (int)currentSpeed;
 
             if (axis == Axis.X)
             {
-                if (velocity.X > 0)
+                if (Velocity.X > 0)
                 {
                     futureBoundingBox.X += maxX;
                 }
 
-                if (velocity.X < 0)
+                if (Velocity.X < 0)
                 {
                     futureBoundingBox.X -= maxX;
                 }
             }
             else if (axis == Axis.Y)
             {
-                if (velocity.Y > 0)
+                if (Velocity.Y > 0)
                 {
                     futureBoundingBox.Y += maxY;
                 }
 
-                if (velocity.Y < 0)
+                if (Velocity.Y < 0)
                 {
                     futureBoundingBox.Y -= maxY;
                 }
@@ -176,13 +185,33 @@ namespace LuxEngine
             // Wall collision detected
             if (wallCollision != Rectangle.Empty)
             {
+                // Moving right
+                if (Velocity.X > 0 && wallCollision.Left > futureBoundingBox.Right)
+                {
+                    Position.X = wallCollision.Left;
+                }
+                else if (Velocity.X < 0 && wallCollision.Right > futureBoundingBox.Left) // Left
+                {
+                    Position.X = wallCollision.Right;
+                }
+                    
+                // Moving down
+                if (Velocity.Y > 0 && wallCollision.Top > futureBoundingBox.Bottom)
+                {
+                    Position.Y = wallCollision.Top;
+                }
+                else if (Velocity.Y < 0 && wallCollision.Bottom > futureBoundingBox.Top) // Up
+                {
+                    Position.Y = wallCollision.Bottom;
+                }
+
                 return true;
             }
 
             // Check for object coliision
             for (int i = 0; i < objects.Count; i++)
             {
-                if (objects[i] != this && objects[i].active && objects[i].collidable && objects[i].CheckCollision(futureBoundingBox))
+                if (objects[i] != this && objects[i].Active && objects[i].Collidable && objects[i].CheckCollision(futureBoundingBox))
                 {
                     return true;
                 }
@@ -191,28 +220,11 @@ namespace LuxEngine
             return false;
         }
 
-        public void LandResponse(Rectangle wallCollision)
-        {
-            position.Y = wallCollision.Top - (boundingBoxHeight + boundingBoxOffset.Y);
-            velocity.Y = 0;
-            jumping = false;
-        }
-
         protected float TendToZero(float val, float amount)
         {
             if (val > 0f && (val -= amount) < 0f) return 0f;
             if (val < 0f && (val += amount) > 0f) return 0f;
             return val;
-        }
-
-        protected Rectangle OnGround(Map map)
-        {
-            Rectangle futureBoundingBox = new Rectangle(
-                (int)(position.X + boundingBoxOffset.X),
-                (int)(position.Y + boundingBoxOffset.Y + (velocity.Y + gravity)),
-                boundingBoxWidth, boundingBoxHeight);
-
-            return map.CheckCollision(futureBoundingBox);
         }
     }
 }

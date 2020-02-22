@@ -6,13 +6,13 @@ namespace LuxEngine
 {
     static class Global
     {
-        public static LuxEngine game;
-        public static Random random = new Random();
-        public static string levelName;
+        public static LuxEngine Game;
+        public static Random Random = new Random();
+        public static string LevelName;
 
         public static void Initialize(LuxEngine inputGame)
         {
-            game = inputGame;
+            Game = inputGame;
         }
     }
 }
