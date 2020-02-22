@@ -18,8 +18,6 @@ namespace LuxEngine
     {
         Walk = 4,
         Run = 10,
-
-        Max // Always last
     }
 
     public class Character : AnimatedObject
@@ -56,21 +54,49 @@ namespace LuxEngine
 
         private void UpdateMovement(List<GameObject> objects, Map map)
         {
-            // X Axis
-            if (Velocity.X != 0 && CheckCollisions(map, objects, Axis.X))
+            Rectangle collision_x = CheckCollisions(map, objects, Axis.X);
+
+            // X Axis collision
+            if (collision_x != Rectangle.Empty)
             {
+                // Moving right
+                if (Velocity.X > 0)
+                {
+                    Position.X = collision_x.Left - boundingBoxWidth;
+                }
+
+                // Moving left
+                if (Velocity.X < 0)
+                {
+                    Position.X = collision_x.Right;
+                }
+
                 Velocity.X = 0;
             }
 
-            Position.X += Velocity.X;
+            Rectangle collision_y = CheckCollisions(map, objects, Axis.Y);
 
-            // Y Axis
-            if (Velocity.Y != 0 && CheckCollisions(map, objects, Axis.Y))
+            // Y Axis collision
+            if (Velocity.Y != 0 && collision_y != Rectangle.Empty)
             {
+                // Moving down
+                if (Velocity.Y > 0)
+                {
+                    Position.Y = collision_y.Top - boundingBoxHeight;
+                }
+
+                // Moving up
+                if (Velocity.Y < 0)
+                {
+                    Position.Y = collision_y.Bottom;
+                }
+
                 Velocity.Y = 0;
             }
 
+            // Move
             Position.Y += Velocity.Y;
+            Position.X += Velocity.X;
 
             // Deaccelerate
             Velocity.X = TendToZero(Velocity.X, decel);
@@ -148,36 +174,17 @@ namespace LuxEngine
             direction.Y = -1;
         }
 
-        protected virtual bool CheckCollisions(Map map, List<GameObject> objects, Axis axis)
+        protected virtual Rectangle CheckCollisions(Map map, List<GameObject> objects, Axis axis)
         {
             Rectangle futureBoundingBox = BoundingBox;
 
-            int maxX = (int)currentSpeed;
-            int maxY = (int)currentSpeed;
-
-            if (axis == Axis.X)
+            if (axis == Axis.X && Velocity.X != 0)
             {
-                if (Velocity.X > 0)
-                {
-                    futureBoundingBox.X += maxX;
-                }
-
-                if (Velocity.X < 0)
-                {
-                    futureBoundingBox.X -= maxX;
-                }
+                futureBoundingBox.X += (int)direction.X * (int)currentSpeed;
             }
-            else if (axis == Axis.Y)
+            else if (axis == Axis.Y && Velocity.Y != 0)
             {
-                if (Velocity.Y > 0)
-                {
-                    futureBoundingBox.Y += maxY;
-                }
-
-                if (Velocity.Y < 0)
-                {
-                    futureBoundingBox.Y -= maxY;
-                }
+                futureBoundingBox.Y += (int)direction.Y * (int)currentSpeed;
             }
 
             Rectangle wallCollision = map.CheckCollision(futureBoundingBox);
@@ -185,27 +192,7 @@ namespace LuxEngine
             // Wall collision detected
             if (wallCollision != Rectangle.Empty)
             {
-                // Moving right
-                if (Velocity.X > 0 && wallCollision.Left > futureBoundingBox.Right)
-                {
-                    Position.X = wallCollision.Left;
-                }
-                else if (Velocity.X < 0 && wallCollision.Right > futureBoundingBox.Left) // Left
-                {
-                    Position.X = wallCollision.Right;
-                }
-                    
-                // Moving down
-                if (Velocity.Y > 0 && wallCollision.Top > futureBoundingBox.Bottom)
-                {
-                    Position.Y = wallCollision.Top;
-                }
-                else if (Velocity.Y < 0 && wallCollision.Bottom > futureBoundingBox.Top) // Up
-                {
-                    Position.Y = wallCollision.Bottom;
-                }
-
-                return true;
+                return wallCollision;
             }
 
             // Check for object coliision
@@ -213,11 +200,11 @@ namespace LuxEngine
             {
                 if (objects[i] != this && objects[i].Active && objects[i].Collidable && objects[i].CheckCollision(futureBoundingBox))
                 {
-                    return true;
+                    return objects[i].BoundingBox;
                 }
             }
 
-            return false;
+            return Rectangle.Empty;
         }
 
         protected float TendToZero(float val, float amount)
