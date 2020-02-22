@@ -24,13 +24,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="LuxGame.cs" />
+    <Compile Include="LuxEngine.cs" />
     <Compile Include="Utils\Camera.cs" />
     <Compile Include="Utils\Global.cs" />
     <Compile Include="Utils\Input.cs" />
     <Compile Include="Utils\Resolution.cs" />
     <Compile Include="Utils\TextureLoader.cs" />
     <Compile Include="Utils\XmlHelper.cs" />
+    <Compile Include="GameObject.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="Map.cs" />
+    <Compile Include="Character.cs" />
+    <Compile Include="Utils\GraphicsManager.cs" />
+    <Compile Include="Scene.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\" />
