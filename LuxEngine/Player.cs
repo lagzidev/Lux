@@ -28,7 +28,7 @@ namespace LuxEngine
             image = TextureLoader.Load("spritesheet", content);
 
             LoadAnimation("Anim1.xml", content);
-            ChangeAnimation(AnimationType.WalkRight);
+            ChangeAnimation(AnimationType.IdleRight);
 
             base.Load(content);
 
@@ -64,57 +64,6 @@ namespace LuxEngine
             else if (Input.IsKeyDown(Keys.Up))
             {
                 new MoveCommand(this, MoveDirection.Up, speed).Execute();
-            }
-        }
-
-        protected override void UpdateAnimations()
-        {
-            if (currentAnimation == null)
-            {
-                return;
-            }
-
-            base.UpdateAnimations();
-
-            // Standing still
-            if (Velocity == Vector2.Zero)
-            {
-                if (direction.X < 0 && AnimationIsNot(AnimationType.IdleLeft))
-                {
-                    ChangeAnimation(AnimationType.IdleLeft);
-                }
-                else if (direction.X > 0 && AnimationIsNot(AnimationType.IdleRight))
-                {
-                    ChangeAnimation(AnimationType.IdleRight);
-                }
-
-                if (direction.Y < 0 && AnimationIsNot(AnimationType.IdleUp))
-                {
-                    ChangeAnimation(AnimationType.IdleUp);
-                }
-                else if (direction.Y > 0 && AnimationIsNot(AnimationType.IdleDown))
-                {
-                    ChangeAnimation(AnimationType.IdleDown);
-                }
-            }
-            else // Moving
-            {
-                if (direction.X < 0 && AnimationIsNot(AnimationType.WalkLeft))
-                {
-                    ChangeAnimation(AnimationType.WalkLeft);
-                }
-                else if (direction.X > 0 && AnimationIsNot(AnimationType.WalkRight))
-                {
-                    ChangeAnimation(AnimationType.WalkRight);
-                }
-                else if (direction.Y < 0 && AnimationIsNot(AnimationType.WalkUp))
-                {
-                    ChangeAnimation(AnimationType.WalkUp);
-                }
-                else if (direction.Y > 0 && AnimationIsNot(AnimationType.WalkDown))
-                {
-                    ChangeAnimation(AnimationType.WalkDown);
-                }
             }
         }
     }

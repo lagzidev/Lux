@@ -33,16 +33,9 @@ namespace LuxEngine
         protected float decel = 1.2f;
         protected float accel = .78f;
 
-        const float gravity = 1f;
-        const float jumpVelocity = 16f;
-        const float maxFallVelocity = 32f;
-
-        protected bool jumping;
-
         public override void Initialize()
         {
             Velocity = Vector2.Zero;
-            jumping = false;
             base.Initialize();
         }
 
@@ -103,6 +96,83 @@ namespace LuxEngine
             Velocity.Y = TendToZero(Velocity.Y, decel);
         }
 
+        protected override void UpdateAnimations()
+        {
+            if (currentAnimation == null)
+            {
+                return;
+            }
+
+            base.UpdateAnimations();
+
+            // Standing still
+            if (Velocity == Vector2.Zero)
+            {
+                if (Velocity.X == 0)
+                {
+                    // Facing right
+                    if (direction.X > 0)
+                    {
+                        ChangeAnimation(AnimationType.IdleRight);
+                    }
+
+                    // Facing left
+                    if (direction.X < 0)
+                    {
+                        ChangeAnimation(AnimationType.IdleLeft);
+                    }
+                }
+
+                if (Velocity.Y == 0)
+                {
+                    // Facing down
+                    if (direction.Y > 0)
+                    {
+                        ChangeAnimation(AnimationType.IdleDown);
+                    }
+
+                    // Facing up
+                    if (direction.Y < 0)
+                    {
+                        ChangeAnimation(AnimationType.IdleUp);
+                    }
+                }
+            }
+            else
+            {
+                // Moving
+                if (Velocity.X != 0)
+                {
+                    // Walking right
+                    if (direction.X > 0)
+                    {
+                        ChangeAnimation(AnimationType.WalkRight);
+                    }
+
+                    // Walking left
+                    if (direction.X < 0)
+                    {
+                        ChangeAnimation(AnimationType.WalkLeft);
+                    }
+                }
+
+                if (Velocity.Y != 0)
+                {
+                    // Walking down
+                    if (direction.Y > 0)
+                    {
+                        ChangeAnimation(AnimationType.WalkDown);
+                    }
+
+                    // Walking up
+                    if (direction.Y < 0)
+                    {
+                        ChangeAnimation(AnimationType.WalkUp);
+                    }
+                }
+            }
+        }
+
         public void Move(MoveDirection direction, MoveSpeed speed)
         {
             currentSpeed = speed;
@@ -136,6 +206,7 @@ namespace LuxEngine
             }
 
             direction.X = 1;
+            direction.Y = 0;
         }
 
         protected void MoveLeft(MoveSpeed speed)
@@ -148,6 +219,7 @@ namespace LuxEngine
             }
 
             direction.X = -1;
+            direction.Y = 0;
         }
 
         protected void MoveDown(MoveSpeed speed)
