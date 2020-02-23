@@ -14,6 +14,9 @@ This engine is based on the [FNA framework](https://github.com/FNA-XNA/FNA).
 * [Introduction to MonoGame](https://docs.microsoft.com/en-us/xamarin/graphics-games/monogame/introduction/) - by Microsoft.
 
 ## Useful Libraries
+
+* [Tools used for Celeste](https://celestegame.tumblr.com/tools) - This includes Crunch for spritesheets and BMFont for packing fonts.
+
 * [FNA-Template](https://github.com/AndrewRussellNet/FNA-Template) - A simple template for FNA game projects. This was useful only as a reference for creating this project from scratch. This [YouTube video](https://www.youtube.com/watch?v=lNw-9S_GdW8) explains how to use this project.
 
 * [awesome-monogame](https://github.com/aloisdeniel/awesome-monogame) - A hand-picked bookmark collection of libraries for building games with Monogame (many work with FNA as well).
