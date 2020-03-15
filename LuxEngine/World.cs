@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
@@ -42,6 +43,20 @@ namespace LuxEngine
             _entityMasks.Add(entityHandle.Entity, new ComponentMask(new int[0]));
 
             return entityHandle;
+        }
+
+        public T Unpack<T>(Entity entity)
+        {
+            ComponentManager<T> foundComponentManager = _getComponentManager<T>();
+            if (null == foundComponentManager)
+            {
+                throw new LuxException(LuxStatus.WORLD_UNPACK_COMPONENT_MANAGER_NOT_FOUND, (int)BaseComponent<T>.ComponentType);
+            }
+
+            BaseComponent<T> component = foundComponentManager.GetComponent(entity);
+
+            // Return the component without the ugly BaseComponent<T> wrapper
+            return (T)Convert.ChangeType(component, typeof(T));
         }
 
         public ComponentManager<T> GetComponents<T>()
@@ -106,11 +121,11 @@ namespace LuxEngine
             }
         }
 
-        public virtual void LoadContent()
+        public virtual void LoadContent(GraphicsDevice graphicsDevice)
         {
             foreach (BaseSystem system in Systems)
             {
-                system.LoadContent();
+                system.LoadContent(graphicsDevice);
             }
         }
 

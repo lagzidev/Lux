@@ -4,9 +4,9 @@ namespace LuxEngine
 {
     public struct ComponentInstance
     {
-        public uint Index;
+        public int Index;
 
-        public ComponentInstance(uint index)
+        public ComponentInstance(int index)
         {
             Index = index;
         }
@@ -14,16 +14,21 @@ namespace LuxEngine
 
     public class ComponentList<T>
     {
-        public uint Size { get; private set; }
-        private T[] components;
+        public int Size { get; private set; }
+        private BaseComponent<T>[] components;
 
         public ComponentList()
         {
             Size = 0;
-            components = new T[HardCodedConfig.MAX_COMPONENTS_PER_TYPE];
+            components = new BaseComponent<T>[HardCodedConfig.MAX_COMPONENTS_PER_TYPE];
         }
 
-        public ComponentInstance Add(T component)
+        public BaseComponent<T> this[int i]
+        {
+            get { return components[i]; }
+        }
+
+        public ComponentInstance Add(BaseComponent<T> component)
         {
             ComponentInstance newInstance;
             newInstance.Index = Size;
@@ -41,7 +46,7 @@ namespace LuxEngine
         /// </summary>
         /// <param name="index">Index of the component to remove</param>
         /// <returns>The last component's new instance (and thus new position)</returns>
-        public ComponentInstance Remove(uint index)
+        public ComponentInstance Remove(int index)
         {
             // Replace the removed component with the last component in the list
             // to avoid fragmentation.
@@ -63,12 +68,12 @@ namespace LuxEngine
 
     public class ComponentManager<T> : BaseComponentManager
     {
-        private ComponentList<BaseComponent<T>> componentList;
+        private ComponentList<T> componentList;
         private EntityMap entityMap;
 
         public ComponentManager()
         {
-            componentList = new ComponentList<BaseComponent<T>>();
+            componentList = new ComponentList<T>();
             entityMap = new EntityMap();
         }
 
@@ -107,6 +112,12 @@ namespace LuxEngine
 
             // Remove component from the entity map
             entityMap.Remove(entityToRemove);
+        }
+
+        public BaseComponent<T> GetComponent(Entity entity)
+        {
+            ComponentInstance componentInstance = entityMap.GetComponentInstance(entity);
+            return componentList[componentInstance.Index];
         }
     }
 }

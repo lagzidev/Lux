@@ -53,6 +53,8 @@
     <Compile Include="EntityMap.cs" />
     <Compile Include="ComponentMask.cs" />
     <Compile Include="LuxException.cs" />
+    <Compile Include="RenderSystem.cs" />
+    <Compile Include="PhysicsSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

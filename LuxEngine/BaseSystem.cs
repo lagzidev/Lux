@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
@@ -10,15 +11,16 @@ namespace LuxEngine
         public List<Entity> RegisteredEntities { get; protected set; }
         public ComponentMask ComponentMask { get; private set; }
 
-        /// <param name="componentMask">
-        ///     Specifies which components are required for the entities this
-        ///     system operates on.
+        /// <param name="requiredComponentTypes">
+        /// Specifies which components are required for the entities this
+        /// system operates on.
         /// </param>
-        public BaseSystem(ComponentMask componentMask)
+        public BaseSystem(params ComponentType[] requiredComponentTypes)
         {
             World = null;
             RegisteredEntities = new List<Entity>();
-            ComponentMask = componentMask;
+            ComponentMask = new ComponentMask(
+                Array.ConvertAll(requiredComponentTypes, x => (int)x));
         }
 
         public void RegisterEntity(Entity entity)
@@ -61,7 +63,7 @@ namespace LuxEngine
         /// <summary>
         /// Automatically called when the game launches to load any game assets (graphics, audio etc.)
         /// </summary>
-        public virtual void LoadContent()
+        public virtual void LoadContent(GraphicsDevice graphicsDevice)
         {
         }
     }

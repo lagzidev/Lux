@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace LuxEngine
 {
@@ -12,7 +10,6 @@ namespace LuxEngine
         public string Title;
 
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
 
         public LuxGame(int width, int height, int windowWidth, int windowHeight, string windowTitle, bool fullscreen)
         {
@@ -42,9 +39,8 @@ namespace LuxEngine
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            World.LoadContent();
+            base.LoadContent();
+            World.LoadContent(GraphicsDevice);
 
             //Map.Load(Content);
             //LoadLevel();
@@ -78,21 +74,21 @@ namespace LuxEngine
 
             //Resolution.BeginDraw();
 
-            spriteBatch.Begin(
-                SpriteSortMode.BackToFront,
-                BlendState.AlphaBlend,
-                SamplerState.PointClamp, // SamplerState.LinearClamp
-                DepthStencilState.Default,
-                RasterizerState.CullNone,
-                null,
-                Camera.GetTransformMatrix());
+            //spriteBatch.Begin(
+            //    SpriteSortMode.BackToFront,
+            //    BlendState.AlphaBlend,
+            //    SamplerState.PointClamp,
+            //    DepthStencilState.Default,
+            //    RasterizerState.CullNone,
+            //    null,
+            //    Camera.GetTransformMatrix());
 
             World.Draw(gameTime);
 
             //DrawObjects();
             //Map.DrawWalls(SpriteBatch);
 
-            spriteBatch.End();
+            //spriteBatch.End();
 
             //Draw the things FNA handles for us underneath the hood:
             base.Draw(gameTime);

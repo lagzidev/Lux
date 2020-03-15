@@ -1,20 +1,20 @@
 ﻿using System;
 namespace LuxEngine
 {
-    public enum ComponentType
+    public enum ComponentType : int
     {
-        TransformComponent,
         DebugNameComponent,
+        TransformComponent,
+        SpriteComponent,
+
+        // Always last
+        ComponentTypeCount,
+        MaxComponentTypes = HardCodedConfig.MAX_COMPONENT_TYPES
     }
 
     public abstract class BaseComponent<T>
     {
         public Entity Entity { get; set; }
-        public static ComponentType ComponentType { get; private set; }
-
-        public BaseComponent(ComponentType componentType)
-        {
-            ComponentType = componentType;
-        }
+        public static ComponentType ComponentType { get; set; }
     }
 }
