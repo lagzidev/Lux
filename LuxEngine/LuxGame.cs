@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,22 +7,30 @@ namespace LuxEngine
 {
     public class LuxGame : Game
     {
-        public World World;
+        public List<World> Worlds;
         public string Title;
 
-        GraphicsDeviceManager graphics;
+        GraphicsDeviceManager graphicsDeviceManager;
 
         public LuxGame(int width, int height, int windowWidth, int windowHeight, string windowTitle, bool fullscreen)
         {
-            World = new World();
+            Worlds = new List<World>();
             Title = Window.Title = windowTitle;
 
-            graphics = new GraphicsDeviceManager(this);
+            graphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = @"Content";
 
             //Resolution.Init(ref graphics);
             //Resolution.SetVirtualResolution(width, height); // Resolution our assets are based in
             //Resolution.SetResolution(windowWidth, windowHeight, fullscreen);
+        }
+
+        public World CreateWorld()
+        {
+            World newWorld = new World();
+            Worlds.Add(newWorld);
+
+            return newWorld;
         }
 
         /// <summary>
@@ -30,7 +39,7 @@ namespace LuxEngine
         protected override void Initialize()
         {
             base.Initialize();
-            World.Init();
+            Worlds.ForEach(x => x.Init());
             //Camera.Initialize();
         }
 
@@ -40,7 +49,7 @@ namespace LuxEngine
         protected override void LoadContent()
         {
             base.LoadContent();
-            World.LoadContent(GraphicsDevice);
+            Worlds.ForEach(x => x.LoadContent(GraphicsDevice, Content));
 
             //Map.Load(Content);
             //LoadLevel();
@@ -53,7 +62,7 @@ namespace LuxEngine
         /// </summary>
         protected override void Update(GameTime gameTime)
         {
-            World.Update(gameTime);
+            Worlds.ForEach(x => x.Update(gameTime));
 
             //Input.Update();
             //map.Update(objects);
@@ -70,7 +79,7 @@ namespace LuxEngine
         protected override void Draw(GameTime gameTime)
         {
             //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.CornflowerBlue);
 
             //Resolution.BeginDraw();
 
@@ -83,7 +92,7 @@ namespace LuxEngine
             //    null,
             //    Camera.GetTransformMatrix());
 
-            World.Draw(gameTime);
+            Worlds.ForEach(x => x.Draw(gameTime));
 
             //DrawObjects();
             //Map.DrawWalls(SpriteBatch);

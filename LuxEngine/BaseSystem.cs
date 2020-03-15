@@ -1,10 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
+    public enum SystemId
+    {
+        DebugSystem,
+        RenderSystem,
+
+        SystemsCount // Always last
+    }
+
+    public abstract class IdentifiableSystem<T> : BaseSystem
+    {
+        public static SystemId SystemId { get; set; }
+
+        public IdentifiableSystem(params ComponentType[] requiredComponentTypes) : base(requiredComponentTypes)
+        {
+        }
+    }
+
     public abstract class BaseSystem
     {
         public World World { protected get; set; }
@@ -45,6 +63,13 @@ namespace LuxEngine
         }
 
         /// <summary>
+        /// Automatically called when the game launches to load any game assets (graphics, audio etc.)
+        /// </summary>
+        public virtual void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager)
+        {
+        }
+
+        /// <summary>
         /// Called each frame to update the game. Games usually runs 60 frames per second.
         /// Each frame the Update function will run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -57,13 +82,6 @@ namespace LuxEngine
         /// This is called when the game is ready to draw to the screen, it's also called each frame.
         /// </summary>
         public virtual void Draw(GameTime gameTime)
-        {
-        }
-
-        /// <summary>
-        /// Automatically called when the game launches to load any game assets (graphics, audio etc.)
-        /// </summary>
-        public virtual void LoadContent(GraphicsDevice graphicsDevice)
         {
         }
     }

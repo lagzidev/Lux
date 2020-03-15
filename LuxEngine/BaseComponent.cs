@@ -14,7 +14,7 @@ namespace LuxEngine
 
     public abstract class BaseComponent<T>
     {
-        public Entity Entity { get; set; }
         public static ComponentType ComponentType { get; set; }
+        public Entity Entity { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
@@ -10,31 +11,15 @@ namespace LuxEngine
         private EntityManager _entityManager;
         private SortedDictionary<Entity, ComponentMask> _entityMasks;
         private BaseSystem[] _systems;
-        public BaseSystem[] Systems
-        {
-            private get
-            {
-                return _systems;
-            }
-            set
-            {
-                foreach (BaseSystem system in value)
-                {
-                    system.World = this;
-                }
 
-                _systems = value;
-            }
-        }
-
-        public BaseComponentManager[] ComponentManagers { get; set; }
+        public BaseComponentManager[] ComponentManagers { get; private set; }
 
         public World()
         {
             _entityManager = new EntityManager();
             _entityMasks = new SortedDictionary<Entity, ComponentMask>();
-            Systems = new BaseSystem[0];
-            ComponentManagers = new BaseComponentManager[0];
+            _systems = new BaseSystem[(int)SystemId.SystemsCount];
+            ComponentManagers = new BaseComponentManager[(int)ComponentType.ComponentTypeCount];
         }
 
         public EntityHandle CreateEntity()
@@ -80,6 +65,33 @@ namespace LuxEngine
             updateEntitySystems(entity, oldMask);
         }
 
+        public void RegisterSystem<T>(SystemId systemId) where T: IdentifiableSystem<T>, new()
+        {
+            // Set the ID for the appropriate system class
+            IdentifiableSystem<T>.SystemId = systemId;
+
+            // Create the system
+            T newSystem = new T();
+            newSystem.World = this;
+
+            _systems[(int)systemId] = newSystem;
+        }
+
+        /// <summary>
+        /// Applies a ComponentType to a Component class and instantiates
+        /// a component manager for the component type.
+        /// </summary>
+        /// <typeparam name="T">Component class</typeparam>
+        /// <param name="componentType">Component type matching the class</param>
+        public void RegisterComponentType<T>(ComponentType componentType)
+        {
+            // Set the type for the appropriate component class
+            BaseComponent<T>.ComponentType = componentType;
+
+            // Create a component manager for the component type
+            ComponentManagers[(int)componentType] = new ComponentManager<T>();
+        }
+
         public void RemoveComponent<T>(Entity entity)
         {
             // Update the component manager
@@ -98,7 +110,7 @@ namespace LuxEngine
         /// </summary>
         private void updateEntitySystems(Entity entity, ComponentMask oldMask)
         {
-            foreach (var system in Systems)
+            foreach (var system in _systems)
             {
                 bool entityMatchesSystem = _entityMasks[entity].Matches(system.ComponentMask);
                 bool entityWasInSystem = oldMask.Matches(system.ComponentMask);
@@ -115,23 +127,23 @@ namespace LuxEngine
 
         public virtual void Init()
         {
-            foreach (BaseSystem system in Systems)
+            foreach (BaseSystem system in _systems)
             {
                 system.Init();
             }
         }
 
-        public virtual void LoadContent(GraphicsDevice graphicsDevice)
+        public virtual void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManage)
         {
-            foreach (BaseSystem system in Systems)
+            foreach (BaseSystem system in _systems)
             {
-                system.LoadContent(graphicsDevice);
+                system.LoadContent(graphicsDevice, contentManage);
             }
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            foreach (BaseSystem system in Systems)
+            foreach (BaseSystem system in _systems)
             {
                 system.Update(gameTime);
             }
@@ -139,7 +151,7 @@ namespace LuxEngine
 
         public virtual void Draw(GameTime gameTime)
         {
-            foreach (BaseSystem system in Systems)
+            foreach (BaseSystem system in _systems)
             {
                 system.Draw(gameTime);
             }
