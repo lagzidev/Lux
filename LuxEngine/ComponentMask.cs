@@ -42,7 +42,13 @@ namespace LuxEngine
             // [0, 1, 1, 1] _mask
             // [0, 1, 0, 1] otherMask
             // [0, 1, 0, 1] (_mask & otherMask) == otherMask
+
+            // TODO: Implement BitArray yourself. This one sucks.
+
+            // We have to save the mask because .And mutates it for some reason
+            BitArray savedMask = (BitArray)_mask.Clone();
             BitArray andResult = _mask.And(otherMask._mask);
+            _mask = savedMask;
 
             // Check if andResult and otherMask are equal (for lack of .Equals)
             for (int i = 0; i < andResult.Length; i++)

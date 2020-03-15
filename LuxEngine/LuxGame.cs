@@ -70,7 +70,7 @@ namespace LuxEngine
         protected override void Draw(GameTime gameTime)
         {
             //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             //Resolution.BeginDraw();
 
