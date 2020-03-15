@@ -42,7 +42,18 @@ namespace LuxEngine
             // [0, 1, 1, 1] _mask
             // [0, 1, 0, 1] otherMask
             // [0, 1, 0, 1] (_mask & otherMask) == otherMask
-            return _mask.And(otherMask._mask) == otherMask._mask;
+            BitArray andResult = _mask.And(otherMask._mask);
+
+            // Check if andResult and otherMask are equal (for lack of .Equals)
+            for (int i = 0; i < andResult.Length; i++)
+            {
+                if (andResult[i] != otherMask._mask[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public object Clone()

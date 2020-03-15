@@ -12,10 +12,10 @@ namespace LuxEngine
 
         public Entity CreateEntity()
         {
-            _lastId++;
-
             Entity entity;
             entity.Id = _lastId;
+
+            _lastId++;
 
             return entity;
         }
