@@ -26,7 +26,7 @@ namespace LuxEngine
 
         public static void Initialize()
         {
-            zoom = 1.0f;
+            zoom = 1f;
             Rotation = 0.0f;
 
             //Start the camera at the center of the screen:

@@ -106,6 +106,11 @@ namespace LuxEngine
 
         protected virtual void ChangeAnimation(AnimationType newAnimationType)
         {
+            if (currentAnimation.Name == GetAnimationName(newAnimationType))
+            {
+                return;
+            }
+
             currentAnimation = GetAnimation(newAnimationType);
 
             if (currentAnimation == null)

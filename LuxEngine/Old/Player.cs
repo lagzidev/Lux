@@ -25,9 +25,9 @@ namespace LuxEngine
 
         public override void Load(ContentManager content)
         {
-            image = TextureLoader.Load("spritesheet", content);
+            image = TextureLoader.Load("alex_stardew_valley", content);
 
-            LoadAnimation("Anim1.xml", content);
+            LoadAnimation("Alex.xml", content);
             ChangeAnimation(AnimationType.IdleRight);
 
             base.Load(content);

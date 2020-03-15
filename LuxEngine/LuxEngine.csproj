@@ -7,6 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>LuxEngine</RootNamespace>
     <AssemblyName>LuxEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|anycpu' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,27 +25,40 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="LuxEngine.cs" />
-    <Compile Include="Utils\Camera.cs" />
-    <Compile Include="Utils\Global.cs" />
-    <Compile Include="Utils\Input.cs" />
-    <Compile Include="Utils\Resolution.cs" />
-    <Compile Include="Utils\TextureLoader.cs" />
-    <Compile Include="Utils\XmlHelper.cs" />
-    <Compile Include="GameObject.cs" />
-    <Compile Include="Player.cs" />
-    <Compile Include="Map.cs" />
-    <Compile Include="Character.cs" />
-    <Compile Include="Animation\Animation.cs" />
-    <Compile Include="Animation\AnimationLoader.cs" />
-    <Compile Include="Animation\AnimatedObject.cs" />
-    <Compile Include="Commands\Command.cs" />
-    <Compile Include="Commands\MoveCommand.cs" />
+    <Compile Include="LuxGame.cs" />
+    <Compile Include="Old\Animation\AnimatedObject.cs" />
+    <Compile Include="Old\Animation\Animation.cs" />
+    <Compile Include="Old\Animation\AnimationLoader.cs" />
+    <Compile Include="Old\Commands\Command.cs" />
+    <Compile Include="Old\Commands\MoveCommand.cs" />
+    <Compile Include="Old\Character.cs" />
+    <Compile Include="Old\GameObject.cs" />
+    <Compile Include="Old\Map.cs" />
+    <Compile Include="Old\Utils\Camera.cs" />
+    <Compile Include="Old\Utils\Global.cs" />
+    <Compile Include="Old\Utils\Input.cs" />
+    <Compile Include="Old\Utils\Resolution.cs" />
+    <Compile Include="Old\Utils\TextureLoader.cs" />
+    <Compile Include="Old\Utils\XmlHelper.cs" />
+    <Compile Include="Old\Player.cs" />
+    <Compile Include="Old\Scene.cs" />
+    <Compile Include="BaseSystem.cs" />
+    <Compile Include="Entity.cs" />
+    <Compile Include="BaseComponent.cs" />
+    <Compile Include="World.cs" />
+    <Compile Include="EntityManager.cs" />
+    <Compile Include="EntityHandle.cs" />
+    <Compile Include="ComponentManager.cs" />
+    <Compile Include="HardCodedConfig.cs" />
+    <Compile Include="EntityMap.cs" />
+    <Compile Include="ComponentMask.cs" />
+    <Compile Include="LuxException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Utils\" />
-    <Folder Include="Animation\" />
-    <Folder Include="Commands\" />
+    <Folder Include="Old\" />
+    <Folder Include="Old\Animation\" />
+    <Folder Include="Old\Commands\" />
+    <Folder Include="Old\Utils\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\FNA\FNA.csproj">
@@ -54,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\build\CopyFNALibs.targets" />
