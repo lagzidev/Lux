@@ -6,6 +6,8 @@ namespace LuxEngine
         DebugNameComponent,
         TransformComponent,
         SpriteComponent,
+        RelationshipComponent,
+        PlatformerPlayerControlled,
 
         // Always last
         ComponentTypeCount,

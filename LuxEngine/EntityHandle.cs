@@ -29,5 +29,10 @@ namespace LuxEngine
         {
             World.RemoveComponent<T>(Entity);
         }
+
+        public T Unpack<T>()
+        {
+            return World.Unpack<T>(Entity);
+        }
     }
 }

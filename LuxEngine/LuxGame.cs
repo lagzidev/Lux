@@ -20,7 +20,7 @@ namespace LuxEngine
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = @"Content";
 
-            //Resolution.Init(ref graphics);
+            //Resolution.Init(ref graphicsDeviceManager);
             //Resolution.SetVirtualResolution(width, height); // Resolution our assets are based in
             //Resolution.SetResolution(windowWidth, windowHeight, fullscreen);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -6,10 +7,43 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
+    //public class LuxEnum : IEnumerable<KeyValuePair<string, int>>
+    //{
+    //    private SortedList<string, int> _elements;
+
+    //    public LuxEnum(params string[] keys)
+    //    {
+    //        _elements = new SortedList<string, int>(keys.Length);
+    //        foreach (var key in keys)
+    //        {
+    //            _elements[key] = 0;
+    //        }
+    //    }
+
+    //    public IEnumerator<KeyValuePair<string, int>> GetEnumerator()
+    //    {
+    //        return _elements.GetEnumerator();
+    //    }
+
+    //    IEnumerator IEnumerable.GetEnumerator()
+    //    {
+    //        return _elements.GetEnumerator();
+    //    }
+    //}
+
+    //public static LuxEnum SystemId = new LuxEnum(
+    //    "DebugSystem",
+    //    "RenderSystem",
+
+    //    "SystemsCount" // Always last
+    //);
+
+    // TODO: Enable the user to expand this enum (and update SystemsCount accordingly)
     public enum SystemId
     {
         DebugSystem,
         RenderSystem,
+        PlatformerPlayerControllerSystem,
 
         SystemsCount // Always last
     }

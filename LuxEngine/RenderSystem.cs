@@ -13,6 +13,7 @@ namespace LuxEngine
     public class SpriteComponent : BaseComponent<SpriteComponent>
     {
         public string TextureFilePath;
+        public Rectangle PositionInTexture;
         public Color Color;
         public float Rotation;
         public SpriteDepth SpriteDepth;
@@ -21,9 +22,10 @@ namespace LuxEngine
         public Texture2D Texture;
 
         // TODO: Add: bool mipMap, SurfaceFormat format (for Texture2d)
-        public SpriteComponent(string textureFilePath, Color color, SpriteDepth spriteDepth, float rotation = 0) 
+        public SpriteComponent(string textureFilePath, Rectangle positionInTexture, SpriteDepth spriteDepth, Color color, float rotation = 0)
         {
             TextureFilePath = textureFilePath;
+            PositionInTexture = positionInTexture;
             Color = color;
             Rotation = rotation;
             SpriteDepth = spriteDepth;
@@ -79,8 +81,8 @@ namespace LuxEngine
 
                 _spriteBatch.Draw(
                     sprite.Texture,
-                    transform.Position,
-                    transform.Size,
+                    new Vector2(transform.X, transform.Y),
+                    sprite.PositionInTexture,
                     sprite.Color,
                     sprite.Rotation,
                     Vector2.Zero,

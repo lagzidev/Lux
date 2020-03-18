@@ -11,15 +11,14 @@ namespace LuxEngine
         private EntityManager _entityManager;
         private SortedDictionary<Entity, ComponentMask> _entityMasks;
         private BaseSystem[] _systems;
-
-        public BaseComponentManager[] ComponentManagers { get; private set; }
+        private BaseComponentManager[] _componentManagers { get; set; }
 
         public World()
         {
             _entityManager = new EntityManager();
             _entityMasks = new SortedDictionary<Entity, ComponentMask>();
             _systems = new BaseSystem[(int)SystemId.SystemsCount];
-            ComponentManagers = new BaseComponentManager[(int)ComponentType.ComponentTypeCount];
+            _componentManagers = new BaseComponentManager[(int)ComponentType.ComponentTypeCount];
         }
 
         public EntityHandle CreateEntity()
@@ -42,14 +41,6 @@ namespace LuxEngine
 
             // Return the component without the ugly BaseComponent<T> wrapper
             return (T)Convert.ChangeType(component, typeof(T));
-        }
-
-        public ComponentManager<T> GetComponents<T>()
-        {
-            // TODO: Optimization - give each component/component manager an 
-            // index that can be used to instantly access the correct 
-            // componentmanager by index.
-            return _getComponentManager<T>();
         }
 
         public void AddComponent<T>(Entity entity, BaseComponent<T> component)
@@ -89,7 +80,7 @@ namespace LuxEngine
             BaseComponent<T>.ComponentType = componentType;
 
             // Create a component manager for the component type
-            ComponentManagers[(int)componentType] = new ComponentManager<T>();
+            _componentManagers[(int)componentType] = new ComponentManager<T>();
         }
 
         public void RemoveComponent<T>(Entity entity)
@@ -159,8 +150,12 @@ namespace LuxEngine
 
         private ComponentManager<T> _getComponentManager<T>()
         {
+            // TODO: Optimization - give each component/component manager an 
+            // index that can be used to instantly access the correct 
+            // componentmanager by index.
+
             ComponentManager<T> foundComponentManager = null;
-            foreach (var componentManager in ComponentManagers)
+            foreach (var componentManager in _componentManagers)
             {
                 // Find the component manager of the appropriate component type
                 if (componentManager.GetType() == typeof(ComponentManager<T>))

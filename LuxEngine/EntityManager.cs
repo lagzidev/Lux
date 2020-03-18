@@ -3,7 +3,7 @@ namespace LuxEngine
 {
     public class EntityManager
     {
-        ulong _lastId;
+        int _lastId;
 
         public EntityManager()
         {

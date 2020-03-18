@@ -6,7 +6,7 @@ namespace LuxEngine
 {
     public struct Entity : IComparable
     {
-        public ulong Id;
+        public int Id;
 
         // To use Entity in a SortedDictionary
         public int CompareTo(object obj)

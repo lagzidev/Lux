@@ -25,7 +25,13 @@ namespace LuxEngine
 
         public ComponentInstance GetComponentInstance(Entity entity)
         {
-            return entityToComponent[entity];
+            ComponentInstance componentInstance;
+            if (!entityToComponent.TryGetValue(entity, out componentInstance))
+            {
+                throw new LuxException(LuxStatus.ENTITYMAP_GETCOMPONENTINSTANCE_COMPONENT_DOES_NOT_EXIST_FOR_THIS_ENTITY, entity.Id);
+            }
+
+            return componentInstance;
         }
 
         public void Update(Entity entity, ComponentInstance componentInstance)

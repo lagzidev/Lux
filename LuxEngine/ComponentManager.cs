@@ -62,7 +62,7 @@ namespace LuxEngine
 
     // This exists so we can create an array of component managers without
     // specifying the type <T>
-    public class BaseComponentManager
+    public abstract class BaseComponentManager
     {
     }
 
@@ -92,16 +92,19 @@ namespace LuxEngine
 
         public void RemoveComponent(Entity entityToRemove)
         {
-            // ComponentList.Remove(..):
-            //     v-- componentToRemove
-            // [1, 2, 3, 4]
-            // [1, ?, 3, 4]
-            // [1, 4, 3, ?]
-            //           ^-- lastComponent
+            // componentList.Remove(..):
+
 
             // Remove component from the component list
             ComponentInstance componentToRemove = entityMap.GetComponentInstance(entityToRemove);
+
+            //     v-- componentToRemove
+            // [1, 2, 3, 4]
             ComponentInstance lastComponent = componentList.Remove(componentToRemove.Index);
+
+            // [1, x, 3, 4]
+            // [1, 4, 3, x]
+            //           ^-- lastComponent
 
             // Update the entity map because the last component was moved
             // to [componentToRemove.Index] by componentList.Remove
