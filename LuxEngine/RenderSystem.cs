@@ -79,9 +79,20 @@ namespace LuxEngine
                 var sprite = World.Unpack<SpriteComponent>(entity);
                 var transform = World.Unpack<TransformComponent>(entity);
 
+                // Handle relationship logic
+                RelationshipComponent relationship;
+                float parentX = 0;
+                float parentY = 0;
+                if (World.TryUnpack(entity, out relationship))
+                {
+                    var parentTransform = relationship.ParentEntity.Unpack<TransformComponent>();
+                    parentX = parentTransform.X;
+                    parentY = parentTransform.Y;
+                }
+
                 _spriteBatch.Draw(
                     sprite.Texture,
-                    new Vector2(transform.X, transform.Y),
+                    new Vector2(transform.X + parentX, transform.Y + parentY),
                     sprite.PositionInTexture,
                     sprite.Color,
                     sprite.Rotation,

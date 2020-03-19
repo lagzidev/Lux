@@ -117,10 +117,17 @@ namespace LuxEngine
             entityMap.Remove(entityToRemove);
         }
 
-        public BaseComponent<T> GetComponent(Entity entity)
+        public bool TryGetComponent(Entity entity, out BaseComponent<T> componentOut)
         {
-            ComponentInstance componentInstance = entityMap.GetComponentInstance(entity);
-            return componentList[componentInstance.Index];
+            ComponentInstance componentInstance;
+            if (!entityMap.TryGetComponentInstance(entity, out componentInstance))
+            {
+                componentOut = null;
+                return false;
+            }
+
+            componentOut = componentList[componentInstance.Index];
+            return true;
         }
     }
 }

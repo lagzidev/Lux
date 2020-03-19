@@ -55,6 +55,7 @@
     <Compile Include="LuxException.cs" />
     <Compile Include="RenderSystem.cs" />
     <Compile Include="PhysicsSystem.cs" />
+    <Compile Include="RelationshipComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

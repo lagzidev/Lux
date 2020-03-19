@@ -11,7 +11,7 @@ namespace LuxEngine
     public class EntityHandle
     {
         public Entity Entity;
-        public World World;
+        public World World { private get; set; }
 
         public EntityHandle(Entity entity, World world)
         {

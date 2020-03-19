@@ -29,18 +29,35 @@ namespace LuxEngine
             return entityHandle;
         }
 
-        public T Unpack<T>(Entity entity)
+        public bool TryUnpack<T>(Entity entity, out T componentOut)
         {
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
             if (null == foundComponentManager)
             {
-                throw new LuxException(LuxStatus.WORLD_UNPACK_COMPONENT_MANAGER_NOT_FOUND, (int)BaseComponent<T>.ComponentType);
+                throw new LuxException(LuxStatus.WORLD_TRYUNPACK_COMPONENT_MANAGER_NOT_FOUND, (int)BaseComponent<T>.ComponentType);
             }
 
-            BaseComponent<T> component = foundComponentManager.GetComponent(entity);
+            BaseComponent<T> component;
+            if (!foundComponentManager.TryGetComponent(entity, out component))
+            {
+                componentOut = default;
+                return false;
+            }
 
             // Return the component without the ugly BaseComponent<T> wrapper
-            return (T)Convert.ChangeType(component, typeof(T));
+            componentOut = (T)Convert.ChangeType(component, typeof(T));
+            return true;
+        }
+
+        public T Unpack<T>(Entity entity)
+        {
+            T component;
+            if (!TryUnpack<T>(entity, out component))
+            {
+                throw new LuxException(LuxStatus.WORLD_UNPACK_COMPONENT_NOT_FOUND_FOR_ENTITY, entity.Id);
+            }
+
+            return component;
         }
 
         public void AddComponent<T>(Entity entity, BaseComponent<T> component)
