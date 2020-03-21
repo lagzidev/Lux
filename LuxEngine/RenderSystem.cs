@@ -5,9 +5,19 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
+    /// <summary>
+    /// Rendering depth of the sprite.
+    /// The actual enum int value will be converted to float and divided by 10
+    /// when passed to the sprite batch.
+    /// </summary>
     public enum SpriteDepth : int
     {
-        Normal = 1, // TODO: Change the name
+        Min = 0, // Front-most
+
+        Character = 5,
+        Wall = 6,
+
+        Max = 10 // Deepest
     }
 
     public class SpriteComponent : BaseComponent<SpriteComponent>
@@ -34,7 +44,7 @@ namespace LuxEngine
         }
     }
 
-    public class RenderSystem : IdentifiableSystem<RenderSystem>
+    public class RenderSystem : BaseSystem<RenderSystem>
     {
         private SpriteBatch _spriteBatch;
         private GraphicsDevice _graphicsDevice;
@@ -63,10 +73,20 @@ namespace LuxEngine
         {
             base.Draw(gameTime);
 
-            // Clear what's on the screen each frame
-            _graphicsDevice.Clear(Color.CornflowerBlue);
+            var resolution = World.GlobalEntity.Unpack<ResolutionSingleton>();
 
-            //_graphicsDevice.Viewport = new Viewport(0, 0, 100, 100);
+            // Resize the viewport to the whole window
+            _graphicsDevice.Viewport = new Viewport(0, 0, resolution.Width, resolution.Height);
+
+            // Clear to Black
+            _graphicsDevice.Clear(Color.Black);
+
+            // Calculate Proper Viewport according to Aspect Ratio
+            _graphicsDevice.Viewport = ResolutionSystem.GetVirtualViewport(resolution);
+            // and clear that
+            // This way we are gonna have black bars if aspect ratio requires it and
+            // the clear color on the rest
+            _graphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(
                 SpriteSortMode.BackToFront,
@@ -74,7 +94,8 @@ namespace LuxEngine
                 SamplerState.PointClamp,
                 DepthStencilState.Default,
                 RasterizerState.CullNone,
-                null); // , Camera.GetTransformMatrix()
+                null,
+                ResolutionSystem.CalculateTransformationMatrix(resolution, _graphicsDevice.Viewport.Width)); // , Camera.GetTransformMatrix() // Black bars?
 
 
             foreach (var entity in RegisteredEntities)
@@ -102,7 +123,7 @@ namespace LuxEngine
                     Vector2.Zero,
                     1f,
                     SpriteEffects.None,
-                    (float)sprite.SpriteDepth);
+                    (float)sprite.SpriteDepth / 10f);
             }
 
             _spriteBatch.End();

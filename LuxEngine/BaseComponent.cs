@@ -5,6 +5,7 @@ namespace LuxEngine
     {
         DebugNameComponent,
         InputSingleton,
+        ResolutionSingleton,
         TransformComponent,
         SpriteComponent,
         RelationshipComponent,

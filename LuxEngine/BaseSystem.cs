@@ -43,6 +43,7 @@ namespace LuxEngine
     {
         DebugSystem,
         InputSystem,
+        ResolutionSystem,
         RenderSystem,
         PlatformerPlayerControllerSystem,
         CameraSystem,
@@ -50,16 +51,16 @@ namespace LuxEngine
         SystemsCount // Always last
     }
 
-    public abstract class IdentifiableSystem<T> : BaseSystem
+    public abstract class BaseSystem<T> : InternalBaseSystem
     {
         public static SystemId SystemId { get; set; }
 
-        public IdentifiableSystem(params ComponentType[] requiredComponentTypes) : base(requiredComponentTypes)
+        public BaseSystem(params ComponentType[] requiredComponentTypes) : base(requiredComponentTypes)
         {
         }
     }
 
-    public abstract class BaseSystem
+    public abstract class InternalBaseSystem
     {
         public World World { protected get; set; }
         public List<Entity> RegisteredEntities { get; protected set; }
@@ -69,7 +70,7 @@ namespace LuxEngine
         /// Specifies which components are required for the entities this
         /// system operates on.
         /// </param>
-        public BaseSystem(params ComponentType[] requiredComponentTypes)
+        public InternalBaseSystem(params ComponentType[] requiredComponentTypes)
         {
             World = null;
             RegisteredEntities = new List<Entity>();
@@ -90,7 +91,7 @@ namespace LuxEngine
         /// <summary>
         /// Automatically called when the game launches to initialize any non-graphic variables.
         /// </summary>
-        public virtual void Init()
+        public virtual void Init(GraphicsDeviceManager graphicsDeviceManager)
         {
             if (null == World)
             {

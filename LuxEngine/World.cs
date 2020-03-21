@@ -10,7 +10,7 @@ namespace LuxEngine
     {
         private EntityManager _entityManager;
         private SortedDictionary<Entity, ComponentMask> _entityMasks;
-        private BaseSystem[] _systems;
+        private InternalBaseSystem[] _systems;
         private BaseComponentManager[] _componentManagers;
 
         public EntityHandle GlobalEntity { get; private set; }
@@ -19,7 +19,7 @@ namespace LuxEngine
         {
             _entityManager = new EntityManager();
             _entityMasks = new SortedDictionary<Entity, ComponentMask>();
-            _systems = new BaseSystem[(int)SystemId.SystemsCount];
+            _systems = new InternalBaseSystem[(int)SystemId.SystemsCount];
             _componentManagers = new BaseComponentManager[(int)ComponentType.ComponentTypeCount];
 
             GlobalEntity = CreateEntity();
@@ -77,10 +77,10 @@ namespace LuxEngine
             updateEntitySystems(entity, oldMask);
         }
 
-        public void RegisterSystem<T>(SystemId systemId) where T: IdentifiableSystem<T>, new()
+        public void RegisterSystem<T>(SystemId systemId) where T : BaseSystem<T>, new()
         {
             // Set the ID for the appropriate system class
-            IdentifiableSystem<T>.SystemId = systemId;
+            BaseSystem<T>.SystemId = systemId;
 
             // Create the system
             T newSystem = new T();
@@ -137,25 +137,25 @@ namespace LuxEngine
             }
         }
 
-        public virtual void Init()
+        public virtual void Init(GraphicsDeviceManager graphicsDeviceManager)
         {
-            foreach (BaseSystem system in _systems)
+            foreach (InternalBaseSystem system in _systems)
             {
-                system.Init();
+                system.Init(graphicsDeviceManager);
             }
         }
 
-        public virtual void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManage)
+        public virtual void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager)
         {
-            foreach (BaseSystem system in _systems)
+            foreach (InternalBaseSystem system in _systems)
             {
-                system.LoadContent(graphicsDevice, contentManage);
+                system.LoadContent(graphicsDevice, contentManager);
             }
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            foreach (BaseSystem system in _systems)
+            foreach (InternalBaseSystem system in _systems)
             {
                 system.Update(gameTime);
             }
@@ -163,7 +163,7 @@ namespace LuxEngine
 
         public virtual void Draw(GameTime gameTime)
         {
-            foreach (BaseSystem system in _systems)
+            foreach (InternalBaseSystem system in _systems)
             {
                 system.Draw(gameTime);
             }

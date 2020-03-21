@@ -17,7 +17,7 @@ namespace LuxEngine
         }
     }
 
-    public class CameraSystem : IdentifiableSystem<CameraSystem>
+    public class CameraSystem : BaseSystem<CameraSystem>
     {
         public CameraSystem() : base(Camera.ComponentType, Transform.ComponentType)
         {

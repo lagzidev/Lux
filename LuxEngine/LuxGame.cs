@@ -12,17 +12,13 @@ namespace LuxEngine
 
         GraphicsDeviceManager graphicsDeviceManager;
 
-        public LuxGame(int width, int height, int windowWidth, int windowHeight, string windowTitle, bool fullscreen)
+        public LuxGame(string windowTitle)
         {
             Worlds = new List<World>();
             Title = Window.Title = windowTitle;
 
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = @"Content";
-
-            //Resolution.Init(ref graphicsDeviceManager);
-            //Resolution.SetVirtualResolution(width, height); // Resolution our assets are based in
-            //Resolution.SetResolution(windowWidth, windowHeight, fullscreen);
         }
 
         public World CreateWorld()
@@ -39,7 +35,7 @@ namespace LuxEngine
         protected override void Initialize()
         {
             base.Initialize();
-            Worlds.ForEach(x => x.Init());
+            Worlds.ForEach(x => x.Init(graphicsDeviceManager));
             //Camera.Initialize();
         }
 

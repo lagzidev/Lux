@@ -15,7 +15,7 @@ namespace LuxEngine
     /// <summary>
     /// Populates the InputSingleton component
     /// </summary>
-    public class InputSystem : IdentifiableSystem<InputSystem>
+    public class InputSystem : BaseSystem<InputSystem>
     {
         public InputSystem() : base(InputSingleton.ComponentType)
         {
