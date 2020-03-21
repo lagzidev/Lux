@@ -60,11 +60,11 @@ namespace LuxEngine
             return viewport;
         }
 
-        static public Matrix CalculateTransformationMatrix(ResolutionSingleton resolution, int viewportWidth)
+        public static Matrix GetScaleMatrix(ResolutionSingleton resolution, int viewportWidth)
         {
+            // If virtual width/height changed, recalculate the matrix
             if (resolution.DirtyMatrix)
             {
-                // Recreate scale matrix
                 resolution.DirtyMatrix = false;
                 resolution.ScaleMatrix = Matrix.CreateScale(
                     (float)viewportWidth / resolution.VWidth,

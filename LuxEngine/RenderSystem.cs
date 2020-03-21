@@ -95,7 +95,7 @@ namespace LuxEngine
                 DepthStencilState.Default,
                 RasterizerState.CullNone,
                 null,
-                ResolutionSystem.CalculateTransformationMatrix(resolution, _graphicsDevice.Viewport.Width)); // , Camera.GetTransformMatrix() // Black bars?
+                ResolutionSystem.GetScaleMatrix(resolution, _graphicsDevice.Viewport.Width)); // , Camera.GetTransformMatrix() // Black bars?
 
 
             foreach (var entity in RegisteredEntities)
