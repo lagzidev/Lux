@@ -42,8 +42,10 @@ namespace LuxEngine
     public enum SystemId
     {
         DebugSystem,
+        InputSystem,
         RenderSystem,
         PlatformerPlayerControllerSystem,
+        CameraSystem,
 
         SystemsCount // Always last
     }

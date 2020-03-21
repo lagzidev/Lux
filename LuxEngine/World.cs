@@ -11,7 +11,9 @@ namespace LuxEngine
         private EntityManager _entityManager;
         private SortedDictionary<Entity, ComponentMask> _entityMasks;
         private BaseSystem[] _systems;
-        private BaseComponentManager[] _componentManagers { get; set; }
+        private BaseComponentManager[] _componentManagers;
+
+        public EntityHandle GlobalEntity { get; private set; }
 
         public World()
         {
@@ -19,6 +21,8 @@ namespace LuxEngine
             _entityMasks = new SortedDictionary<Entity, ComponentMask>();
             _systems = new BaseSystem[(int)SystemId.SystemsCount];
             _componentManagers = new BaseComponentManager[(int)ComponentType.ComponentTypeCount];
+
+            GlobalEntity = CreateEntity();
         }
 
         public EntityHandle CreateEntity()

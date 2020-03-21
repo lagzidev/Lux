@@ -1,11 +1,11 @@
 ﻿using System;
 namespace LuxEngine
 {
-    public class RelationshipComponent : BaseComponent<RelationshipComponent>
+    public class Relationship  : BaseComponent<Relationship>
     {
         public EntityHandle ParentEntity { get; set; }
 
-        public RelationshipComponent(EntityHandle parentEntity)
+        public Relationship(EntityHandle parentEntity)
         {
             ParentEntity = parentEntity;
         }

@@ -40,7 +40,7 @@ namespace LuxEngine
         private GraphicsDevice _graphicsDevice;
 
         public RenderSystem() :
-            base(SpriteComponent.ComponentType, TransformComponent.ComponentType) // TODO: Improve this syntax and only specify type
+            base(SpriteComponent.ComponentType, Transform.ComponentType) // TODO: Improve this syntax and only specify type
         {
         }
 
@@ -66,6 +66,8 @@ namespace LuxEngine
             // Clear what's on the screen each frame
             _graphicsDevice.Clear(Color.CornflowerBlue);
 
+            //_graphicsDevice.Viewport = new Viewport(0, 0, 100, 100);
+
             _spriteBatch.Begin(
                 SpriteSortMode.BackToFront,
                 BlendState.AlphaBlend,
@@ -74,18 +76,19 @@ namespace LuxEngine
                 RasterizerState.CullNone,
                 null); // , Camera.GetTransformMatrix()
 
+
             foreach (var entity in RegisteredEntities)
             {
                 var sprite = World.Unpack<SpriteComponent>(entity);
-                var transform = World.Unpack<TransformComponent>(entity);
+                var transform = World.Unpack<Transform>(entity);
 
                 // Handle relationship logic
-                RelationshipComponent relationship;
+                Relationship  relationship;
                 float parentX = 0;
                 float parentY = 0;
                 if (World.TryUnpack(entity, out relationship))
                 {
-                    var parentTransform = relationship.ParentEntity.Unpack<TransformComponent>();
+                    var parentTransform = relationship.ParentEntity.Unpack<Transform>();
                     parentX = parentTransform.X;
                     parentY = parentTransform.Y;
                 }

@@ -4,10 +4,13 @@ namespace LuxEngine
     public enum ComponentType : int
     {
         DebugNameComponent,
+        InputSingleton,
         TransformComponent,
         SpriteComponent,
         RelationshipComponent,
         PlatformerPlayerControlled,
+        Camera,
+        PlatformerLens,
 
         // Always last
         ComponentTypeCount,

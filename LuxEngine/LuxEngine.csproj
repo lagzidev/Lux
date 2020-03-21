@@ -34,9 +34,7 @@
     <Compile Include="Old\Character.cs" />
     <Compile Include="Old\GameObject.cs" />
     <Compile Include="Old\Map.cs" />
-    <Compile Include="Old\Utils\Camera.cs" />
-    <Compile Include="Old\Utils\Global.cs" />
-    <Compile Include="Old\Utils\Input.cs" />
+    <Compile Include="Old\Utils\CameraL.cs" />
     <Compile Include="Old\Utils\Resolution.cs" />
     <Compile Include="Old\Utils\TextureLoader.cs" />
     <Compile Include="Old\Utils\XmlHelper.cs" />
@@ -56,6 +54,8 @@
     <Compile Include="RenderSystem.cs" />
     <Compile Include="PhysicsSystem.cs" />
     <Compile Include="RelationshipComponent.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="InputSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

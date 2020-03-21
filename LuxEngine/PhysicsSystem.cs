@@ -3,12 +3,12 @@ using Microsoft.Xna.Framework;
 
 namespace LuxEngine
 {
-    public class TransformComponent : BaseComponent<TransformComponent>
+    public class Transform : BaseComponent<Transform>
     {
         public float X;
         public float Y;
 
-        public TransformComponent(float x, float y)
+        public Transform(float x, float y)
         {
             X = x;
             Y = y;
