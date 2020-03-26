@@ -20,6 +20,11 @@ namespace LuxEngine
         Max = 10 // Deepest
     }
 
+    //public class TextureAsset : BaseComponent<TextureAsset>
+    //{
+    //    public string TextureFilePath;
+    //}
+
     public class SpriteComponent : BaseComponent<SpriteComponent>
     {
         public string TextureFilePath;
@@ -29,7 +34,7 @@ namespace LuxEngine
         public SpriteDepth SpriteDepth;
 
         // This is set by the RenderSystem
-        public Texture2D Texture;
+        public Texture2D Texture; // TODO: Remove this, components should only have structures - data. 
 
         // TODO: Add: bool mipMap, SurfaceFormat format (for Texture2d)
         public SpriteComponent(string textureFilePath, Rectangle positionInTexture, SpriteDepth spriteDepth, Color color, float rotation = 0)
@@ -73,7 +78,7 @@ namespace LuxEngine
         {
             base.Draw(gameTime);
 
-            var resolution = World.GlobalEntity.Unpack<ResolutionSingleton>();
+            var resolution = World.SingletonEntity.Unpack<ResolutionSingleton>();
 
             // Resize the viewport to the whole window
             _graphicsDevice.Viewport = new Viewport(0, 0, resolution.Width, resolution.Height);
@@ -104,7 +109,7 @@ namespace LuxEngine
                 var transform = World.Unpack<Transform>(entity);
 
                 // Handle relationship logic
-                Relationship  relationship;
+                Relationship relationship;
                 float parentX = 0;
                 float parentY = 0;
                 if (World.TryUnpack(entity, out relationship))

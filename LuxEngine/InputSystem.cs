@@ -10,6 +10,9 @@ namespace LuxEngine
         public bool Down;
         public bool Right;
         public bool Left;
+        public bool F4;
+        public bool F5;
+        public bool F6;
     }
 
     /// <summary>
@@ -36,6 +39,9 @@ namespace LuxEngine
                 input.Down = keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down);
                 input.Right = keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right);
                 input.Left = keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left);
+                input.F4 = keyboard.IsKeyDown(Keys.F4);
+                input.F5 = keyboard.IsKeyDown(Keys.F5);
+                input.F6 = keyboard.IsKeyDown(Keys.F6);
             }
         }
 

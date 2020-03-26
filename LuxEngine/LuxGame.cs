@@ -7,16 +7,14 @@ namespace LuxEngine
 {
     public class LuxGame : Game
     {
-        public List<World> Worlds;
-        public string Title;
-
-        GraphicsDeviceManager graphicsDeviceManager;
+        private List<World> worlds;
+        private GraphicsDeviceManager graphicsDeviceManager;
 
         public LuxGame(string windowTitle)
         {
-            Worlds = new List<World>();
-            Title = Window.Title = windowTitle;
+            Window.Title = windowTitle;
 
+            worlds = new List<World>();
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = @"Content";
         }
@@ -24,7 +22,7 @@ namespace LuxEngine
         public World CreateWorld()
         {
             World newWorld = new World();
-            Worlds.Add(newWorld);
+            worlds.Add(newWorld);
 
             return newWorld;
         }
@@ -35,7 +33,7 @@ namespace LuxEngine
         protected override void Initialize()
         {
             base.Initialize();
-            Worlds.ForEach(x => x.Init(graphicsDeviceManager));
+            worlds.ForEach(x => x.Init(graphicsDeviceManager));
             //Camera.Initialize();
         }
 
@@ -45,7 +43,7 @@ namespace LuxEngine
         protected override void LoadContent()
         {
             base.LoadContent();
-            Worlds.ForEach(x => x.LoadContent(GraphicsDevice, Content));
+            worlds.ForEach(x => x.LoadContent(GraphicsDevice, Content));
 
             //Map.Load(Content);
             //LoadLevel();
@@ -58,7 +56,7 @@ namespace LuxEngine
         /// </summary>
         protected override void Update(GameTime gameTime)
         {
-            Worlds.ForEach(x => x.Update(gameTime));
+            worlds.ForEach(x => x.Update(gameTime));
 
             //Input.Update();
             //map.Update(objects);
@@ -74,28 +72,10 @@ namespace LuxEngine
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
-            //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
-            //GraphicsDevice.Clear(Color.CornflowerBlue);
+            worlds.ForEach(x => x.PreDraw(gameTime));
+            worlds.ForEach(x => x.Draw(gameTime));
+            worlds.ForEach(x => x.PostDraw(gameTime));
 
-            //Resolution.BeginDraw();
-
-            //spriteBatch.Begin(
-            //    SpriteSortMode.BackToFront,
-            //    BlendState.AlphaBlend,
-            //    SamplerState.PointClamp,
-            //    DepthStencilState.Default,
-            //    RasterizerState.CullNone,
-            //    null,
-            //    Camera.GetTransformMatrix());
-
-            Worlds.ForEach(x => x.Draw(gameTime));
-
-            //DrawObjects();
-            //Map.DrawWalls(SpriteBatch);
-
-            //spriteBatch.End();
-
-            //Draw the things FNA handles for us underneath the hood:
             base.Draw(gameTime);
         }
 

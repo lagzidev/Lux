@@ -6,17 +6,17 @@ using Microsoft.Xna.Framework.Input;
 
 namespace LuxEngine
 {
-    public class Animation
+    public class AnimationL
     {
         public string Name;
         public List<int> AnimationOrder = new List<int>();
         public int Speed;
 
-        public Animation()
+        public AnimationL()
         {
         }
 
-        public Animation(string inputName, int inputSpeed, List<int> inputAnmationOrder)
+        public AnimationL(string inputName, int inputSpeed, List<int> inputAnmationOrder)
         {
             Name = inputName;
             Speed = inputSpeed;
@@ -30,7 +30,7 @@ namespace LuxEngine
         public int Height; // Height of each frame
         public int GridX; // How many frames are in the X axis
         public int GridY; // How many frames are in the Y axis
-        public List<Animation> AnimationList = new List<Animation>();
+        public List<AnimationL> AnimationList = new List<AnimationL>();
 
         public AnimationSet()
         {

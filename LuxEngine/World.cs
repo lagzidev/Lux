@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,21 +10,52 @@ namespace LuxEngine
 {
     public class World
     {
+        bool Paused;
+
         private EntityManager _entityManager;
         private SortedDictionary<Entity, ComponentMask> _entityMasks;
         private InternalBaseSystem[] _systems;
         private BaseComponentManager[] _componentManagers;
+        private List<Type> _systemTypes;
+        private List<Type> _componentTypes;
 
-        public EntityHandle GlobalEntity { get; private set; }
+        public EntityHandle SingletonEntity { get; private set; }
 
         public World()
         {
+            Paused = false;
+
             _entityManager = new EntityManager();
             _entityMasks = new SortedDictionary<Entity, ComponentMask>();
-            _systems = new InternalBaseSystem[(int)SystemId.SystemsCount];
-            _componentManagers = new BaseComponentManager[(int)ComponentType.ComponentTypeCount];
+            _systems = null;
+            _componentManagers = null;
+            _systemTypes = new List<Type>();
+            _componentTypes = new List<Type>();
 
-            GlobalEntity = CreateEntity();
+            SingletonEntity = CreateEntity();
+        }
+
+        /// <summary>
+        /// Should be called after all systems and component types are registered,
+        /// and before any entities are created.
+        /// </summary>
+        public void Init()
+        {
+            // TODO: Find a better way to number systems/managers while creating a fixed-size array
+            // We use reflection (Activator) which is slow because this happens rarely.
+            _systems = new InternalBaseSystem[_systemTypes.Count];
+            for (int i = 0; i < _systems.Length; i++)
+            {
+                _systems[i] = (InternalBaseSystem)Activator.CreateInstance(_systemTypes[i]);
+                _systems[i].World = this;
+            }
+
+            _componentManagers = new BaseComponentManager[_componentTypes.Count];
+            for (int i = 0; i < _componentManagers.Length; i++)
+            {
+                Type type = typeof(ComponentManager<>).MakeGenericType(_componentTypes[i]);
+                _componentManagers[i] = (BaseComponentManager)Activator.CreateInstance(type);
+            }
         }
 
         public EntityHandle CreateEntity()
@@ -31,6 +64,16 @@ namespace LuxEngine
             _entityMasks.Add(entityHandle.Entity, new ComponentMask(new int[0]));
 
             return entityHandle;
+        }
+
+        internal void PreDraw(GameTime gameTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void PostDraw(GameTime gameTime)
+        {
+            throw new NotImplementedException();
         }
 
         public bool TryUnpack<T>(Entity entity, out T componentOut)
@@ -77,33 +120,6 @@ namespace LuxEngine
             updateEntitySystems(entity, oldMask);
         }
 
-        public void RegisterSystem<T>(SystemId systemId) where T : BaseSystem<T>, new()
-        {
-            // Set the ID for the appropriate system class
-            BaseSystem<T>.SystemId = systemId;
-
-            // Create the system
-            T newSystem = new T();
-            newSystem.World = this;
-
-            _systems[(int)systemId] = newSystem;
-        }
-
-        /// <summary>
-        /// Applies a ComponentType to a Component class and instantiates
-        /// a component manager for the component type.
-        /// </summary>
-        /// <typeparam name="T">Component class</typeparam>
-        /// <param name="componentType">Component type matching the class</param>
-        public void RegisterComponentType<T>(ComponentType componentType)
-        {
-            // Set the type for the appropriate component class
-            BaseComponent<T>.ComponentType = componentType;
-
-            // Create a component manager for the component type
-            _componentManagers[(int)componentType] = new ComponentManager<T>();
-        }
-
         public void RemoveComponent<T>(Entity entity)
         {
             // Update the component manager
@@ -115,6 +131,51 @@ namespace LuxEngine
             _entityMasks[entity].RemoveComponent<T>();
 
             updateEntitySystems(entity, oldMask);
+        }
+
+        public void RegisterSystem<T>() where T : BaseSystem<T>, new()
+        {
+            // Set the ID for the appropriate system class
+            BaseSystem<T>.SystemId = _systemTypes.Count;
+            _systemTypes.Add(typeof(T));
+        }
+
+        /// <summary>
+        /// Applies a ComponentType to a Component class and instantiates
+        /// a component manager for the component type.
+        /// </summary>
+        /// <typeparam name="T">Component class</typeparam>
+        public void RegisterComponentType<T>()
+        {
+            // Set the type for the appropriate component class
+            BaseComponent<T>.ComponentType = _componentTypes.Count;
+
+            // Add the type to the componentTypes for later initialization of the
+            // componentManager array
+            _componentTypes.Add(typeof(T));
+        }
+
+        /// <summary>
+        /// Serializes all of the component managers and writes them into a
+        /// TextWriter instance
+        /// </summary>
+        /// <param name="writer">Writer to write the serialized data into</param>
+        public void Serialize(TextWriter writer)
+        {
+            var toSerialize = _componentManagers;
+
+            XmlSerializer serializer = new XmlSerializer(toSerialize.GetType());
+            serializer.Serialize(writer, toSerialize);
+        }
+
+        /// <summary>
+        /// Deserializes a world from a reader and loads it
+        /// </summary>
+        /// <param name="reader">Reader to get the world data from</param>
+        public void Deserialize(TextReader reader)
+        {
+            XmlSerializer serializer = new XmlSerializer(_componentManagers.GetType());
+            _componentManagers = (BaseComponentManager[])serializer.Deserialize(reader);
         }
 
         /// <summary>
@@ -155,17 +216,23 @@ namespace LuxEngine
 
         public virtual void Update(GameTime gameTime)
         {
-            foreach (InternalBaseSystem system in _systems)
+            if (!Paused)
             {
-                system.Update(gameTime);
+                foreach (InternalBaseSystem system in _systems)
+                {
+                    system.Update(gameTime);
+                }
             }
         }
 
         public virtual void Draw(GameTime gameTime)
         {
-            foreach (InternalBaseSystem system in _systems)
+            if (!Paused)
             {
-                system.Draw(gameTime);
+                foreach (InternalBaseSystem system in _systems)
+                {
+                    system.Draw(gameTime);
+                }
             }
         }
 

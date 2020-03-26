@@ -44,7 +44,7 @@ namespace LuxEngine
 
             _graphicsDeviceManager = graphicsDeviceManager;
 
-            var resolution = World.GlobalEntity.Unpack<ResolutionSingleton>();
+            var resolution = World.SingletonEntity.Unpack<ResolutionSingleton>();
 
             ApplyResolutionSettings(graphicsDeviceManager, resolution);
         }
@@ -110,7 +110,7 @@ namespace LuxEngine
 
             return viewport;
         }
-        
+
         //private void SetVirtualResolution(ResolutionSingleton resolution, int virtualWidth, int virtualHeight)
         //{
         //    resolution.VWidth = virtualWidth;

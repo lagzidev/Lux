@@ -57,6 +57,11 @@
     <Compile Include="Camera.cs" />
     <Compile Include="InputSystem.cs" />
     <Compile Include="ResolutionSystem.cs" />
+    <Compile Include="AnimationSystem.cs" />
+    <Compile Include="SaveSystem.cs" />
+    <Compile Include="NetworkSystem.cs" />
+    <Compile Include="BMFont.cs" />
+    <Compile Include="FontSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

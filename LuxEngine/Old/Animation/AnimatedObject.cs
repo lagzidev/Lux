@@ -14,7 +14,7 @@ namespace LuxEngine
         protected int currentAnimationX = -1;
         protected int currentAnimationY = -1;
         protected AnimationSet animationSet;
-        protected Animation currentAnimation;
+        protected AnimationL currentAnimation;
 
         protected bool flipRightFrames = false;
         protected bool flipLeftFrames = false;
@@ -89,7 +89,7 @@ namespace LuxEngine
             }
         }
 
-        private Animation GetAnimation(AnimationType animationType)
+        private AnimationL GetAnimation(AnimationType animationType)
         {
             string name = GetAnimationName(animationType);
 

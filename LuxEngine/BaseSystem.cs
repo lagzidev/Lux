@@ -38,24 +38,15 @@ namespace LuxEngine
     //    "SystemsCount" // Always last
     //);
 
-    // TODO: Enable the user to expand this enum (and update SystemsCount accordingly)
-    public enum SystemId
-    {
-        DebugSystem,
-        InputSystem,
-        ResolutionSystem,
-        RenderSystem,
-        PlatformerPlayerControllerSystem,
-        CameraSystem,
-
-        SystemsCount // Always last
-    }
-
+    /// <summary>
+    /// Systems are allowed
+    /// </summary>
+    /// <typeparam name="T">System class that inherits this BaseSystem</typeparam>
     public abstract class BaseSystem<T> : InternalBaseSystem
     {
-        public static SystemId SystemId { get; set; }
+        public static int SystemId { get; set; }
 
-        public BaseSystem(params ComponentType[] requiredComponentTypes) : base(requiredComponentTypes)
+        public BaseSystem(params int[] requiredComponentTypes) : base(requiredComponentTypes)
         {
         }
     }
@@ -70,7 +61,7 @@ namespace LuxEngine
         /// Specifies which components are required for the entities this
         /// system operates on.
         /// </param>
-        public InternalBaseSystem(params ComponentType[] requiredComponentTypes)
+        public InternalBaseSystem(params int[] requiredComponentTypes)
         {
             World = null;
             RegisteredEntities = new List<Entity>();
