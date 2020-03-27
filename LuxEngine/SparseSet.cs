@@ -1,18 +1,26 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LuxEngine
 {
     /// <summary>
     /// Represents an unordered sparse set of natural numbers, and provides constant-time operations on it.
     /// </summary>
-    public sealed class SparseSet : IEnumerable<int>
+    public sealed class SparseSet<T> : IEnumerable<T>
     {
         /// <summary>
         /// Contains the actual data packed tightly in memory.
+        /// Mirrors the keys array.
         /// </summary>
-        private readonly int[] _denseArr;
+        private readonly T[] _valueArr;
+
+        /// <summary>
+        /// Contains keys, packed tightly in memory.
+        /// Mirrors the value array.
+        /// </summary>
+        private readonly int[] _keyArr;
 
         /// <summary>
         /// Contains a list of indexes to valid values in the dense array.
@@ -38,109 +46,107 @@ namespace LuxEngine
         {
             MaxSize = maxSize;
             Count = 0;
-            _denseArr = new int[MaxSize];
+            _valueArr = new T[MaxSize];
+            _keyArr = new int[MaxSize];
             _sparseArr = new int[MaxSize];
         }
 
         /// <summary>
         /// Adds the given value.
         /// If the value already exists in the set it will be ignored.
+        /// Fails silently if key is outside the valid range.
         /// </summary>
-        /// <param name="value">The value to add.</param>
+        /// <param name="key">The key of the corresponding value to add</param>
         /// <param name="outStatus">
-        /// <see cref="LuxStatusCode.SPARSESET_ADD_VALUE_OUT_OF_RANGE"/>
-        /// <see cref="LuxStatusCode.SPARSESET_ADD_VALUE_ALREADY_EXISTS"/>
         /// <see cref="SparseSet.Contains"/>
         /// </param>
-        /// <returns>
-        ///   A <see cref="LuxStatus"/> indicating the function's success/failure.
-        /// </returns>
-        public void Add(int value, out LuxStatus outStatus)
+        public void Add(int key, T value)
         {
-            if (value < 0 || value >= MaxSize)
+            if (key < 0 || key >= MaxSize)
             {
-                outStatus = new LuxStatus(LuxStatusCode.SPARSESET_ADD_VALUE_OUT_OF_RANGE, value);
+                Debug.Assert(false);
                 return;
             }
 
-            if (Contains(value, out LuxStatus status))
+            if (Contains(key))
             {
-                outStatus = new LuxStatus(LuxStatusCode.SPARSESET_ADD_VALUE_ALREADY_EXISTS, value);
+                Debug.Assert(false);
                 return;
             }
 
-            if (!status)
-            {
-                outStatus = status;
-                return;
-            }
+            // Insert new value in the dense array
+            _keyArr[Count] = key;
+            _valueArr[Count] = value;
 
-            _denseArr[Count] = value;     // insert new value in the dense array...
-            _sparseArr[value] = Count;     // ...and link it to the sparse array
+            // Link it to the sparse array
+            _sparseArr[key] = Count;
             Count++;
-
-            outStatus = LuxStatus.SUCCESS;
         }
 
         /// <summary>
-        /// Removes the given value in case it exists.
+        /// Removes a value from the set if exists, otherwise does nothing.
         /// </summary>
-        /// <param name="value">The value to remove</param>
-        /// <param name="outStatus">
-        /// Possible status codes:
-        /// <see cref="LuxStatusCode.SPARSESET_REMOVE_VALUE_DOESNT_EXIST"/>
-        /// <see cref="SparseSet.Contains"/>
+        /// <param name="key">The key that corresponds with the value to remove</param>
         /// </param>
-        public void Remove(int value, out LuxStatus outStatus)
+        public void Remove(int key)
         {
-            if (!Contains(value, out LuxStatus status))
+            if (!Contains(key))
             {
-                outStatus = new LuxStatus(LuxStatusCode.SPARSESET_REMOVE_VALUE_DOESNT_EXIST, value);
                 return;
             }
 
-            if (!status)
-            {
-                outStatus = status;
-                return;
-            }
+            // put the key and value from the end of their respective arrays
+            // into the slot of the removed key
+            _keyArr[_sparseArr[key]] = _keyArr[Count - 1];
+            _valueArr[_sparseArr[key]] = _valueArr[Count - 1];
 
-            // put the value at the end of the dense array into the slot of the removed value
-            _denseArr[_sparseArr[value]] = _denseArr[Count - 1];
-
-            // put the link to the removed value in the slot of the replaced value
-            _sparseArr[_denseArr[Count - 1]] = _sparseArr[value];
+            // put the link to the removed key in the slot of the replaced value
+            _sparseArr[_keyArr[Count - 1]] = _sparseArr[key];
 
             Count--;
-
-            outStatus = LuxStatus.SUCCESS;
         }
 
         /// <summary>
-        /// Determines whether the set contains the given value.
+        /// Determines whether the set has a value that corresponds to the given key.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="outStatus">
-        /// <see cref="LuxStatusCode.SPARSESET_CONTAINS_VALUE_OUT_OF_RANGE"/>
-        /// </param>
-        /// <returns><c>true</c> if the set contains the given value; <c>false</c> otherwise.</returns>
-        public bool Contains(int value, out LuxStatus outStatus)
+        /// <param name="key">Key to check if exists</param>
+        /// <returns>
+        /// <c>true</c> if the set has a value that corresponds to the given key; 
+        /// <c>false</c> otherwise.
+        /// </returns>
+        public bool Contains(int key)
         {
-            if (value >= MaxSize || value < 0)
+            if (key >= MaxSize || key < 0)
             {
-                outStatus = new LuxStatus(LuxStatusCode.SPARSESET_CONTAINS_VALUE_OUT_OF_RANGE, value);
+                Debug.Assert(false);
                 return false;
             }
 
-            outStatus = LuxStatus.SUCCESS;
+            // Linked key from the sparse array must point to a key within the currently used range of the keys array
+            bool sparseValueInDenseArrayRange = _sparseArr[key] < Count;
 
-            // Linked value from the sparse array must point to a value within the currently used range of the dense array
-            bool sparseValueInDenseArrayRange = _sparseArr[value] < Count;
-
-            // There's a valid two-way link between the sparse array and the dense array.
-            bool validTwoWayLink = _denseArr[_sparseArr[value]] == value;
+            // There's a valid two-way link between the sparse array and the keys array.
+            bool validTwoWayLink = _keyArr[_sparseArr[key]] == key;
 
             return sparseValueInDenseArrayRange && validTwoWayLink;
+        }
+
+        /// <summary>
+        /// Gets a value using the corresponding key.
+        /// </summary>
+        /// <param name="key">Key that corresponds to the value</param>
+        /// <param name="outValue">Value to return</param>
+        /// <returns><c>true</c> if successfully returned value; <c>false</c> otherwise.</returns>
+        public bool GetValue(int key, out T outValue)
+        {
+            if (!Contains(key))
+            {
+                outValue = default;
+                return false;
+            }
+
+            outValue = _valueArr[_sparseArr[key]];
+            return true;
         }
 
         /// <summary>
@@ -157,22 +163,16 @@ namespace LuxEngine
         /// <returns>
         /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<int> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             var i = 0;
             while (i < Count)
             {
-                yield return _denseArr[i];
+                yield return _valueArr[i];
                 i++;
             }
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through all elements in the set.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

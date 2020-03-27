@@ -2,64 +2,6 @@
 
 namespace LuxEngine
 {
-    public struct ComponentInstance
-    {
-        public int Index;
-
-        public ComponentInstance(int index)
-        {
-            Index = index;
-        }
-    }
-
-    public class ComponentList<T>
-    {
-        public int Size { get; private set; }
-        private BaseComponent<T>[] components;
-
-        public ComponentList()
-        {
-            Size = 0;
-            components = new BaseComponent<T>[HardCodedConfig.MAX_COMPONENTS_PER_TYPE];
-        }
-
-        public BaseComponent<T> this[int i]
-        {
-            get { return components[i]; }
-        }
-
-        public ComponentInstance Add(BaseComponent<T> component)
-        {
-            ComponentInstance newInstance;
-            newInstance.Index = Size;
-
-            // Add to list
-            components[newInstance.Index] = component;
-            Size++;
-
-            return newInstance;
-        }
-
-        /// <summary>
-        /// Removes a component from the list by moving the last component
-        /// in the list to the index of the removed component.
-        /// </summary>
-        /// <param name="index">Index of the component to remove</param>
-        /// <returns>The last component's new instance (and thus new position)</returns>
-        public ComponentInstance Remove(int index)
-        {
-            // Replace the removed component with the last component in the list
-            // to avoid fragmentation.
-            components[index] = components[Size - 1];
-            Size--;
-
-            ComponentInstance lastComponent;
-            lastComponent.Index = Size;
-
-            return lastComponent;
-        }
-    }
-
     // This exists so we can create an array of component managers without
     // specifying the type <T>
     public abstract class BaseComponentManager
@@ -68,71 +10,36 @@ namespace LuxEngine
 
     public class ComponentManager<T> : BaseComponentManager
     {
-        private ComponentList<T> componentList;
-        private EntityMap entityMap;
+        private SparseSet<BaseComponent<T>> _components;
 
         public ComponentManager()
         {
-            componentList = new ComponentList<T>();
-            entityMap = new EntityMap();
+            _components = new SparseSet<BaseComponent<T>>(HardCodedConfig.MAX_COMPONENTS_PER_TYPE);
         }
 
         /// <summary>
-        /// We wrap <T> with BaseComponent so that the user could pass only
-        /// the component type (e.g. TransformComponent) and we would still be
-        /// able to access BaseComponent's properties (e.g. Entity)
+        /// Adds a component to the dataset.
+        /// The component can later be queried with the entity as the key.
         /// </summary>
-        public ComponentInstance AddComponent(Entity entity, BaseComponent<T> component)
+        /// <param name="entity">Entity that corresponds to the given component</param>
+        /// <param name="component">Component to add</param>
+        public void AddComponent(Entity entity, BaseComponent<T> component)
         {
-            ComponentInstance newInstance = componentList.Add(component);
-            entityMap.Add(entity, newInstance);
-
-            return newInstance;
+            _components.Add(entity.Id, component);
         }
 
-        public void RemoveComponent(Entity entityToRemove)
+        /// <summary>
+        /// Removes a component from the dataset
+        /// </summary>
+        /// <param name="entity">Entity that corresponds to the component</param>
+        public void RemoveComponent(Entity entity)
         {
-            // componentList.Remove(..):
-
-
-            // Remove component from the component list
-            ComponentInstance componentToRemove = entityMap.GetComponentInstance(entityToRemove, out LuxStatus status);
-            if (!status)
-            {
-                //TODO
-                throw new Exception();
-            }
-
-            //     v-- componentToRemove
-            // [1, 2, 3, 4]
-            ComponentInstance lastComponent = componentList.Remove(componentToRemove.Index);
-
-            // [1, x, 3, 4]
-            // [1, 4, 3, x]
-            //           ^-- lastComponent
-
-            // Update the entity map because the last component was moved
-            // to [componentToRemove.Index] by componentList.Remove
-            // Move the entity that corresponded with the last component
-            // to the component's new location
-            Entity lastEntity = entityMap.GetEntity(lastComponent);
-            entityMap.Update(lastEntity, componentToRemove);
-
-            // Remove component from the entity map
-            entityMap.Remove(entityToRemove);
+            _components.Remove(entity.Id);
         }
 
-        public bool TryGetComponent(Entity entity, out BaseComponent<T> componentOut)
+        public bool GetComponent(Entity entity, out BaseComponent<T> outComponent)
         {
-            ComponentInstance componentInstance;
-            if (!entityMap.TryGetComponentInstance(entity, out componentInstance))
-            {
-                componentOut = null;
-                return false;
-            }
-
-            componentOut = componentList[componentInstance.Index];
-            return true;
+            return _components.GetValue(entity.Id, out outComponent);
         }
     }
 }

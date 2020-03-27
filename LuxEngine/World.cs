@@ -11,29 +11,29 @@ namespace LuxEngine
 {
     public class World
     {
-        bool Paused;
+        public bool Paused { get; set; }
+        public EntityHandle SingletonEntity { get; private set; }
 
         private EntityManager _entityManager;
         private SortedDictionary<Entity, ComponentMask> _entityMasks;
         private InternalBaseSystem[] _systems;
         private BaseComponentManager[] _componentManagers;
-        private List<Type> _systemTypes;
-        private List<Type> _componentTypes;
 
-        public EntityHandle SingletonEntity { get; private set; }
+        private List<InternalBaseSystem> _tempSystemList;
+        private List<BaseComponentManager> _tempComponentManagerList;
+
 
         public World()
         {
             Paused = false;
+            SingletonEntity = null;
 
             _entityManager = new EntityManager();
             _entityMasks = new SortedDictionary<Entity, ComponentMask>();
             _systems = null;
             _componentManagers = null;
-            _systemTypes = new List<Type>();
-            _componentTypes = new List<Type>();
-
-            SingletonEntity = CreateEntity();
+            _tempSystemList = new List<InternalBaseSystem>();
+            _tempComponentManagerList = new List<BaseComponentManager>();
         }
 
         /// <summary>
@@ -42,21 +42,9 @@ namespace LuxEngine
         /// </summary>
         public void InitWorld()
         {
-            // TODO: Find a better way to number systems/managers while creating a fixed-size array
-            // We use reflection (Activator) which is slow because this happens rarely.
-            _systems = new InternalBaseSystem[_systemTypes.Count];
-            for (int i = 0; i < _systems.Length; i++)
-            {
-                _systems[i] = (InternalBaseSystem)Activator.CreateInstance(_systemTypes[i]);
-                _systems[i].World = this;
-            }
-
-            _componentManagers = new BaseComponentManager[_componentTypes.Count];
-            for (int i = 0; i < _componentManagers.Length; i++)
-            {
-                Type type = typeof(ComponentManager<>).MakeGenericType(_componentTypes[i]);
-                _componentManagers[i] = (BaseComponentManager)Activator.CreateInstance(type);
-            }
+            _systems = _tempSystemList.ToArray();
+            _componentManagers = _tempComponentManagerList.ToArray();
+            SingletonEntity = CreateEntity();
         }
 
         public EntityHandle CreateEntity()
@@ -72,14 +60,12 @@ namespace LuxEngine
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
             if (null == foundComponentManager)
             {
-                // This is worrying on a development level, assert
-                Debug.Assert(false);
                 outComponent = default;
                 return false;
             }
 
             BaseComponent<T> component;
-            if (!foundComponentManager.TryGetComponent(entity, out component))
+            if (!foundComponentManager.GetComponent(entity, out component))
             {
                 outComponent = default;
                 return false;
@@ -100,7 +86,7 @@ namespace LuxEngine
 
             return component;
         }
-
+            
         public void AddComponent<T>(Entity entity, BaseComponent<T> component)
         {
             // Update the component manager
@@ -130,8 +116,12 @@ namespace LuxEngine
         public void RegisterSystem<T>() where T : BaseSystem<T>, new()
         {
             // Set the ID for the appropriate system class
-            BaseSystem<T>.SystemId = _systemTypes.Count;
-            _systemTypes.Add(typeof(T));
+            BaseSystem<T>.SystemId = _tempSystemList.Count;
+
+            T system = new T();
+            system.World = this;
+
+            _tempSystemList.Add(system);
         }
 
         /// <summary>
@@ -141,12 +131,9 @@ namespace LuxEngine
         /// <typeparam name="T">Component class</typeparam>
         public void RegisterComponentType<T>()
         {
-            // Set the type for the appropriate component class
-            BaseComponent<T>.ComponentType = _componentTypes.Count;
-
-            // Add the type to the componentTypes for later initialization of the
-            // componentManager array
-            _componentTypes.Add(typeof(T));
+            // Set the ComponentType for the component's class
+            BaseComponent<T>.ComponentType = _tempComponentManagerList.Count;
+            _tempComponentManagerList.Add(new ComponentManager<T>());
         }
 
         /// <summary>
@@ -255,29 +242,14 @@ namespace LuxEngine
 
         private ComponentManager<T> _getComponentManager<T>()
         {
-            // TODO: Optimization - give each component/component manager an 
-            // index that can be used to instantly access the correct 
-            // componentmanager by index.
+            return (ComponentManager<T>)_componentManagers[BaseComponent<T>.ComponentType];
 
-            ComponentManager<T> foundComponentManager = null;
-            foreach (var componentManager in _componentManagers)
-            {
-                // Find the component manager of the appropriate component type
-                if (componentManager.GetType() == typeof(ComponentManager<T>))
-                {
-                    foundComponentManager = (ComponentManager<T>)componentManager;
-                    break;
-                }
-            }
-
-            // If component manager not found
-            if (null == foundComponentManager)
-            {
-                // TODO: Log error
-                return null;
-            }
-
-            return foundComponentManager;
+            //// If component manager not found
+            //if (null == foundComponentManager)
+            //{
+            //    Debug.Assert(false, "Probably forgot to register the component");
+            //    return null;
+            //}
         }
     }
 }

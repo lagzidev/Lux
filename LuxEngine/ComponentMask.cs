@@ -26,7 +26,7 @@ namespace LuxEngine
         /// <typeparam name="T">A component type (not wrapped in BaseComponent)</typeparam>
         public void AddComponent<T>()
         {
-            _mask[(int)BaseComponent<T>.ComponentType] = true;
+            _mask[BaseComponent<T>.ComponentType] = true;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace LuxEngine
         /// <typeparam name="T">A component type (not wrapped in BaseComponent)</typeparam>
         public void RemoveComponent<T>()
         {
-            _mask[(int)BaseComponent<T>.ComponentType] = false;
+            _mask[BaseComponent<T>.ComponentType] = false;
         }
 
         public bool Matches(ComponentMask otherMask)

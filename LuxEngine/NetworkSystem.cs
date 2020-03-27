@@ -61,7 +61,7 @@ namespace LuxEngine
                     // Create a UDP/IP socket.  
                     connection.Socket = new Socket(
                         connection.ServerIPAddress.AddressFamily,
-                        SocketType.Dgram, ProtocolType.Tcp);
+                        SocketType.Dgram, ProtocolType.Udp);
 
                     // Connect to the remote endpoint.  
                     connection.Socket.BeginConnect(
