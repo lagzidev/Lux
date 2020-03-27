@@ -55,7 +55,7 @@ namespace LuxEngine
         private GraphicsDevice _graphicsDevice;
 
         public RenderSystem() :
-            base(SpriteComponent.ComponentType, Transform.ComponentType) // TODO: Improve this syntax and only specify type
+            base(SpriteComponent.ComponentType, Transform.ComponentType)
         {
         }
 

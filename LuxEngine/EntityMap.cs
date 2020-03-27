@@ -47,15 +47,19 @@ namespace LuxEngine
         /// Get the component instance of an entity
         /// </summary>
         /// <param name="entity">Entity that owns the component</param>
+        /// <param name="outStatus">
+        /// <see cref="LuxStatusCode.ENTITYMAP_GETCOMPONENTINSTANCE_COMPONENT_DOES_NOT_EXIST_FOR_THIS_ENTITY"/>
+        /// </param>
         /// <returns>Component instance of the entity</returns>
-        public ComponentInstance GetComponentInstance(Entity entity)
+        public ComponentInstance GetComponentInstance(Entity entity, out LuxStatus outStatus)
         {
             ComponentInstance componentInstance;
             if (!TryGetComponentInstance(entity, out componentInstance))
             {
-                throw new LuxException(LuxStatus.ENTITYMAP_GETCOMPONENTINSTANCE_COMPONENT_DOES_NOT_EXIST_FOR_THIS_ENTITY, entity.Id);
+                outStatus = new LuxStatus(LuxStatusCode.ENTITYMAP_GETCOMPONENTINSTANCE_COMPONENT_DOES_NOT_EXIST_FOR_THIS_ENTITY, entity.Id);
             }
 
+            outStatus = LuxStatus.SUCCESS;
             return componentInstance;
         }
 

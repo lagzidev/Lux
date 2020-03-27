@@ -96,7 +96,12 @@ namespace LuxEngine
 
 
             // Remove component from the component list
-            ComponentInstance componentToRemove = entityMap.GetComponentInstance(entityToRemove);
+            ComponentInstance componentToRemove = entityMap.GetComponentInstance(entityToRemove, out LuxStatus status);
+            if (!status)
+            {
+                //TODO
+                throw new Exception();
+            }
 
             //     v-- componentToRemove
             // [1, 2, 3, 4]

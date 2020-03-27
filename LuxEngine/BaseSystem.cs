@@ -1,45 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
-    //public class LuxEnum : IEnumerable<KeyValuePair<string, int>>
-    //{
-    //    private SortedList<string, int> _elements;
-
-    //    public LuxEnum(params string[] keys)
-    //    {
-    //        _elements = new SortedList<string, int>(keys.Length);
-    //        foreach (var key in keys)
-    //        {
-    //            _elements[key] = 0;
-    //        }
-    //    }
-
-    //    public IEnumerator<KeyValuePair<string, int>> GetEnumerator()
-    //    {
-    //        return _elements.GetEnumerator();
-    //    }
-
-    //    IEnumerator IEnumerable.GetEnumerator()
-    //    {
-    //        return _elements.GetEnumerator();
-    //    }
-    //}
-
-    //public static LuxEnum SystemId = new LuxEnum(
-    //    "DebugSystem",
-    //    "RenderSystem",
-
-    //    "SystemsCount" // Always last
-    //);
-
     /// <summary>
-    /// Systems are allowed
+    /// Base system class from which all systems are derived
     /// </summary>
     /// <typeparam name="T">System class that inherits this BaseSystem</typeparam>
     public abstract class BaseSystem<T> : InternalBaseSystem
@@ -84,10 +54,7 @@ namespace LuxEngine
         /// </summary>
         public virtual void Init(GraphicsDeviceManager graphicsDeviceManager)
         {
-            if (null == World)
-            {
-                throw new LuxException(LuxStatus.BASESYSTEM_INIT_WORLD_IS_NULL, 0); // TODO: Have an ID for each system and put it in extra_info
-            }
+            Debug.Assert(World != null);
         }
 
         /// <summary>
@@ -97,17 +64,20 @@ namespace LuxEngine
         {
         }
 
-        /// <summary>
-        /// Called each frame to update the game. Games usually runs 60 frames per second.
-        /// Each frame the Update function will run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
+        public virtual void PreUpdate(GameTime gameTime)
+        {
+        }
+
         public virtual void Update(GameTime gameTime)
         {
         }
 
+        public virtual void PostUpdate(GameTime gameTime)
+        {
+        }
+
         /// <summary>
-        /// This is called when the game is ready to draw to the screen, it's also called each frame.
+        /// This is called every frame when the game is ready to draw to the screen.
         /// </summary>
         public virtual void Draw(GameTime gameTime)
         {

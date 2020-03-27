@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
@@ -39,7 +40,7 @@ namespace LuxEngine
         /// Should be called after all systems and component types are registered,
         /// and before any entities are created.
         /// </summary>
-        public void Init()
+        public void InitWorld()
         {
             // TODO: Find a better way to number systems/managers while creating a fixed-size array
             // We use reflection (Activator) which is slow because this happens rarely.
@@ -66,43 +67,36 @@ namespace LuxEngine
             return entityHandle;
         }
 
-        internal void PreDraw(GameTime gameTime)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void PostDraw(GameTime gameTime)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TryUnpack<T>(Entity entity, out T componentOut)
+        public bool TryUnpack<T>(Entity entity, out T outComponent)
         {
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
             if (null == foundComponentManager)
             {
-                throw new LuxException(LuxStatus.WORLD_TRYUNPACK_COMPONENT_MANAGER_NOT_FOUND, (int)BaseComponent<T>.ComponentType);
+                // This is worrying on a development level, assert
+                Debug.Assert(false);
+                outComponent = default;
+                return false;
             }
 
             BaseComponent<T> component;
             if (!foundComponentManager.TryGetComponent(entity, out component))
             {
-                componentOut = default;
+                outComponent = default;
                 return false;
             }
 
             // Return the component without the ugly BaseComponent<T> wrapper
-            componentOut = (T)Convert.ChangeType(component, typeof(T));
+            outComponent = (T)Convert.ChangeType(component, typeof(T));
             return true;
         }
 
         public T Unpack<T>(Entity entity)
         {
             T component;
-            if (!TryUnpack<T>(entity, out component))
-            {
-                throw new LuxException(LuxStatus.WORLD_UNPACK_COMPONENT_NOT_FOUND_FOR_ENTITY, entity.Id);
-            }
+            bool unpackSuccess = TryUnpack(entity, out component);
+
+            // Always expecting success
+            Debug.Assert(unpackSuccess);
 
             return component;
         }
@@ -198,6 +192,7 @@ namespace LuxEngine
             }
         }
 
+        // System calling functions
         public virtual void Init(GraphicsDeviceManager graphicsDeviceManager)
         {
             foreach (InternalBaseSystem system in _systems)
@@ -214,6 +209,17 @@ namespace LuxEngine
             }
         }
 
+        public virtual void PreUpdate(GameTime gameTime)
+        {
+            if (!Paused)
+            {
+                foreach (InternalBaseSystem system in _systems)
+                {
+                    system.PreUpdate(gameTime);
+                }
+            }
+        }
+
         public virtual void Update(GameTime gameTime)
         {
             if (!Paused)
@@ -221,6 +227,17 @@ namespace LuxEngine
                 foreach (InternalBaseSystem system in _systems)
                 {
                     system.Update(gameTime);
+                }
+            }
+        }
+
+        public virtual void PostUpdate(GameTime gameTime)
+        {
+            if (!Paused)
+            {
+                foreach (InternalBaseSystem system in _systems)
+                {
+                    system.PostUpdate(gameTime);
                 }
             }
         }
