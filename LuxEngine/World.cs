@@ -10,29 +10,54 @@ namespace LuxEngine
 {
     public class World
     {
-        public bool Paused { get; set; }
+        private bool _paused;
+        public bool Paused
+        {
+            get
+            {
+                return _paused;
+            }
+            set
+            {
+                if (null != _systems)
+                {
+                    _systems.Paused = value;
+                }
+
+                _paused = value;
+            }
+        }
+
         public EntityHandle SingletonEntity { get; private set; }
 
         private EntityManager _entityManager;
         private SortedDictionary<Entity, ComponentMask> _entityMasks;
-        private InternalBaseSystem[] _systems;
+        private LuxIterator<InternalBaseSystem> _systems;
         private BaseComponentManager[] _componentManagers;
 
         private List<InternalBaseSystem> _tempSystemList;
         private List<BaseComponentManager> _tempComponentManagerList;
 
+        /// <summary>
+        /// A list of actions to execute after done iterating over systems;
+        /// These are actions that cannot be executed while iterating systems.
+        /// </summary>
+        private Queue<Action> _postponedSystemActions;
 
         public World()
         {
-            Paused = false;
+            _paused = false;
             SingletonEntity = null;
 
             _entityManager = new EntityManager();
             _entityMasks = new SortedDictionary<Entity, ComponentMask>();
             _systems = null;
             _componentManagers = null;
+
             _tempSystemList = new List<InternalBaseSystem>();
             _tempComponentManagerList = new List<BaseComponentManager>();
+
+            _postponedSystemActions = new Queue<Action>();
         }
 
         /// <summary>
@@ -41,7 +66,7 @@ namespace LuxEngine
         /// </summary>
         public void InitWorld()
         {
-            _systems = _tempSystemList.ToArray();
+            _systems = new LuxIterator<InternalBaseSystem>(_tempSystemList.ToArray(), _postponedSystemActions);
             _componentManagers = _tempComponentManagerList.ToArray();
             SingletonEntity = CreateEntity();
         }
@@ -56,17 +81,20 @@ namespace LuxEngine
 
         public void DestroyEntity(Entity entity)
         {
+            // Remove entity from all systems
+            foreach (var system in _systems)
+            {
+                // Notify systems
+                system.PreDestroyEntity(entity);
+
+                // Unregister if entity exists in the system
+                system.UnregisterEntity(entity);
+            }
+
             // Remove entity's components
             foreach (var componentManager in _componentManagers)
             {
                 componentManager.RemoveComponent(entity);
-            }
-
-            // Remove entity from all systems
-            foreach (var system in _systems)
-            {
-                system.PreDestroyEntity(entity);
-                system.UnregisterEntity(entity);
             }
 
             // Remove entity
@@ -108,6 +136,13 @@ namespace LuxEngine
             
         public void AddComponent<T>(Entity entity, BaseComponent<T> component)
         {
+            // If iterating systems, add the component afterwards instead of now
+            if (_systems.IsIterating)
+            {
+                _postponedSystemActions.Enqueue(() => AddComponent(entity, component));
+                return;
+            }
+
             // Set the entity for the component
             component.Entity = entity;
 
@@ -124,6 +159,13 @@ namespace LuxEngine
 
         public void RemoveComponent<T>(Entity entity)
         {
+            // If iterating systems, remove the component afterwards instead of now
+            if (_systems.IsIterating)
+            {
+                _postponedSystemActions.Enqueue(() => RemoveComponent<T>(entity));
+                return;
+            }
+
             // Update the component manager
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
             foundComponentManager.RemoveComponent(entity);
@@ -137,6 +179,7 @@ namespace LuxEngine
             }
             else
             {
+                // Entity doesn't have a mask
                 LuxCommon.Assert(false);
             }
         }
@@ -226,45 +269,33 @@ namespace LuxEngine
 
         public virtual void PreUpdate(GameTime gameTime)
         {
-            if (!Paused)
+            foreach (InternalBaseSystem system in _systems)
             {
-                foreach (InternalBaseSystem system in _systems)
-                {
-                    system.PreUpdate(gameTime);
-                }
+                system.PreUpdate(gameTime);
             }
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            if (!Paused)
+            foreach (InternalBaseSystem system in _systems)
             {
-                foreach (InternalBaseSystem system in _systems)
-                {
-                    system.Update(gameTime);
-                }
+                system.Update(gameTime);
             }
         }
 
         public virtual void PostUpdate(GameTime gameTime)
         {
-            if (!Paused)
+            foreach (InternalBaseSystem system in _systems)
             {
-                foreach (InternalBaseSystem system in _systems)
-                {
-                    system.PostUpdate(gameTime);
-                }
+                system.PostUpdate(gameTime);
             }
         }
 
         public virtual void Draw(GameTime gameTime)
         {
-            if (!Paused)
+            foreach (InternalBaseSystem system in _systems)
             {
-                foreach (InternalBaseSystem system in _systems)
-                {
-                    system.Draw(gameTime);
-                }
+                system.Draw(gameTime);
             }
         }
 

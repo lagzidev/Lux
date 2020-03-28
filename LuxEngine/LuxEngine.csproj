@@ -17,7 +17,6 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyName></AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|anycpu' ">
     <Optimize>true</Optimize>
@@ -64,7 +63,8 @@
     <Compile Include="Benchmark.cs" />
     <Compile Include="SparseSet.cs" />
     <Compile Include="Utils\ResolutionUtils.cs" />
-    <Compile Include="RelationshipSystem.cs" />
+    <Compile Include="ParentSystem.cs" />
+    <Compile Include="Systems.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

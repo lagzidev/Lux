@@ -29,7 +29,7 @@ namespace LuxEngine
             {
                 var transform = World.Unpack<Transform>(entity);
 
-                EntityHandle parent = World.Unpack<Relationship>(entity).ParentEntity;
+                EntityHandle parent = World.Unpack<Parent>(entity).ParentEntity;
                 var parentTransform = parent.Unpack<Transform>();
 
                 PlatformerLens platformerLens;

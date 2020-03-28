@@ -109,13 +109,13 @@ namespace LuxEngine
                 var sprite = World.Unpack<SpriteComponent>(entity);
                 var transform = World.Unpack<Transform>(entity);
 
-                // Handle relationship logic
-                Relationship relationship;
+                // Handle parent logic
+                Parent parent;
                 float parentX = 0;
                 float parentY = 0;
-                if (World.TryUnpack(entity, out relationship))
+                if (World.TryUnpack(entity, out parent))
                 {
-                    var parentTransform = relationship.ParentEntity.Unpack<Transform>();
+                    var parentTransform = parent.ParentEntity.Unpack<Transform>();
                     parentX = parentTransform.X;
                     parentY = parentTransform.Y;
                 }

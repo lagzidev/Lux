@@ -79,7 +79,7 @@ namespace LuxEngine
         }
 
         /// <summary>
-        /// Automatically called before a registered entity is destroyed and unregistered.
+        /// Automatically called before an entity (any entity in the world) is destroyed.
         /// Do not attempt to unregister the entity yourself, it happens automatically.
         /// </summary>
         /// <param name="entity">The entity that is about to be destroyed.</param>

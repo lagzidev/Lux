@@ -10,6 +10,41 @@ namespace LuxEngine
         [FieldOffset(0)] public Int16 Index;
         [FieldOffset(2)] public Int16 Generation;
 
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (!(obj is Entity otherEntity))
+            {
+                return false;
+            }
+
+            return Id.Equals(otherEntity.Id);
+        }
+
+        public static bool operator ==(Entity a, Entity b)
+        {
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            return a.Equals(a);
+        }
+
+        public static bool operator !=(Entity a, Entity b)
+        {
+            return !(a == b);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
         public int CompareTo(object obj)
         {
             if (obj == null)
@@ -18,7 +53,17 @@ namespace LuxEngine
             }
 
             Entity otherEntity = (Entity)obj;
-            return Id.CompareTo(otherEntity.Id);
+
+            int generationCompare = Generation.CompareTo(otherEntity.Generation);
+
+            // If the generations are different, return that comparison
+            if (0 != generationCompare)
+            {
+                return generationCompare;
+            }
+
+            // If the generations are the same, compare indexes
+            return Index.CompareTo(otherEntity.Index);
         }
     }
 }
