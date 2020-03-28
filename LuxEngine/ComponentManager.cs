@@ -26,21 +26,39 @@ namespace LuxEngine
         /// <param name="component">Component to add</param>
         public void AddComponent(Entity entity, BaseComponent<T> component)
         {
-            _components.Add(entity.Id, component);
+            _components.Add(entity.Index, component);
         }
 
         /// <summary>
-        /// Removes a component from the dataset
+        /// Removes a component from the dataset if exists for the given entity
         /// </summary>
         /// <param name="entity">Entity that corresponds to the component</param>
         public override void RemoveComponent(Entity entity)
         {
-            _components.Remove(entity.Id);
+            // If component doesn't exist for the entity, do nothing
+            if (!GetComponent(entity, out _))
+            {
+                return;
+            }
+
+            _components.Remove(entity.Index);
         }
 
         public bool GetComponent(Entity entity, out BaseComponent<T> outComponent)
         {
-            return _components.GetValue(entity.Id, out outComponent);
+            // Get the entity's component; if it doesn't exist return false
+            if (!_components.GetValue(entity.Index, out outComponent))
+            {
+                return false;
+            }
+
+            // If the entity is not of the correct generation (meaning it's not the same entity)
+            if (outComponent.Entity.Generation != entity.Generation)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -7,7 +7,6 @@ namespace LuxEngine
     /// places, this class lets them all be accessed as if they were part of
     /// the entity itself.
     /// </summary>
-    /// TODO: Swap EntityHandle and Entity's names - it's confusing, a handle is more data oriented not an interface
     public class EntityHandle
     {
         public Entity Entity;
@@ -21,7 +20,6 @@ namespace LuxEngine
 
         public void AddComponent<T>(BaseComponent<T> component)
         {
-            component.Entity = Entity;
             World.AddComponent(Entity, component);
         }
 

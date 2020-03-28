@@ -70,8 +70,8 @@ namespace LuxEngine
             }
 
             // Remove entity
-            _entityManager.DestroyEntity(entity);
             _entityMasks.Remove(entity);
+            _entityManager.DestroyEntity(entity);
         }
 
         public bool TryUnpack<T>(Entity entity, out T outComponent)
@@ -108,6 +108,9 @@ namespace LuxEngine
             
         public void AddComponent<T>(Entity entity, BaseComponent<T> component)
         {
+            // Set the entity for the component
+            component.Entity = entity;
+
             // Update the component manager
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
             foundComponentManager.AddComponent(entity, component);
