@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
@@ -55,6 +54,26 @@ namespace LuxEngine
             return entityHandle;
         }
 
+        public void DestroyEntity(Entity entity)
+        {
+            // Remove entity's components
+            foreach (var componentManager in _componentManagers)
+            {
+                componentManager.RemoveComponent(entity);
+            }
+
+            // Remove entity from all systems
+            foreach (var system in _systems)
+            {
+                system.PreDestroyEntity(entity);
+                system.UnregisterEntity(entity);
+            }
+
+            // Remove entity
+            _entityManager.DestroyEntity(entity);
+            _entityMasks.Remove(entity);
+        }
+
         public bool TryUnpack<T>(Entity entity, out T outComponent)
         {
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
@@ -82,7 +101,7 @@ namespace LuxEngine
             bool unpackSuccess = TryUnpack(entity, out component);
 
             // Always expecting success
-            Debug.Assert(unpackSuccess);
+            LuxCommon.Assert(unpackSuccess);
 
             return component;
         }
@@ -107,10 +126,16 @@ namespace LuxEngine
             foundComponentManager.RemoveComponent(entity);
 
             // Update the entity's component mask
-            var oldMask = (ComponentMask)_entityMasks[entity].Clone();
-            _entityMasks[entity].RemoveComponent<T>();
-
-            updateEntitySystems(entity, oldMask);
+            if (_entityMasks.TryGetValue(entity, out ComponentMask oldMask))
+            {
+                oldMask = (ComponentMask)oldMask.Clone();
+                _entityMasks[entity].RemoveComponent<T>();
+                updateEntitySystems(entity, oldMask);
+            }
+            else
+            {
+                LuxCommon.Assert(false);
+            }
         }
 
         public void RegisterSystem<T>() where T : BaseSystem<T>, new()
@@ -243,13 +268,6 @@ namespace LuxEngine
         private ComponentManager<T> _getComponentManager<T>()
         {
             return (ComponentManager<T>)_componentManagers[BaseComponent<T>.ComponentType];
-
-            //// If component manager not found
-            //if (null == foundComponentManager)
-            //{
-            //    Debug.Assert(false, "Probably forgot to register the component");
-            //    return null;
-            //}
         }
     }
 }

@@ -78,19 +78,20 @@ namespace LuxEngine
         {
             base.Draw(gameTime);
 
-            var resolution = World.SingletonEntity.Unpack<ResolutionSingleton>();
+           if (World.SingletonEntity.TryUnpack(out ResolutionSingleton resolution))
+            {
+                // Resize the viewport to the whole window
+                _graphicsDevice.Viewport = new Viewport(0, 0, resolution.Width, resolution.Height);
 
-            // Resize the viewport to the whole window
-            _graphicsDevice.Viewport = new Viewport(0, 0, resolution.Width, resolution.Height);
+                // Clear to Black
+                _graphicsDevice.Clear(Color.Black);
 
-            // Clear to Black
-            _graphicsDevice.Clear(Color.Black);
+                // Calculate Proper Viewport according to Aspect Ratio
+                _graphicsDevice.Viewport = ResolutionUtils.GetVirtualViewport(resolution);
+                // and clear that so we can have black bars if aspect ratio requires it and
+                // the clear color on the rest
+            }
 
-            // Calculate Proper Viewport according to Aspect Ratio
-            _graphicsDevice.Viewport = ResolutionSystem.GetVirtualViewport(resolution);
-            // and clear that
-            // This way we are gonna have black bars if aspect ratio requires it and
-            // the clear color on the rest
             _graphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(
@@ -100,7 +101,7 @@ namespace LuxEngine
                 DepthStencilState.Default,
                 RasterizerState.CullNone,
                 null,
-                ResolutionSystem.GetScaleMatrix(resolution, _graphicsDevice.Viewport.Width)); // , Camera.GetTransformMatrix() // Black bars?
+                ResolutionUtils.GetScaleMatrix(resolution, _graphicsDevice.Viewport.Width)); // , Camera.GetTransformMatrix() // Black bars?
 
 
             foreach (var entity in RegisteredEntities)

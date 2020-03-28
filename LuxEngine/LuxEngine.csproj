@@ -34,10 +34,10 @@
     <Compile Include="Old\Character.cs" />
     <Compile Include="Old\GameObject.cs" />
     <Compile Include="Old\Map.cs" />
-    <Compile Include="Old\Utils\CameraL.cs" />
-    <Compile Include="Old\Utils\Resolution.cs" />
-    <Compile Include="Old\Utils\TextureLoader.cs" />
-    <Compile Include="Old\Utils\XmlHelper.cs" />
+    <Compile Include="Old\Utils old\CameraL.cs" />
+    <Compile Include="Old\Utils old\Resolution.cs" />
+    <Compile Include="Old\Utils old\TextureLoader.cs" />
+    <Compile Include="Old\Utils old\XmlHelper.cs" />
     <Compile Include="Old\Player.cs" />
     <Compile Include="Old\Scene.cs" />
     <Compile Include="BaseSystem.cs" />
@@ -49,10 +49,9 @@
     <Compile Include="ComponentManager.cs" />
     <Compile Include="HardCodedConfig.cs" />
     <Compile Include="ComponentMask.cs" />
-    <Compile Include="LuxException.cs" />
+    <Compile Include="LuxCommon.cs" />
     <Compile Include="RenderSystem.cs" />
     <Compile Include="PhysicsSystem.cs" />
-    <Compile Include="RelationshipComponent.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="InputSystem.cs" />
     <Compile Include="ResolutionSystem.cs" />
@@ -64,12 +63,15 @@
     <Compile Include="LuxGame.cs" />
     <Compile Include="Benchmark.cs" />
     <Compile Include="SparseSet.cs" />
+    <Compile Include="Utils\ResolutionUtils.cs" />
+    <Compile Include="RelationshipSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
     <Folder Include="Old\Animation\" />
     <Folder Include="Old\Commands\" />
-    <Folder Include="Old\Utils\" />
+    <Folder Include="Old\Utils old\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\FNA\FNA.csproj">

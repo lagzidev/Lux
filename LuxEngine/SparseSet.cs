@@ -64,13 +64,13 @@ namespace LuxEngine
         {
             if (key < 0 || key >= MaxSize)
             {
-                Debug.Assert(false);
+                LuxCommon.Assert(false);
                 return;
             }
 
             if (Contains(key))
             {
-                Debug.Assert(false);
+                LuxCommon.Assert(false);
                 return;
             }
 
@@ -118,7 +118,7 @@ namespace LuxEngine
         {
             if (key >= MaxSize || key < 0)
             {
-                Debug.Assert(false);
+                LuxCommon.Assert(false);
                 return false;
             }
 

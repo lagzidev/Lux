@@ -16,6 +16,15 @@ namespace LuxEngine
     {
         public static int SystemId { get; set; }
 
+        /// <summary>
+        /// BaseSystem's constructor
+        /// </summary>
+        /// <param name="requiredComponentTypes">A list of the component types the system requires</param>
+        /// <example>
+        /// <code>
+        /// RenderSystem() : base(SpriteComponent.ComponentType)
+        /// </code>
+        /// </example>
         public BaseSystem(params int[] requiredComponentTypes) : base(requiredComponentTypes)
         {
         }
@@ -44,9 +53,14 @@ namespace LuxEngine
             RegisteredEntities.Add(entity);
         }
 
-        public void UnregisterEntity(Entity entity)
+        /// <summary>
+        /// Unregisters an entity from the system.
+        /// </summary>
+        /// <param name="entity">Entity to unregister</param>
+        /// <returns><c>true</c> if entity was found and removed; <c>false</c> otherwise.</returns>
+        public bool UnregisterEntity(Entity entity)
         {
-            RegisteredEntities.Remove(entity);
+            return RegisteredEntities.Remove(entity);
         }
 
         /// <summary>
@@ -54,13 +68,22 @@ namespace LuxEngine
         /// </summary>
         public virtual void Init(GraphicsDeviceManager graphicsDeviceManager)
         {
-            Debug.Assert(World != null);
+            LuxCommon.Assert(World != null);
         }
 
         /// <summary>
         /// Automatically called when the game launches to load any game assets (graphics, audio etc.)
         /// </summary>
         public virtual void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager)
+        {
+        }
+
+        /// <summary>
+        /// Automatically called before a registered entity is destroyed and unregistered.
+        /// Do not attempt to unregister the entity yourself, it happens automatically.
+        /// </summary>
+        /// <param name="entity">The entity that is about to be destroyed.</param>
+        public virtual void PreDestroyEntity(Entity entity)
         {
         }
 

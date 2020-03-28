@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace LuxEngine
 {
+    [StructLayout(LayoutKind.Explicit)]
     public struct Entity : IComparable
     {
-        public int Id;
+        [FieldOffset(0)] public Int32 Id;
+        [FieldOffset(0)] public Int16 Index;
+        [FieldOffset(2)] public Int16 Generation;
 
-        // To use Entity in a SortedDictionary
         public int CompareTo(object obj)
         {
             if (obj == null)

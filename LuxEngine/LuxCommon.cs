@@ -1,6 +1,20 @@
 ﻿using System;
+using System.Diagnostics;
+
 namespace LuxEngine
 {
+    class LuxCommon
+    {
+        [Conditional("DEBUG")]
+        public static void Assert(bool statement)
+        {
+            if (!statement)
+            {
+                Debugger.Break();
+            }
+        }
+    }
+
     public enum LuxStatusCode
     {
         SUCCESS = 0,

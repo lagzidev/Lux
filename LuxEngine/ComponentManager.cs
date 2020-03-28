@@ -6,6 +6,7 @@ namespace LuxEngine
     // specifying the type <T>
     public abstract class BaseComponentManager
     {
+        public abstract void RemoveComponent(Entity entity);
     }
 
     public class ComponentManager<T> : BaseComponentManager
@@ -32,7 +33,7 @@ namespace LuxEngine
         /// Removes a component from the dataset
         /// </summary>
         /// <param name="entity">Entity that corresponds to the component</param>
-        public void RemoveComponent(Entity entity)
+        public override void RemoveComponent(Entity entity)
         {
             _components.Remove(entity.Id);
         }

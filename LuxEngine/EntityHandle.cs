@@ -34,5 +34,15 @@ namespace LuxEngine
         {
             return World.Unpack<T>(Entity);
         }
+
+        public bool TryUnpack<T>(out T outComponent)
+        {
+            return World.TryUnpack<T>(Entity, out outComponent);
+        }
+
+        public void Destroy()
+        {
+            World.DestroyEntity(Entity);
+        }
     }
 }

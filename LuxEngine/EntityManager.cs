@@ -12,12 +12,19 @@ namespace LuxEngine
 
         public Entity CreateEntity()
         {
-            Entity entity;
-            entity.Id = _lastId;
+            Entity entity = new Entity
+            {
+                Id = _lastId
+            };
 
             _lastId++;
 
             return entity;
+        }
+
+        public void DestroyEntity(Entity entity)
+        {
+
         }
     }
 }
