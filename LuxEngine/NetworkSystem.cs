@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework;
 
 namespace LuxEngine
 {
+    [Serializable]
     public class ConnectionToClient : BaseComponent<ConnectionToClient>
     {
+        [NonSerialized]
         public Socket Socket;
         public IPAddress IPAddress;
         public int Port;
@@ -20,15 +22,19 @@ namespace LuxEngine
         }
     }
 
+    [Serializable]
     public class ConnectionToServer : BaseComponent<ConnectionToServer>
     {
         public Socket Socket;
         public IPAddress ServerIPAddress;
         public int Port;
 
-        // ManualResetEvent instances signal completion.  
+        // ManualResetEvent instances signal completion.
+        [NonSerialized]
         public ManualResetEvent connectDone = new ManualResetEvent(false);
+        [NonSerialized]
         public ManualResetEvent sendDone = new ManualResetEvent(false);
+        [NonSerialized]
         public ManualResetEvent receiveDone = new ManualResetEvent(false);
 
         public ConnectionToServer(IPAddress serverIPAddress, int port)

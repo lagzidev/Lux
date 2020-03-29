@@ -1,6 +1,7 @@
 ﻿using System;
 namespace LuxEngine
 {
+    [Serializable]
     public class Animation : BaseComponent<Animation>
     {
         public string Name;

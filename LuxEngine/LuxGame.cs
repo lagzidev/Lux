@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using LuxEngine;
 
-namespace Haven
+namespace LuxEngine
 {
     public class LuxGame : Game
     {
         private List<World> worlds;
-        private GraphicsDeviceManager graphicsDeviceManager;
+        public GraphicsDeviceManager GraphicsDeviceManager;
 
         public LuxGame(string windowTitle)
         {
             Window.Title = windowTitle;
 
             worlds = new List<World>();
-            graphicsDeviceManager = new GraphicsDeviceManager(this);
+            GraphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = @"Content";
         }
 
@@ -34,7 +33,7 @@ namespace Haven
         protected override void Initialize()
         {
             base.Initialize();
-            worlds.ForEach(x => x.Init(graphicsDeviceManager));
+            worlds.ForEach(x => x.Init(GraphicsDeviceManager));
         }
 
         /// <summary>

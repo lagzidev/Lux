@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace LuxEngine
 {
+    [Serializable]
     public class InputSingleton : BaseComponent<InputSingleton>
     {
         public bool Up;

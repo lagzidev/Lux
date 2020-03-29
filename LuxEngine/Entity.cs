@@ -3,12 +3,14 @@ using System.Runtime.InteropServices;
 
 namespace LuxEngine
 {
+    [Serializable]
     [StructLayout(LayoutKind.Explicit)]
     public struct Entity : IComparable
     {
         [FieldOffset(0)] public Int32 Id;
-        [FieldOffset(0)] public Int16 Index;
-        [FieldOffset(2)] public Int16 Generation;
+
+        [NonSerialized] [FieldOffset(0)] public Int16 Index;
+        [NonSerialized] [FieldOffset(2)] public Int16 Generation;
 
         public override bool Equals(object obj)
         {

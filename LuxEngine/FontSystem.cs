@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
+    [Serializable]
     public class Text : BaseComponent<Text>
     {
         public string TextStr;
@@ -16,6 +17,7 @@ namespace LuxEngine
         }
     }
 
+    [Serializable]
     public class FontSingleton : BaseComponent<FontSingleton>
     {
         public string FontDescriptorFile;

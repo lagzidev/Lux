@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -69,6 +71,28 @@ namespace LuxEngine
             _systems = new LuxIterator<InternalBaseSystem>(_tempSystemList.ToArray(), _postponedSystemActions);
             _componentManagers = _tempComponentManagerList.ToArray();
             SingletonEntity = CreateEntity();
+        }
+
+        /// <summary>
+        /// Deserializes a world from a reader and initializes it
+        /// Should be called after all systems and component types are registered,
+        /// and before any entities are created.
+        /// </summary>
+        public void InitWorld(BinaryReader reader, GraphicsDeviceManager graphicsDeviceManager, ContentManager contentManager)
+        {
+            _systems = new LuxIterator<InternalBaseSystem>(_tempSystemList.ToArray(), _postponedSystemActions);
+            _componentManagers = DeserializeToComponentManagers(reader);
+            SingletonEntity = DeserializeSingletonEntity(reader);
+
+            foreach (var system in _systems)
+            {
+                system.Init(graphicsDeviceManager);
+            }
+
+            foreach (var system in _systems)
+            {
+                system.LoadContent(graphicsDeviceManager.GraphicsDevice, contentManager);
+            }
         }
 
         public EntityHandle CreateEntity()
@@ -210,24 +234,57 @@ namespace LuxEngine
         /// <summary>
         /// Serializes all of the component managers and writes them into a
         /// TextWriter instance
+        /// <para>All components (and their members' types) must be decorated with the [Serializable] attribute.</para>
+        /// <para>To prevent a member from being serialized, decorate it with the [NonSerialized] attribute; cannot be applied to properties.</para>
         /// </summary>
         /// <param name="writer">Writer to write the serialized data into</param>
-        public void Serialize(TextWriter writer)
+        public void Serialize(BinaryWriter writer)
         {
-            var toSerialize = _componentManagers;
+            // Serialize component managers
+            writer.Write(_componentManagers.Length);
 
-            XmlSerializer serializer = new XmlSerializer(toSerialize.GetType());
-            serializer.Serialize(writer, toSerialize);
+            foreach (var componentManager in _componentManagers)
+            {
+                componentManager.Serialize(writer);
+            }
+
+            // Serialize singleton entity
+            IFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(writer.BaseStream, SingletonEntity.Entity);
         }
 
         /// <summary>
         /// Deserializes a world from a reader and loads it
         /// </summary>
-        /// <param name="reader">Reader to get the world data from</param>
-        public void Deserialize(TextReader reader)
+        /// <param name="reader">Reader to read the world data from</param>
+        /// <returns>An array of component managers with entity data</returns>
+        private BaseComponentManager[] DeserializeToComponentManagers(BinaryReader reader)
         {
-            XmlSerializer serializer = new XmlSerializer(_componentManagers.GetType());
-            _componentManagers = (BaseComponentManager[])serializer.Deserialize(reader);
+            // Get amount of component managers
+            int componentManagersCount = reader.ReadInt32();
+            BaseComponentManager[] componentManagers = new BaseComponentManager[componentManagersCount];
+
+            // Populate component manager array
+            for (int i = 0; i < componentManagers.Length; i++)
+            {
+                componentManagers[i] = BaseComponentManager.Deserialize(reader);
+            }
+
+            return componentManagers;
+        }
+
+        /// <summary>
+        /// Deserializes a singleton entity from a world reader.
+        /// Must be called after DeserializeToComponentManagers(reader)
+        /// </summary>
+        /// <param name="reader">Reader to read the world data from</param>
+        /// <returns></returns>
+        private EntityHandle DeserializeSingletonEntity(BinaryReader reader)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            Entity singletonEntity = (Entity)formatter.Deserialize(reader.BaseStream);
+
+            return new EntityHandle(singletonEntity, this);
         }
 
         /// <summary>

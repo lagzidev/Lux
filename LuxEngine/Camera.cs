@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace LuxEngine
 {
+    [Serializable]
     public class Camera : BaseComponent<Camera>
     {
         public Camera()
@@ -10,6 +11,7 @@ namespace LuxEngine
         }
     }
 
+    [Serializable]
     public class PlatformerLens : BaseComponent<PlatformerLens>
     {
         public PlatformerLens()
@@ -29,8 +31,8 @@ namespace LuxEngine
             {
                 var transform = World.Unpack<Transform>(entity);
 
-                EntityHandle parent = World.Unpack<Parent>(entity).ParentEntity;
-                var parentTransform = parent.Unpack<Transform>();
+                Entity parent = World.Unpack<Parent>(entity).ParentEntity;
+                var parentTransform = World.Unpack<Transform>(parent);
 
                 PlatformerLens platformerLens;
                 if (World.TryUnpack(entity, out platformerLens))

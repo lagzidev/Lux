@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
+    [Serializable]
     public class ResolutionSingleton : BaseComponent<ResolutionSingleton>
     {
         public int VWidth;

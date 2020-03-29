@@ -2,13 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.Serialization;
 
 namespace LuxEngine
 {
+    [Serializable]
+    public abstract class BaseSparseSet
+    {
+    }
+
     /// <summary>
     /// Represents an unordered sparse set of natural numbers, and provides constant-time operations on it.
     /// </summary>
-    public sealed class SparseSet<T> : IEnumerable<T>
+    [Serializable]
+    public sealed class SparseSet<T> : BaseSparseSet, IEnumerable<T>, ISerializable
     {
         /// <summary>
         /// Contains the actual data packed tightly in memory.
@@ -49,6 +57,26 @@ namespace LuxEngine
             _valueArr = new T[MaxSize];
             _keyArr = new int[MaxSize];
             _sparseArr = new int[MaxSize];
+        }
+
+        private SparseSet(SerializationInfo info, StreamingContext context)
+        {
+            MaxSize = (int)info.GetValue("MaxSize", MaxSize.GetType());
+            Count = (int)info.GetValue("Count", Count.GetType());
+
+            _valueArr = (T[])info.GetValue("_valueArr", typeof(T[]));
+            _keyArr = (int[])info.GetValue("_keyArr", typeof(int[]));
+            _sparseArr = (int[])info.GetValue("_sparseArr", typeof(int[]));
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("MaxSize", MaxSize, MaxSize.GetType());
+            info.AddValue("Count", Count, Count.GetType());
+
+            info.AddValue("_valueArr", _valueArr, _valueArr.GetType());
+            info.AddValue("_keyArr", _keyArr, _keyArr.GetType());
+            info.AddValue("_sparseArr", _sparseArr, _sparseArr.GetType());
         }
 
         /// <summary>

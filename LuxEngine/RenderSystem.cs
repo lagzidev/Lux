@@ -25,6 +25,7 @@ namespace LuxEngine
     //    public string TextureFilePath;
     //}
 
+    [Serializable]
     public class SpriteComponent : BaseComponent<SpriteComponent>
     {
         public string TextureFilePath;
@@ -33,8 +34,8 @@ namespace LuxEngine
         public float Rotation;
         public SpriteDepth SpriteDepth;
 
-        // This is set by the RenderSystem
-        public Texture2D Texture; // TODO: Remove this, components should only have structures - data. 
+        [NonSerialized]
+        public Texture2D Texture; // Set by the RenderSystem
 
         // TODO: Add: bool mipMap, SurfaceFormat format (for Texture2d)
         public SpriteComponent(string textureFilePath, Rectangle positionInTexture, SpriteDepth spriteDepth, Color color, float rotation = 0)
@@ -115,7 +116,7 @@ namespace LuxEngine
                 float parentY = 0;
                 if (World.TryUnpack(entity, out parent))
                 {
-                    var parentTransform = parent.ParentEntity.Unpack<Transform>();
+                    var parentTransform = World.Unpack<Transform>(parent.ParentEntity);
                     parentX = parentTransform.X;
                     parentY = parentTransform.Y;
                 }

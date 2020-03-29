@@ -1,13 +1,19 @@
 ﻿using System;
 namespace LuxEngine
 {
+    [Serializable]
     public class Parent : BaseComponent<Parent>
     {
-        public EntityHandle ParentEntity { get; set; }
+        public Entity ParentEntity { get; set; }
+
+        public Parent(Entity parentEntity)
+        {
+            ParentEntity = parentEntity;
+        }
 
         public Parent(EntityHandle parentEntity)
         {
-            ParentEntity = parentEntity;
+            ParentEntity = parentEntity.Entity;
         }
     }
 
@@ -24,7 +30,7 @@ namespace LuxEngine
             {
                 // If the entity's parent is the destroyed entity
                 var child = World.Unpack<Parent>(entity);
-                if (destroyedEntity == child.ParentEntity.Entity)
+                if (destroyedEntity == child.ParentEntity)
                 {
                     // Remove its child component
                     World.RemoveComponent<Parent>(entity);
