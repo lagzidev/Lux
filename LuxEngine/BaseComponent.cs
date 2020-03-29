@@ -9,7 +9,7 @@ namespace LuxEngine
     [Serializable]
     public abstract class BaseComponent<T> : InternalBaseComponent
     {
-        public static int ComponentType { get; set; }
+        public static int ComponentType { get; set; } = -1;
         public Entity Entity { get; set; }
     }
 }

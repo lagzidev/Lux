@@ -39,15 +39,19 @@ namespace LuxEngine
             _fontRenderer.DrawText(_spriteBatch, (int)pos.X, (int)pos.Y, message);
         }
 
-        public FontSystem() : base(Text.ComponentType)
+        public override Type[] GetRequiredComponents()
         {
+            return new Type[]
+            {
+                typeof(Text)
+            };
         }
 
         public override void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager)
         {
             base.LoadContent(graphicsDevice, contentManager);
 
-            var font = World.SingletonEntity.Unpack<FontSingleton>();
+            var font = World.Unpack<FontSingleton>(World.SingletonEntity);
 
             string fontFilePath = Path.Combine(contentManager.RootDirectory, font.FontDescriptorFile);
             Texture2D fontTexture = contentManager.Load<Texture2D>(font.TexturePNGFile);

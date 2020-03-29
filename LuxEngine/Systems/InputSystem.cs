@@ -11,9 +11,30 @@ namespace LuxEngine
         public bool Down;
         public bool Right;
         public bool Left;
+
+        public bool F4KeyPress;
         public bool F4;
+
+        public bool F5KeyUp;
         public bool F5;
+
         public bool F6;
+
+        public InputSingleton()
+        {
+            Up = false;
+            Down = false;
+            Right = false;
+            Left = false;
+
+            F4KeyPress = false;
+            F4 = false;
+
+            F5KeyUp = false;
+            F5 = false;
+
+            F6 = false;
+        }
     }
 
     /// <summary>
@@ -21,11 +42,15 @@ namespace LuxEngine
     /// </summary>
     public class InputSystem : BaseSystem<InputSystem>
     {
-        public InputSystem() : base(InputSingleton.ComponentType)
+        public override Type[] GetRequiredComponents()
         {
+            return new Type[]
+            {
+                typeof(InputSingleton)
+            };
         }
 
-        public override void Update(GameTime gameTime)
+        public override void PreUpdate(GameTime gameTime)
         {
             base.Update(gameTime);
 
@@ -40,8 +65,13 @@ namespace LuxEngine
                 input.Down = keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down);
                 input.Right = keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right);
                 input.Left = keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left);
+
+                input.F4KeyPress = !input.F4 && keyboard.IsKeyDown(Keys.F4);
                 input.F4 = keyboard.IsKeyDown(Keys.F4);
+
+                input.F5KeyUp = input.F5 && keyboard.IsKeyUp(Keys.F5);
                 input.F5 = keyboard.IsKeyDown(Keys.F5);
+
                 input.F6 = keyboard.IsKeyDown(Keys.F6);
             }
         }

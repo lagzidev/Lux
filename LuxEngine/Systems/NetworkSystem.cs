@@ -47,8 +47,12 @@ namespace LuxEngine
 
     public class NetworkClientSystem : BaseSystem<NetworkClientSystem>
     {
-        public NetworkClientSystem() : base(ConnectionToServer.ComponentType)
+        public override Type[] GetRequiredComponents()
         {
+            return new Type[]
+            {
+                typeof(ConnectionToServer)
+            };
         }
 
         public override void Update(GameTime gameTime)
@@ -124,8 +128,12 @@ namespace LuxEngine
 
     public class NetworkServerSystem : BaseSystem<NetworkServerSystem>
     {
-        public NetworkServerSystem() : base(ConnectionToClient.ComponentType)
+        public override Type[] GetRequiredComponents()
         {
+            return new Type[]
+            {
+                typeof(ConnectionToClient)
+            };
         }
 
         public override void Update(GameTime gameTime)

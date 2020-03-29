@@ -9,33 +9,19 @@ namespace LuxEngine
 {
     public class SaveSystem : BaseSystem<SaveSystem>
     {
-        private GraphicsDeviceManager _graphicsDeviceManager;
-        private ContentManager _contentManager;
-
-        public SaveSystem() : base()
+        public override Type[] GetRequiredComponents()
         {
-            _graphicsDeviceManager = null;
-            _contentManager = null;
-        }
-
-        public override void Init(GraphicsDeviceManager graphicsDeviceManager)
-        {
-            base.Init(graphicsDeviceManager);
-            _graphicsDeviceManager = graphicsDeviceManager;
-        }
-
-        public override void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager)
-        {
-            base.LoadContent(graphicsDevice, contentManager);
-            _contentManager = contentManager;
+            return new Type[]
+            {
+            };
         }
 
         public override void PostUpdate(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            var input = World.SingletonEntity.Unpack<InputSingleton>();
-            if (input.F4)
+            var input = World.Unpack<InputSingleton>(World.SingletonEntity);
+            if (input.F4KeyPress)
             {
                 FileStream stream = File.Open("exported_world.bin", FileMode.Create);
 
@@ -43,15 +29,19 @@ namespace LuxEngine
                 {
                     World.Serialize(writer);
                 }
+                    
+                Console.WriteLine("Saved!");
             }
-            else if (input.F5)
+            else if (input.F5KeyUp)
             {
                 FileStream stream = File.Open("exported_world.bin", FileMode.Open);
 
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
-                    World.InitWorld(reader, _graphicsDeviceManager, _contentManager);
+                    World.InitWorld(reader);
                 }
+
+                Console.WriteLine("Loaded!");
             }
         }
     }

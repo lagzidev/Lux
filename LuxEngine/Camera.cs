@@ -21,8 +21,13 @@ namespace LuxEngine
 
     public class CameraSystem : BaseSystem<CameraSystem>
     {
-        public CameraSystem() : base(Camera.ComponentType, Transform.ComponentType)
+        public override Type[] GetRequiredComponents()
         {
+            return new Type[]
+            {
+                typeof(Camera),
+                typeof(Transform)
+            };
         }
 
         public override void Update(GameTime gameTime)

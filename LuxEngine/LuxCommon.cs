@@ -3,8 +3,14 @@ using System.Diagnostics;
 
 namespace LuxEngine
 {
-    class LuxCommon
+    public class LuxCommon
     {
+#if DEBUG
+        public static bool IsDebug = true;
+#else
+        public static bool IsDebug = false;
+#endif
+
         [Conditional("DEBUG")]
         public static void Assert(bool statement)
         {

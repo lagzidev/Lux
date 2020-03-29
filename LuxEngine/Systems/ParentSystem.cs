@@ -19,8 +19,12 @@ namespace LuxEngine
 
     public class ParentSystem : BaseSystem<ParentSystem>
     {
-        public ParentSystem() : base(Parent.ComponentType)
+        public override Type[] GetRequiredComponents()
         {
+            return new Type[]
+            {
+                typeof(Parent)
+            };
         }
 
         public override void PreDestroyEntity(Entity destroyedEntity)

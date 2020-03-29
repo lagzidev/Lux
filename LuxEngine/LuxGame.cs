@@ -21,7 +21,7 @@ namespace LuxEngine
 
         public World CreateWorld()
         {
-            World newWorld = new World();
+            World newWorld = new World(GraphicsDeviceManager, Content);
             worlds.Add(newWorld);
 
             return newWorld;
@@ -33,7 +33,7 @@ namespace LuxEngine
         protected override void Initialize()
         {
             base.Initialize();
-            worlds.ForEach(x => x.Init(GraphicsDeviceManager));
+            worlds.ForEach(x => x.Init());
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace LuxEngine
         protected override void LoadContent()
         {
             base.LoadContent();
-            worlds.ForEach(x => x.LoadContent(GraphicsDevice, Content));
+            worlds.ForEach(x => x.LoadContent());
         }
 
         /// <summary>

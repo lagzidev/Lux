@@ -14,20 +14,12 @@ namespace LuxEngine
     /// <typeparam name="T">System class that inherits this BaseSystem</typeparam>
     public abstract class BaseSystem<T> : InternalBaseSystem
     {
-        public static int SystemId { get; set; }
-
         /// <summary>
-        /// BaseSystem's constructor
+        /// Gets the list of components the system requires.
+        /// Pass an empty array if no types are required.
         /// </summary>
-        /// <param name="requiredComponentTypes">A list of the component types the system requires</param>
-        /// <example>
-        /// <code>
-        /// RenderSystem() : base(SpriteComponent.ComponentType)
-        /// </code>
-        /// </example>
-        public BaseSystem(params int[] requiredComponentTypes) : base(requiredComponentTypes)
-        {
-        }
+        /// <returns>A list of component types the system requires</returns>
+        public abstract Type[] GetRequiredComponents();
     }
 
     public abstract class InternalBaseSystem
@@ -48,7 +40,11 @@ namespace LuxEngine
                 Array.ConvertAll(requiredComponentTypes, x => (int)x));
         }
 
-        public void RegisterEntity(Entity entity)
+        /// <summary>
+        /// Called when an entity is registered to the system
+        /// </summary>
+        /// <param name="entity">Entity that was registered</param>
+        public virtual void RegisterEntity(Entity entity, ContentManager contentManager)
         {
             RegisteredEntities.Add(entity);
         }
@@ -57,10 +53,9 @@ namespace LuxEngine
         /// Unregisters an entity from the system.
         /// </summary>
         /// <param name="entity">Entity to unregister</param>
-        /// <returns><c>true</c> if entity was found and removed; <c>false</c> otherwise.</returns>
-        public bool UnregisterEntity(Entity entity)
+        public virtual void UnregisterEntity(Entity entity)
         {
-            return RegisteredEntities.Remove(entity);
+            RegisteredEntities.Remove(entity);
         }
 
         /// <summary>

@@ -27,7 +27,6 @@
   <ItemGroup>
     <Compile Include="Old\Animation\AnimatedObject.cs" />
     <Compile Include="Old\Animation\Animation.cs" />
-    <Compile Include="Old\Animation\AnimationLoader.cs" />
     <Compile Include="Old\Commands\Command.cs" />
     <Compile Include="Old\Commands\MoveCommand.cs" />
     <Compile Include="Old\Character.cs" />
@@ -35,8 +34,6 @@
     <Compile Include="Old\Map.cs" />
     <Compile Include="Old\Utils old\CameraL.cs" />
     <Compile Include="Old\Utils old\Resolution.cs" />
-    <Compile Include="Old\Utils old\TextureLoader.cs" />
-    <Compile Include="Old\Utils old\XmlHelper.cs" />
     <Compile Include="Old\Player.cs" />
     <Compile Include="Old\Scene.cs" />
     <Compile Include="BaseSystem.cs" />
@@ -49,22 +46,24 @@
     <Compile Include="HardCodedConfig.cs" />
     <Compile Include="ComponentMask.cs" />
     <Compile Include="LuxCommon.cs" />
-    <Compile Include="RenderSystem.cs" />
-    <Compile Include="PhysicsSystem.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="InputSystem.cs" />
-    <Compile Include="ResolutionSystem.cs" />
-    <Compile Include="AnimationSystem.cs" />
-    <Compile Include="SaveSystem.cs" />
-    <Compile Include="NetworkSystem.cs" />
     <Compile Include="BMFont.cs" />
-    <Compile Include="FontSystem.cs" />
     <Compile Include="LuxGame.cs" />
     <Compile Include="Benchmark.cs" />
     <Compile Include="SparseSet.cs" />
     <Compile Include="Utils\ResolutionUtils.cs" />
-    <Compile Include="ParentSystem.cs" />
     <Compile Include="Systems.cs" />
+    <Compile Include="Systems\CollisionTDSystem.cs" />
+    <Compile Include="Systems\FontSystem.cs" />
+    <Compile Include="Systems\InputSystem.cs" />
+    <Compile Include="Systems\NetworkSystem.cs" />
+    <Compile Include="Systems\ParentSystem.cs" />
+    <Compile Include="Systems\PhysicsSystem.cs" />
+    <Compile Include="Systems\RenderSystem.cs" />
+    <Compile Include="Systems\ResolutionSystem.cs" />
+    <Compile Include="Systems\SaveSystem.cs" />
+    <Compile Include="Systems\SpriteLoaderSystem.cs" />
+    <Compile Include="Pipeline\TextureLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
@@ -72,6 +71,8 @@
     <Folder Include="Old\Commands\" />
     <Folder Include="Old\Utils old\" />
     <Folder Include="Utils\" />
+    <Folder Include="Pipeline\" />
+    <Folder Include="Systems\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\FNA\FNA.csproj">

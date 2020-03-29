@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -43,11 +45,19 @@ namespace LuxEngine
             GridX = inputGridX;
             GridY = inputGridY;
         }
+
+        /// <summary>
+        /// Fills out a AnimationData object with all the items we need for the requested animation.
+        /// </summary>
+        public static SpriteData Load(string name)
+        {
+            //Load the XML data of the animation and return it:
+            XmlSerializer serializer = new XmlSerializer(typeof(SpriteData));
+            TextReader reader = new StreamReader("Content/Animations/" + name);
+            SpriteData obj = (SpriteData)serializer.Deserialize(reader);
+            reader.Close();
+            return obj;
+        }
     }
 
-    public class AnimationData
-    {
-        public AnimationSet Animation { get; set; }
-        public string TexturePath { get; set; }
-    }
 }

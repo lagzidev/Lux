@@ -35,9 +35,14 @@ namespace LuxEngine
     {
         private GraphicsDeviceManager _graphicsDeviceManager;
 
-        public ResolutionSystem() : base(ResolutionSingleton.ComponentType)
+        public override Type[] GetRequiredComponents()
         {
+            return new Type[]
+            {
+                typeof(ResolutionSingleton)
+            };
         }
+
 
         public override void Init(GraphicsDeviceManager graphicsDeviceManager)
         {

@@ -37,20 +37,20 @@ namespace LuxEngine
 
         protected void LoadAnimation(string path, ContentManager content)
         {
-            AnimationData animationData = AnimationLoader.Load(path);
-            animationSet = animationData.Animation;
+            //AnimationData animationData = AnimationLoader.Load(path);
+            //animationSet = animationData.Animation;
 
-            // Set up initial values
-            center.X = animationSet.Width / 2;
-            center.Y = animationSet.Height / 2;
+            //// Set up initial values
+            //center.X = animationSet.Width / 2;
+            //center.Y = animationSet.Height / 2;
 
-            if (animationSet.AnimationList.Count != 0)
-            {
-                currentAnimation = animationSet.AnimationList[0];
-                currentAnimationFrame = 0;
-                animationTimer = 0f;
-                CalculateFramePosition();
-            }
+            //if (animationSet.AnimationList.Count != 0)
+            //{
+            //    currentAnimation = animationSet.AnimationList[0];
+            //    currentAnimationFrame = 0;
+            //    animationTimer = 0f;
+            //    CalculateFramePosition();
+            //}
         }
 
         public override void Update(List<GameObject> objects, Map map)
