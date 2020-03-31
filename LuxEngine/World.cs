@@ -33,13 +33,13 @@ namespace LuxEngine
 
         public Entity SingletonEntity { get; private set; }
 
-        private EntityManager _entityManager;
-        private SortedDictionary<Entity, ComponentMask> _entityMasks;
+        private EntityGenerator _entityGenerator;
+
+        private Dictionary<Entity, ComponentMask> _entityMasks;
         private LuxIterator<InternalBaseSystem> _systems;
-        private BaseComponentManager[] _componentManagers;
+        private Dictionary<int, BaseComponentManager> _componentManagers;
 
         private List<InternalBaseSystem> _tempSystemList;
-        private List<BaseComponentManager> _tempComponentManagerList;
 
         /// <summary>
         /// A list of actions to execute after done iterating over systems;
@@ -50,43 +50,43 @@ namespace LuxEngine
         private GraphicsDeviceManager _graphicsDeviceManager;
         private ContentManager _contentManager;
 
+        private bool _initialized;
+
         public World(GraphicsDeviceManager graphicsDeviceManager, ContentManager contentManager)
         {
             _paused = false;
 
-            // TODO: Think about a way to move this out of the constructor (InitWorld is no good because
-            // it's called before AddSingletonComponent which can be called whenever. Thus the components aren't registered
-            // properly because the component managers are already initialized in InitWorld.
-            SingletonEntity = CreateEntity().Entity;
-
-            _entityManager = new EntityManager();
-            _entityMasks = new SortedDictionary<Entity, ComponentMask>();
+            _entityGenerator = new EntityGenerator();
+            _entityMasks = new Dictionary<Entity, ComponentMask>();
             _systems = null;
-            _componentManagers = null;
+            _componentManagers = new Dictionary<int, BaseComponentManager>();
 
             _tempSystemList = new List<InternalBaseSystem>();
-            _tempComponentManagerList = new List<BaseComponentManager>();
 
             _postponedSystemActions = new Queue<Action>();
 
             _graphicsDeviceManager = graphicsDeviceManager;
             _contentManager = contentManager;
+
+            _initialized = false;
         }
 
-        /// <summary>
-        /// Should be called after all systems and component types are registered,
-        /// and before any entities are created.
-        /// </summary>
         public void InitWorld()
         {
-            _systems = new LuxIterator<InternalBaseSystem>(_tempSystemList.ToArray(), _postponedSystemActions);
-            _componentManagers = _tempComponentManagerList.ToArray();
+            // Only initialize world if not already initialized manually by user
+            if (!_initialized)
+            {
+                _systems = new LuxIterator<InternalBaseSystem>(_tempSystemList.ToArray(), _postponedSystemActions);
+                SingletonEntity = CreateEntity().Entity;
+            }
+
+            _initialized = true;
         }
 
         /// <summary>
         /// Deserializes a world from a reader and initializes it
-        /// Should be called after all systems and component types are registered,
-        /// and before any entities are created.
+        /// Should be called after all systems are registered and before
+        /// any entities that should remain are created.
         /// </summary>
         public void InitWorld(BinaryReader reader)
         {
@@ -94,21 +94,28 @@ namespace LuxEngine
             _componentManagers = DeserializeToComponentManagers(reader);
             SingletonEntity = DeserializeSingletonEntity(reader);
 
-            foreach (var system in _systems)
+            // If the game is already running, call the new world's systems
+            // instead of the game calling them
+            if (_initialized)
             {
-                system.Init(_graphicsDeviceManager);
+                foreach (var system in _systems)
+                {
+                    system.LoadContent(_graphicsDeviceManager.GraphicsDevice, _contentManager);
+                }
+
+                foreach (var system in _systems)
+                {
+                    system.Init(_graphicsDeviceManager);
+                }
             }
 
-            foreach (var system in _systems)
-            {
-                system.LoadContent(_graphicsDeviceManager.GraphicsDevice, _contentManager);
-            }
+            _initialized = true;
         }
 
         public EntityHandle CreateEntity()
         {
-            EntityHandle entityHandle = new EntityHandle(_entityManager.CreateEntity(), this);
-            _entityMasks.Add(entityHandle.Entity, new ComponentMask(new int[0]));
+            EntityHandle entityHandle = new EntityHandle(_entityGenerator.CreateEntity(), this);
+            _entityMasks.Add(entityHandle.Entity, new ComponentMask());
 
             return entityHandle;
         }
@@ -118,22 +125,18 @@ namespace LuxEngine
             // Remove entity from all systems
             foreach (var system in _systems)
             {
-                // Notify systems
-                system.PreDestroyEntity(entity);
-
-                // Unregister if entity exists in the system
-                system.UnregisterEntity(entity);
+                system.OnDestroyEntity(entity);
             }
 
             // Remove entity's components
             foreach (var componentManager in _componentManagers)
             {
-                componentManager.RemoveComponent(entity);
+                componentManager.Value.RemoveComponent(entity);
             }
 
             // Remove entity
             _entityMasks.Remove(entity);
-            _entityManager.DestroyEntity(entity);
+            _entityGenerator.DestroyEntity(entity);
         }
 
         public bool TryUnpack<T>(Entity entity, out T outComponent)
@@ -168,14 +171,12 @@ namespace LuxEngine
             return component;
         }
 
-        public void AddSingletonComponent<T>(BaseComponent<T> component)
+        public void AddSingletonComponent<T>(BaseComponent<T> component) where T : BaseComponent<T>
         {
-            // TODO: Register component type
-
             AddComponent(SingletonEntity, component);
         }
 
-        public void AddComponent<T>(Entity entity, BaseComponent<T> component)
+        public void AddComponent<T>(Entity entity, BaseComponent<T> component) where T : BaseComponent<T>
         {
             // If iterating systems, add the component afterwards instead of now
             if (_systems.IsIterating)
@@ -192,13 +193,29 @@ namespace LuxEngine
             foundComponentManager.AddComponent(entity, component);
 
             // Update the entity's component mask
-            var oldMask = (ComponentMask)_entityMasks[entity].Clone();
             _entityMasks[entity].AddComponent<T>();
 
-            UpdateEntitySystems(entity, oldMask);
+            foreach (var system in _systems)
+            {
+                system.UpdateEntity(entity, _entityMasks[entity]);
+            }
         }
 
-        public void RemoveComponent<T>(Entity entity)
+        /// <summary>
+        /// Remove a component from an entity.
+        /// </summary>
+        /// <typeparam name="T">A component that belongs to an entity</typeparam>
+        /// <param name="entity">The entity that owns the component</param>
+        /// <remarks>
+        /// If called by a system, the removal will take effect only after the
+        /// current stage completed.
+        /// </remarks>
+        /// <example>
+        /// If a component is removed inside the system's Update method, it will
+        /// only be removed after all other systems called Update for this tick.
+        /// PostUpdate will see this component as removed.
+        /// </example>
+        public void RemoveComponent<T>(Entity entity) where T : BaseComponent<T>
         {
             // If iterating systems, remove the component afterwards instead of now
             if (_systems.IsIterating)
@@ -214,13 +231,15 @@ namespace LuxEngine
             // Update the entity's component mask
             if (_entityMasks.TryGetValue(entity, out ComponentMask oldMask))
             {
-                oldMask = (ComponentMask)oldMask.Clone();
                 _entityMasks[entity].RemoveComponent<T>();
-                UpdateEntitySystems(entity, oldMask);
+
+                foreach (var system in _systems)
+                {
+                    system.UpdateEntity(entity, _entityMasks[entity]);
+                }
             }
             else
             {
-                // Entity doesn't have a mask
                 LuxCommon.Assert(false);
             }
         }
@@ -228,43 +247,26 @@ namespace LuxEngine
         public void RegisterSystem<T>() where T : BaseSystem<T>, new()
         {
             T system = new T { World = this };
-
-            // Register required component types if they're not already registered
-            foreach (var componentType in system.GetRequiredComponents())
-            {
-                // We use reflection so that the user won't have to register
-                // component types manually.
-
-                Type genericComponentType = typeof(BaseComponent<>).MakeGenericType(componentType);
-
-                // TODO: Find a way to get rid of these ugly hardcoded strings
-                if (-1 == (int)genericComponentType.GetProperty("ComponentType").GetValue(null))
-                {
-                    // Get the method for registering component types
-                    MethodInfo method = typeof(World).GetMethod(
-                        "RegisterComponentType",
-                        BindingFlags.Instance | BindingFlags.NonPublic);
-
-                    MethodInfo registerComponentType = method.MakeGenericMethod(componentType);
-
-                    // Register this componentType
-                    registerComponentType.Invoke(this, null);
-                }
-            }
-
+            system.ApplySignature();
             _tempSystemList.Add(system);
         }
 
         /// <summary>
-        /// Applies a ComponentType to a Component class and instantiates
-        /// a component manager for the component type.
+        /// Registers a component type to a world.
         /// </summary>
-        /// <typeparam name="T">Component class</typeparam>
-        private void RegisterComponentType<T>() where T : BaseComponent<T>
+        /// <typeparam name="T">Component type to register to the world</typeparam>
+        /// <returns>The component type's ID for the world</returns>
+        public void RegisterComponent<T>() where T : BaseComponent<T>
         {
-            // Set the ComponentType for the component's class
-            BaseComponent<T>.ComponentType = _tempComponentManagerList.Count;
-            _tempComponentManagerList.Add(new ComponentManager<T>());
+            // Set the ComponentType for the component class
+            BaseComponent<T>.SetComponentType();
+
+            // Add a component manager for the type if doesn't exist
+            if (!_componentManagers.ContainsKey(BaseComponent<T>.ComponentType))
+            {
+                var componentManager = new ComponentManager<T>();
+                _componentManagers[BaseComponent<T>.ComponentType] = componentManager;
+            }
         }
 
         /// <summary>
@@ -277,11 +279,12 @@ namespace LuxEngine
         public void Serialize(BinaryWriter writer)
         {
             // Serialize component managers
-            writer.Write(_componentManagers.Length);
+            writer.Write(_componentManagers.Count);
 
             foreach (var componentManager in _componentManagers)
             {
-                componentManager.Serialize(writer);
+                writer.Write(componentManager.Key);
+                componentManager.Value.Serialize(writer);
             }
 
             // Serialize singleton entity
@@ -294,16 +297,34 @@ namespace LuxEngine
         /// </summary>
         /// <param name="reader">Reader to read the world data from</param>
         /// <returns>An array of component managers with entity data</returns>
-        private BaseComponentManager[] DeserializeToComponentManagers(BinaryReader reader)
+        private Dictionary<int, BaseComponentManager> DeserializeToComponentManagers(BinaryReader reader)
         {
             // Get amount of component managers
             int componentManagersCount = reader.ReadInt32();
-            BaseComponentManager[] componentManagers = new BaseComponentManager[componentManagersCount];
+            var componentManagers = new Dictionary<int, BaseComponentManager>(componentManagersCount);
 
             // Populate component manager array
-            for (int i = 0; i < componentManagers.Length; i++)
+            for (int i = 0; i < componentManagers.Count; i++)
             {
-                componentManagers[i] = BaseComponentManager.Deserialize(reader);
+                // Get component type ID
+                int componentTypeID = reader.ReadInt32();
+
+                // Find the component manager type
+                string typeName = reader.ReadString();
+
+                Type componentType = Type.GetType(typeName);
+                Type componentManagerType = typeof(ComponentManager<>).MakeGenericType(componentType);
+
+                // Deserialize the component data
+                IFormatter formatter = new BinaryFormatter();
+                BaseSparseSet components = (BaseSparseSet)formatter.Deserialize(reader.BaseStream);
+
+                // Create a component manager
+                componentManagers[componentTypeID] =
+                    (BaseComponentManager)Activator.CreateInstance(
+                        componentManagerType,
+                        components,
+                        componentTypeID);
             }
 
             return componentManagers;
@@ -321,27 +342,13 @@ namespace LuxEngine
             return (Entity)formatter.Deserialize(reader.BaseStream);
         }
 
-        /// <summary>
-        /// Add or remove the entity for each system it belongs to
-        /// </summary>
-        private void UpdateEntitySystems(Entity entity, ComponentMask oldMask)
+        private ComponentManager<T> _getComponentManager<T>()
         {
-            foreach (var system in _systems)
-            {
-                bool entityMatchesSystem = _entityMasks[entity].Matches(system.ComponentMask);
-                bool entityWasInSystem = oldMask.Matches(system.ComponentMask);
-                if (entityMatchesSystem && !entityWasInSystem)
-                {
-                    system.RegisterEntity(entity, _contentManager);
-                }
-                else if (!entityMatchesSystem && entityWasInSystem)
-                {
-                    system.UnregisterEntity(entity);
-                }
-            }
+            return (ComponentManager<T>)_componentManagers[BaseComponent<T>.ComponentType];
         }
 
-        // System calling functions
+        #region Phases
+
         public virtual void Init()
         {
             foreach (InternalBaseSystem system in _systems)
@@ -390,9 +397,6 @@ namespace LuxEngine
             }
         }
 
-        private ComponentManager<T> _getComponentManager<T>()
-        {
-            return (ComponentManager<T>)_componentManagers[BaseComponent<T>.ComponentType];
-        }
+        #endregion
     }
 }

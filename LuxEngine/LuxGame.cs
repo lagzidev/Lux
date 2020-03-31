@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
     public class LuxGame : Game
     {
-        private List<World> worlds;
+        private List<World> _worlds;
         public GraphicsDeviceManager GraphicsDeviceManager;
 
         public LuxGame(string windowTitle)
         {
             Window.Title = windowTitle;
 
-            worlds = new List<World>();
+            _worlds = new List<World>();
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = @"Content";
         }
@@ -22,7 +21,7 @@ namespace LuxEngine
         public World CreateWorld()
         {
             World newWorld = new World(GraphicsDeviceManager, Content);
-            worlds.Add(newWorld);
+            _worlds.Add(newWorld);
 
             return newWorld;
         }
@@ -32,8 +31,8 @@ namespace LuxEngine
         /// </summary>
         protected override void Initialize()
         {
-            base.Initialize();
-            worlds.ForEach(x => x.Init());
+            base.Initialize(); // calls LoadContent
+            _worlds.ForEach(x => x.Init());
         }
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace LuxEngine
         protected override void LoadContent()
         {
             base.LoadContent();
-            worlds.ForEach(x => x.LoadContent());
+            _worlds.ForEach(x => x.LoadContent());
         }
 
         /// <summary>
@@ -52,9 +51,9 @@ namespace LuxEngine
         /// </summary>
         protected override void Update(GameTime gameTime)
         {
-            worlds.ForEach(x => x.PreUpdate(gameTime));
-            worlds.ForEach(x => x.Update(gameTime));
-            worlds.ForEach(x => x.PostUpdate(gameTime));
+            _worlds.ForEach(x => x.PreUpdate(gameTime));
+            _worlds.ForEach(x => x.Update(gameTime));
+            _worlds.ForEach(x => x.PostUpdate(gameTime));
             base.Update(gameTime);
         }
 
@@ -63,7 +62,7 @@ namespace LuxEngine
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
-            worlds.ForEach(x => x.Draw(gameTime));
+            _worlds.ForEach(x => x.Draw(gameTime));
 
             base.Draw(gameTime);
         }

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace LuxEngine
 {
-    public class EntityManager
+    public class EntityGenerator
     {
         Int16 _nextIndex;
         Stack<Entity> _destroyed_entities;
 
-        public EntityManager()
+        public EntityGenerator()
         {
             _nextIndex = 0;
             _destroyed_entities = new Stack<Entity>();

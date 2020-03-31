@@ -16,21 +16,9 @@ namespace LuxEngine
         /// </summary>
         /// <param name="reader">Reader to read the serialized data from</param>
         /// <returns>A component manager of the given type</returns>
-        public static BaseComponentManager Deserialize(BinaryReader reader)
-        {
-            // Find the component manager type
-            string typeName = reader.ReadString();
-
-            Type componentType = Type.GetType(typeName);
-            Type componentManagerType = typeof(ComponentManager<>).MakeGenericType(componentType);
-
-            // Deserialize the component data
-            IFormatter formatter = new BinaryFormatter();
-            BaseSparseSet components = (BaseSparseSet)formatter.Deserialize(reader.BaseStream);
-
-            // Create a component manager
-            return (BaseComponentManager)Activator.CreateInstance(componentManagerType, components);
-        }
+        //public static BaseComponentManager Deserialize(BinaryReader reader)
+        //{
+        //}
 
         public abstract void RemoveComponent(Entity entity);
         public abstract void Serialize(BinaryWriter writer);

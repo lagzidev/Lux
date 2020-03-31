@@ -7,7 +7,7 @@ namespace LuxEngine
     /// <summary>
     /// For optimizing, see https://gamedev.stackexchange.com/questions/71767/how-can-i-efficiently-implement-a-bitmask-larger-than-64-bits-for-component-exis
     /// </summary>
-    public class ComponentMask : ICloneable
+    public class ComponentMask
     {
         private BitArray _mask;
 
@@ -21,10 +21,15 @@ namespace LuxEngine
             }
         }
 
+        public ComponentMask()
+        {
+            _mask = new BitArray(HardCodedConfig.MAX_COMPONENT_TYPES, false);
+        }
+
         /// <summary>
         /// </summary>
         /// <typeparam name="T">A component type (not wrapped in BaseComponent)</typeparam>
-        public void AddComponent<T>()
+        public void AddComponent<T>() where T : BaseComponent<T>
         {
             _mask[BaseComponent<T>.ComponentType] = true;
         }
@@ -32,12 +37,12 @@ namespace LuxEngine
         /// <summary>
         /// </summary>
         /// <typeparam name="T">A component type (not wrapped in BaseComponent)</typeparam>
-        public void RemoveComponent<T>()
+        public void RemoveComponent<T>() where T : BaseComponent<T>
         {
             _mask[BaseComponent<T>.ComponentType] = false;
         }
 
-        public bool Matches(ComponentMask otherMask)
+        public bool Contains(ComponentMask otherMask)
         {
             // [0, 1, 1, 1] _mask
             // [0, 1, 0, 1] otherMask
@@ -60,15 +65,6 @@ namespace LuxEngine
             }
 
             return true;
-        }
-
-        public object Clone()
-        {
-            var clone = (ComponentMask)MemberwiseClone();
-
-            clone._mask = (BitArray)_mask.Clone();
-
-            return clone;
         }
     }
 }

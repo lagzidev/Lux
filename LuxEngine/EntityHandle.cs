@@ -18,12 +18,12 @@ namespace LuxEngine
             World = world;
         }
 
-        public void AddComponent<T>(BaseComponent<T> component)
+        public void AddComponent<T>(T component) where T : BaseComponent<T>
         {
             World.AddComponent(Entity, component);
         }
 
-        public void RemoveComponent<T>()
+        public void RemoveComponent<T>() where T : BaseComponent<T>
         {
             World.RemoveComponent<T>(Entity);
         }

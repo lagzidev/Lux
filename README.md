@@ -1,6 +1,37 @@
 # LuxEngine
 This engine is based on the [FNA framework](https://github.com/FNA-XNA/FNA).
 
+
+
+## Contents
+
+* [Systems](#systems)
+* [Todo](#TODO)
+* [Useful Material](#Useful Material)
+* [Troubleshooting](#Troubleshooting)
+
+
+
+## Systems
+
+Systems are the only executors of logic in the game. When you create a system, you define which components it requires, and only entities that has all of the required components are registered to the system. The system can then iterate over its registered entities and manipulate their components.
+
+### Phases
+
+All systems have methods that are called at different phases of the game. Each method represents a different phase in the game. These are the phases in the order of their execution:
+
+#### Init
+
+### Handlers
+
+Systems also have methods that are called in response to certain events, like when a component is registered to them. This can be useful to initialize state that the system requires from the entities. These are the different handlers systems can implement:
+
+### RegisterEntity
+
+This is called when an entity is registered to the system.
+
+
+
 ## TODO:
 * Add a content management system to automatically change the content file's properties (e.g. Copy to output directory = Copy if newer)
 
@@ -13,12 +44,13 @@ This engine is based on the [FNA framework](https://github.com/FNA-XNA/FNA).
 
 * [Introduction to MonoGame](https://docs.microsoft.com/en-us/xamarin/graphics-games/monogame/introduction/) - by Microsoft.
 
-## ECS
+### ECS
+
 * [entity-systems.wikidot.com](http://entity-systems.wikidot.com/game-design-for-es)
 
 * [Bitsquid's blog](http://bitsquid.blogspot.com/2014/10/building-data-oriented-entity-system_10.html)
 
-## Useful Libraries
+### Libraries
 
 * [Tools used for Celeste](https://celestegame.tumblr.com/tools) - This includes Crunch for spritesheets and BMFont for packing fonts.
 

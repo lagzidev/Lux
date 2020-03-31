@@ -42,12 +42,9 @@ namespace LuxEngine
     /// </summary>
     public class InputSystem : BaseSystem<InputSystem>
     {
-        public override Type[] GetRequiredComponents()
+        protected override void SetSignature(SystemSignature signature)
         {
-            return new Type[]
-            {
-                typeof(InputSingleton)
-            };
+            signature.Require<InputSingleton>();
         }
 
         public override void PreUpdate(GameTime gameTime)
