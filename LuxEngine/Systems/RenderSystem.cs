@@ -1,110 +1,90 @@
-﻿//using System;
-//using Microsoft.Xna.Framework;
-//using Microsoft.Xna.Framework.Content;
-//using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
-//namespace LuxEngine
-//{
-//    //[Serializable]
-//    //public class SpriteComponent : BaseComponent<SpriteComponent>
-//    //{
-//    //    public string TextureFilePath;
-//    //    public Rectangle PositionInTexture;
-//    //    public Color Color;
-//    //    public float Rotation;
-//    //    public SpriteDepth SpriteDepth;
+namespace LuxEngine
+{
+    public class ScaleMatrixSingleton : BaseComponent<ScaleMatrixSingleton>
+    {
+        public Matrix Matrix;
 
-//    //    [NonSerialized]
-//    //    public Texture2D Texture; // Set by the RenderSystem
+        public ScaleMatrixSingleton()
+        {
+            Matrix = Matrix.Identity;
+        }
+    }
 
-//    //    // TODO: Add: bool mipMap, SurfaceFormat format (for Texture2d)
-//    //    public SpriteComponent(string textureFilePath, Rectangle positionInTexture, SpriteDepth spriteDepth, Color color, float rotation = 0)
-//    //    {
-//    //        TextureFilePath = textureFilePath;
-//    //        PositionInTexture = positionInTexture;
-//    //        Color = color;
-//    //        Rotation = rotation;
-//    //        SpriteDepth = spriteDepth;
+    public class RenderSystem : BaseSystem<RenderSystem>
+    {
+        SpriteBatch _spriteBatch;
 
-//    //        Texture = null;
-//    //    }
-//    //}
+        protected override void SetSignature(SystemSignature signature)
+        {
+            signature.Require<Transform>();
+            signature.Require<Sprite>();
+            signature.Require<SpriteTexture>();
+            signature.RequireSingleton<LoadedTexturesSingleton>();
+            signature.RequireSingleton<ScaleMatrixSingleton>();
+        }
+        // TODO: Assert if using an optional without setting signature.Optional
 
-//    public class RenderSystem : BaseSystem<RenderSystem>
-//    {
-//        private SpriteBatch _spriteBatch;
-//        private GraphicsDevice _graphicsDevice;
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(World.GraphicsDeviceManager.GraphicsDevice);
+        }
 
-//        public override Type[] GetRequiredComponents()
-//        {
-//            return new Type[]
-//            {
-//                typeof(Sprite),
-//                typeof(Transform)
-//            };
-//        }
+        protected override void Draw(GameTime gameTime)
+        {
+            World.GraphicsDeviceManager.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-//        public override void Draw(GameTime gameTime)
-//        {
-//            base.Draw(gameTime);
+            var scaleMatrix = World.UnpackSingleton<ScaleMatrixSingleton>().Matrix;
 
-//           if (World.TryUnpack(World.SingletonEntity, out ResolutionSingleton resolution))
-//            {
-//                // Resize the viewport to the whole window
-//                _graphicsDevice.Viewport = new Viewport(0, 0, resolution.Width, resolution.Height);
+            _spriteBatch.Begin(
+                SpriteSortMode.BackToFront,
+                BlendState.AlphaBlend,
+                SamplerState.PointClamp,
+                DepthStencilState.Default,
+                RasterizerState.CullNone,
+                null,
+                scaleMatrix);
+                // , Camera.GetTransformMatrix() // Black bars?
 
-//                // Clear to Black
-//                _graphicsDevice.Clear(Color.Black);
+            // Get loaded textures
+            var loadedTextures = World.UnpackSingleton<LoadedTexturesSingleton>();
 
-//                // Calculate Proper Viewport according to Aspect Ratio
-//                _graphicsDevice.Viewport = ResolutionUtils.GetVirtualViewport(resolution);
-//                // and clear that so we can have black bars if aspect ratio requires it and
-//                // the clear color on the rest
-//            }
+            foreach (var entity in RegisteredEntities)
+            {
+                var sprite = World.Unpack<Sprite>(entity);
+                var spriteTexture = World.Unpack<SpriteTexture>(entity);
+                var transform = World.Unpack<Transform>(entity);
 
-//            _graphicsDevice.Clear(Color.CornflowerBlue);
+                float transformX = transform.X;
+                float transformY = transform.Y;
 
-//            _spriteBatch.Begin(
-//                SpriteSortMode.BackToFront,
-//                BlendState.AlphaBlend,
-//                SamplerState.PointClamp,
-//                DepthStencilState.Default,
-//                RasterizerState.CullNone,
-//                null,
-//                ResolutionUtils.GetScaleMatrix(resolution, _graphicsDevice.Viewport.Width)); // , Camera.GetTransformMatrix() // Black bars?
+                if (World.TryUnpack(entity, out Parent parent))
+                {
+                    var parentTransform = World.Unpack<Transform>(parent.ParentEntity);
+                    transformX += parentTransform.X;
+                    transformY += parentTransform.Y;
+                }
 
-//            // Get loaded textures
-//            var loadedTextures = World.Unpack<LoadedTexturesSingleton>(World.SingletonEntity);
+                // If the scale is zero the sprite won't show, prevent that
+                if (sprite.Scale == Vector2.Zero) sprite.Scale = Vector2.One;
 
-//            foreach (var entity in RegisteredEntities)
-//            {
-//                var sprite = World.Unpack<Sprite>(entity);
-//                var transform = World.Unpack<Transform>(entity);
+                _spriteBatch.Draw(
+                    loadedTextures.Textures[spriteTexture.TextureName],
+                    new Vector2(transformX, transformY),
+                    new Rectangle(0, 0, sprite.Width, sprite.Height),
+                    sprite.Color,
+                    sprite.Rotation,
+                    Vector2.Zero,
+                    sprite.Scale,
+                    sprite.SpriteEffects,
+                    0.8f);
+            }
 
-//                // Handle parent logic
-//                Parent parent;
-//                float parentX = 0;
-//                float parentY = 0;
-//                if (World.TryUnpack(entity, out parent))
-//                {
-//                    var parentTransform = World.Unpack<Transform>(parent.ParentEntity);
-//                    parentX = parentTransform.X;
-//                    parentY = parentTransform.Y;
-//                }
-
-//                _spriteBatch.Draw(
-//                    loadedTextures.Textures[sprite.SpriteData.TextureName],
-//                    new Vector2(transform.X + parentX, transform.Y + parentY),
-//                    sprite.SpriteData.PositionInTexture,
-//                    sprite.SpriteData.Color,
-//                    sprite.SpriteData.Rotation,
-//                    Vector2.Zero,
-//                    sprite.SpriteData.Scale,
-//                    sprite.SpriteData.SpriteEffects,
-//                    (float)sprite.SpriteData.SpriteDepth / 10f);
-//            }
-
-//            _spriteBatch.End();
-//        }
-//    }
-//}
+            _spriteBatch.End();
+        }
+    }
+}

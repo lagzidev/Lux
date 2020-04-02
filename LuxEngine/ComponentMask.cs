@@ -13,7 +13,7 @@ namespace LuxEngine
 
         public ComponentMask(int[] componentTypes)
         {
-            _mask = new BitArray(HardCodedConfig.MAX_COMPONENT_TYPES, false);
+            _mask = new BitArray(HardCodedConfig.MAX_GAME_COMPONENT_TYPES, false);
 
             foreach (var componentType in componentTypes)
             {
@@ -23,10 +23,11 @@ namespace LuxEngine
 
         public ComponentMask()
         {
-            _mask = new BitArray(HardCodedConfig.MAX_COMPONENT_TYPES, false);
+            _mask = new BitArray(HardCodedConfig.MAX_GAME_COMPONENT_TYPES, false);
         }
 
         /// <summary>
+        /// Add a component to the mask
         /// </summary>
         /// <typeparam name="T">A component type (not wrapped in BaseComponent)</typeparam>
         public void AddComponent<T>() where T : BaseComponent<T>

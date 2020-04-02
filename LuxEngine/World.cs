@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
@@ -13,6 +11,21 @@ namespace LuxEngine
 {
     public class World
     {
+        private EntityGenerator _entityGenerator;
+        private Dictionary<Entity, ComponentMask> _entityMasks;
+
+        /// <summary>
+        /// A list of actions to execute after done iterating over systems;
+        /// These are actions that cannot be executed while iterating systems.
+        /// </summary>
+        private Queue<Action> _postponedSystemActions;
+
+        private LuxIterator<InternalBaseSystem> _systems;
+        private Dictionary<int, BaseComponentManager> _componentManagers;
+
+        private bool _initialized;
+        private bool _inInitSingleton;
+
         private bool _paused;
         public bool Paused
         {
@@ -31,55 +44,37 @@ namespace LuxEngine
             }
         }
 
-        public Entity SingletonEntity { get; private set; }
+        public readonly GraphicsDeviceManager GraphicsDeviceManager;
+        public readonly ContentManager ContentManager;
 
-        private EntityGenerator _entityGenerator;
-
-        private Dictionary<Entity, ComponentMask> _entityMasks;
-        private LuxIterator<InternalBaseSystem> _systems;
-        private Dictionary<int, BaseComponentManager> _componentManagers;
-
-        private List<InternalBaseSystem> _tempSystemList;
-
-        /// <summary>
-        /// A list of actions to execute after done iterating over systems;
-        /// These are actions that cannot be executed while iterating systems.
-        /// </summary>
-        private Queue<Action> _postponedSystemActions;
-
-        private GraphicsDeviceManager _graphicsDeviceManager;
-        private ContentManager _contentManager;
-
-        private bool _initialized;
+        private Entity _singletonEntity;
 
         public World(GraphicsDeviceManager graphicsDeviceManager, ContentManager contentManager)
         {
-            _paused = false;
-
             _entityGenerator = new EntityGenerator();
             _entityMasks = new Dictionary<Entity, ComponentMask>();
-            _systems = null;
-            _componentManagers = new Dictionary<int, BaseComponentManager>();
-
-            _tempSystemList = new List<InternalBaseSystem>();
 
             _postponedSystemActions = new Queue<Action>();
 
-            _graphicsDeviceManager = graphicsDeviceManager;
-            _contentManager = contentManager;
+            _systems = new LuxIterator<InternalBaseSystem>(_postponedSystemActions);
+            _componentManagers = new Dictionary<int, BaseComponentManager>();
 
             _initialized = false;
+            _paused = false;
+
+            GraphicsDeviceManager = graphicsDeviceManager;
+            ContentManager = contentManager;
         }
 
         public void InitWorld()
         {
-            // Only initialize world if not already initialized manually by user
-            if (!_initialized)
+            if (_initialized)
             {
-                _systems = new LuxIterator<InternalBaseSystem>(_tempSystemList.ToArray(), _postponedSystemActions);
-                SingletonEntity = CreateEntity().Entity;
+                LuxCommon.Assert(false);
+                return;
             }
 
+            _singletonEntity = CreateEntity().Entity;
             _initialized = true;
         }
 
@@ -90,26 +85,37 @@ namespace LuxEngine
         /// </summary>
         public void InitWorld(BinaryReader reader)
         {
-            _systems = new LuxIterator<InternalBaseSystem>(_tempSystemList.ToArray(), _postponedSystemActions);
-            _componentManagers = DeserializeToComponentManagers(reader);
-            SingletonEntity = DeserializeSingletonEntity(reader);
-
-            // If the game is already running, call the new world's systems
-            // instead of the game calling them
             if (_initialized)
             {
-                foreach (var system in _systems)
-                {
-                    system.LoadContent(_graphicsDeviceManager.GraphicsDevice, _contentManager);
-                }
+                LuxCommon.Assert(false);
+                return;
+            }
 
-                foreach (var system in _systems)
-                {
-                    system.Init(_graphicsDeviceManager);
-                }
+            // TODO: move to protobuf and Initialize everything else - entity generator, masks, etc.
+            _componentManagers = DeserializeToComponentManagers(reader);
+            _singletonEntity = DeserializeSingletonEntity(reader);
+
+            foreach (var system in _systems)
+            {
+                system.RunInitSingleton();
+            }
+
+            foreach (var system in _systems)
+            {
+                system.RunInit();
+            }
+
+            foreach (var system in _systems)
+            {
+                system.RunLoadContent();
             }
 
             _initialized = true;
+        }
+
+        public ComponentMask GetSingletonMask()
+        {
+            return _entityMasks[_singletonEntity];
         }
 
         public EntityHandle CreateEntity()
@@ -125,7 +131,7 @@ namespace LuxEngine
             // Remove entity from all systems
             foreach (var system in _systems)
             {
-                system.OnDestroyEntity(entity);
+                system.RunOnDestroyEntity(entity);
             }
 
             // Remove entity's components
@@ -160,6 +166,11 @@ namespace LuxEngine
             return true;
         }
 
+        public bool TryUnpackSingleton<T>(Entity entity, out T outComponent)
+        {
+            return TryUnpack(_singletonEntity, out outComponent);
+        }
+
         public T Unpack<T>(Entity entity)
         {
             T component;
@@ -171,9 +182,28 @@ namespace LuxEngine
             return component;
         }
 
+        public T UnpackSingleton<T>()
+        {
+            return Unpack<T>(_singletonEntity);
+        }
+
         public void AddSingletonComponent<T>(BaseComponent<T> component) where T : BaseComponent<T>
         {
-            AddComponent(SingletonEntity, component);
+            // If iterating systems, add the component afterwards instead of now
+            if (_systems.IsIterating)
+            {
+                _postponedSystemActions.Enqueue(() => AddSingletonComponent(component));
+                return;
+            }
+
+            // Add component for the singleton entity
+            AddComponent(_singletonEntity, component);
+
+            // Disable system if new signature doesn't match
+            foreach (var system in _systems)
+            {
+                system.UpdateSingleton(GetSingletonMask());
+            }
         }
 
         public void AddComponent<T>(Entity entity, BaseComponent<T> component) where T : BaseComponent<T>
@@ -190,6 +220,19 @@ namespace LuxEngine
 
             // Update the component manager
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
+            if (null == foundComponentManager)
+            {
+                LuxCommon.Assert(false); // The component wasn't included in any system
+                return;
+            }
+
+            // If component already exists, remove it first
+            if (foundComponentManager.GetComponent(entity, out _))
+            {
+                LuxCommon.Assert(false); // This shouldn't happen, better to manually remove
+                RemoveComponent<T>(entity);
+            }
+
             foundComponentManager.AddComponent(entity, component);
 
             // Update the entity's component mask
@@ -220,6 +263,7 @@ namespace LuxEngine
             // If iterating systems, remove the component afterwards instead of now
             if (_systems.IsIterating)
             {
+                LuxCommon.Assert(_inInitSingleton);
                 _postponedSystemActions.Enqueue(() => RemoveComponent<T>(entity));
                 return;
             }
@@ -248,11 +292,11 @@ namespace LuxEngine
         {
             T system = new T { World = this };
             system.ApplySignature();
-            _tempSystemList.Add(system);
+            _systems.Add(system);
         }
 
         /// <summary>
-        /// Registers a component type to a world.
+        /// Registers a component type to a world. Does nothing if already registered.
         /// </summary>
         /// <typeparam name="T">Component type to register to the world</typeparam>
         /// <returns>The component type's ID for the world</returns>
@@ -287,9 +331,12 @@ namespace LuxEngine
                 componentManager.Value.Serialize(writer);
             }
 
+            // TODO: DITCH BinaryFormatter for Protobuf or XML serializer.
+            // It's not cross platform, weighs a lot, break through versions, etc. https://stackoverflow.com/questions/7964280/c-sharp-serialize-generic-listcustomobject-to-file
+
             // Serialize singleton entity
             IFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(writer.BaseStream, SingletonEntity);
+            formatter.Serialize(writer.BaseStream, _singletonEntity);
         }
 
         /// <summary>
@@ -344,16 +391,31 @@ namespace LuxEngine
 
         private ComponentManager<T> _getComponentManager<T>()
         {
+            if (BaseComponent<T>.ComponentType == -1)
+            {
+                return null;
+            }
+
             return (ComponentManager<T>)_componentManagers[BaseComponent<T>.ComponentType];
         }
 
         #region Phases
 
+        public virtual void InitSingleton()
+        {
+            _inInitSingleton = true;
+            foreach (InternalBaseSystem system in _systems)
+            {
+                system.RunInitSingleton();
+            }
+            _inInitSingleton = false;
+        }
+
         public virtual void Init()
         {
             foreach (InternalBaseSystem system in _systems)
             {
-                system.Init(_graphicsDeviceManager);
+                system.RunInit();
             }
         }
 
@@ -361,7 +423,7 @@ namespace LuxEngine
         {
             foreach (InternalBaseSystem system in _systems)
             {
-                system.LoadContent(_graphicsDeviceManager.GraphicsDevice, _contentManager);
+                system.RunLoadContent();
             }
         }
 
@@ -369,7 +431,7 @@ namespace LuxEngine
         {
             foreach (InternalBaseSystem system in _systems)
             {
-                system.PreUpdate(gameTime);
+                system.RunPreUpdate(gameTime);
             }
         }
 
@@ -377,7 +439,7 @@ namespace LuxEngine
         {
             foreach (InternalBaseSystem system in _systems)
             {
-                system.Update(gameTime);
+                system.RunUpdate(gameTime);
             }
         }
 
@@ -385,7 +447,15 @@ namespace LuxEngine
         {
             foreach (InternalBaseSystem system in _systems)
             {
-                system.PostUpdate(gameTime);
+                system.RunPostUpdate(gameTime);
+            }
+        }
+
+        public virtual void PreDraw(GameTime gameTime)
+        {
+            foreach (InternalBaseSystem system in _systems)
+            {
+                system.RunPreDraw(gameTime);
             }
         }
 
@@ -393,7 +463,7 @@ namespace LuxEngine
         {
             foreach (InternalBaseSystem system in _systems)
             {
-                system.Draw(gameTime);
+                system.RunDraw(gameTime);
             }
         }
 

@@ -47,10 +47,13 @@ namespace LuxEngine
             signature.Require<InputSingleton>();
         }
 
-        public override void PreUpdate(GameTime gameTime)
+        protected override void InitSingleton()
         {
-            base.Update(gameTime);
+            World.AddSingletonComponent(new InputSingleton());
+        }
 
+        protected override void PreUpdate(GameTime gameTime)
+        {
             KeyboardState keyboard = Keyboard.GetState();
             //MouseState mouse = Mouse.GetState();
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
@@ -31,12 +33,14 @@ namespace LuxEngine
         /// </summary>
         protected override void Initialize()
         {
-            base.Initialize(); // calls LoadContent
+            _worlds.ForEach(x => x.InitSingleton());
             _worlds.ForEach(x => x.Init());
+            base.Initialize(); // calls LoadContent
         }
 
         /// <summary>
         /// Automatically called when your game launches to load any game assets (graphics, audio etc.)
+        /// In XNA (not in FNA, maybe in MonoGame) it's called on device reset.
         /// </summary>
         protected override void LoadContent()
         {
@@ -62,6 +66,7 @@ namespace LuxEngine
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
+            _worlds.ForEach(x => x.PreDraw(gameTime));
             _worlds.ForEach(x => x.Draw(gameTime));
 
             base.Draw(gameTime);

@@ -19,6 +19,17 @@ namespace LuxEngine
                 Debugger.Break();
             }
         }
+
+        [Conditional("DEBUG")]
+        public static void Log(string log)
+        {
+            Console.WriteLine(log);
+        }
+
+        public static bool IsBitSet(uint b, int pos)
+        {
+            return (b & (1 << pos)) != 0;
+        }
     }
 
     public enum LuxStatusCode

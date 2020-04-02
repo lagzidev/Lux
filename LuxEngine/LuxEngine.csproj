@@ -51,7 +51,6 @@
     <Compile Include="LuxGame.cs" />
     <Compile Include="Benchmark.cs" />
     <Compile Include="SparseSet.cs" />
-    <Compile Include="Utils\ResolutionUtils.cs" />
     <Compile Include="Systems.cs" />
     <Compile Include="Systems\CollisionTDSystem.cs" />
     <Compile Include="Systems\FontSystem.cs" />
@@ -62,9 +61,11 @@
     <Compile Include="Systems\RenderSystem.cs" />
     <Compile Include="Systems\ResolutionSystem.cs" />
     <Compile Include="Systems\SaveSystem.cs" />
-    <Compile Include="Systems\SpriteLoaderSystem.cs" />
+    <Compile Include="Systems\TextureLoaderSystem.cs" />
     <Compile Include="Pipeline\TextureLoader.cs" />
     <Compile Include="Systems\PlayerControllerTDSystem.cs" />
+    <Compile Include="Pipeline\Asperite.cs" />
+    <Compile Include="Systems\AnimationSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
@@ -84,11 +85,21 @@
   <ItemGroup>
     <Reference Include="System.Xml" />
     <Reference Include="System" />
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\Haven with Lux\packages\protobuf-net.2.4.4\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Haven with Lux\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md">
       <Link>README.md</Link>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\build\CopyFNALibs.targets" />

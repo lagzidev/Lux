@@ -18,12 +18,21 @@ namespace LuxEngine
         /// </summary>
         public static void SetComponentType()
         {
-            // If component type not already set
-            if (ComponentType == -1)
+            // If component type already set
+            if (ComponentType != -1)
             {
-                ComponentType = ComponentTypesCount;
-                ComponentTypesCount++;
+                return;
             }
+
+            // If there are too many component types
+            if (ComponentTypesCount >= HardCodedConfig.MAX_GAME_COMPONENT_TYPES)
+            {
+                LuxCommon.Assert(false);
+                return;
+            }
+
+            ComponentType = ComponentTypesCount;
+            ComponentTypesCount++;
         }
     }
 }

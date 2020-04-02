@@ -12,19 +12,82 @@ namespace LuxEngine
     /// </summary>
     public class SystemSignature
     {
-        public ComponentMask ComponentMask { get; private set; }
+        public readonly ComponentMask ComponentMask;
+        public readonly ComponentMask SingletonComponentMask;
+        public bool SingletonMatches { get; private set; }
+
+        /// <summary>
+        /// A reference to the system that owns this signature.
+        /// The reason for this backwards behaviour is to simplify the signature
+        /// setting for the user, so that they could simply signature.Require<T>()
+        /// </summary>
         private readonly InternalBaseSystem _system;
 
         public SystemSignature(InternalBaseSystem system)
         {
             ComponentMask = new ComponentMask();
+            SingletonComponentMask = new ComponentMask();
+            SingletonMatches = true;
+
             _system = system;
         }
 
+        /// <summary>
+        /// Registers the component to the world so that the system could use it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void Optional<T>() where T : BaseComponent<T>
+        {
+            _system.World.RegisterComponent<T>();
+        }
+
+        /// <summary>
+        /// Requires any registered entities to have the given component.
+        /// This registers the component to the world and adds it to the
+        /// system's component mask.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public void Require<T>() where T : BaseComponent<T>
         {
             _system.World.RegisterComponent<T>();
             ComponentMask.AddComponent<T>();
+        }
+
+        /// <summary>
+        /// Requires the singleton component to be present for the system to
+        /// function. IMPORTANT: Whenever the required singleton component doesn't
+        /// exist the system won't run.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void RequireSingleton<T>() where T : BaseComponent<T>
+        {
+            _system.World.RegisterComponent<T>();
+
+            // At this stage there aren't any components created, so this is false for sure
+            SingletonMatches = false;
+            SingletonComponentMask.AddComponent<T>();
+        }
+
+        /// <summary>
+        /// Determines whether a component mask matches the system.
+        /// </summary>
+        /// <param name="componentMask">Component mask to check if contained in the system</param>
+        /// <returns>
+        /// <c>true</c> if component mask matches the system,
+        /// <c>false otherwise</c>
+        /// </returns>
+        public bool Matches(ComponentMask componentMask)
+        {
+            return componentMask.Contains(ComponentMask);
+        }
+
+        /// <summary>
+        /// Sets whether the singleton component mask matches the system.
+        /// </summary>
+        /// <param name="singletonComponentMask">Singleton entity's component mask</param>
+        public void SetSingletonMatch(ComponentMask singletonComponentMask)
+        {
+            SingletonMatches = singletonComponentMask.Contains(SingletonComponentMask);
         }
     }
 
@@ -43,33 +106,33 @@ namespace LuxEngine
 
     public abstract class InternalBaseSystem
     {
-        public World World { get; set; }
-        public readonly HashSet<Entity> RegisteredEntities;
-
         private readonly SystemSignature _signature;
 
-        /// <summary>
-        /// A string defining the components the system requires.
-        /// Pass an empty array if no types are required.
-        /// </summary>
-        /// <returns>A list of component types the system requires</returns>
-        //public SystemSignature Signature = new SystemSignature()
+        public World World { get; set; }
+        public readonly HashSet<Entity> RegisteredEntities;
+        public bool IsReadyToLoadContent;
 
-        /// <param name="requiredComponentTypes">
-        /// Specifies which components are required for the entities this
-        /// system operates on.
-        /// </param>
         public InternalBaseSystem()
         {
-            World = null;
-            //ComponentMask = new ComponentMask(Array.ConvertAll<Type, int>(GetRequiredComponents, x => x));
-            RegisteredEntities = new HashSet<Entity>();
             _signature = new SystemSignature(this);
+
+            World = null;
+            RegisteredEntities = new HashSet<Entity>();
+            IsReadyToLoadContent = false;
         }
 
         public void ApplySignature()
         {
             SetSignature(_signature);
+        }
+
+        /// <summary>
+        /// The system is disabled if the singleton component mask doesn't match.
+        /// </summary>
+        /// <param name="singletonComponentMask">Singleton entity's component mask</param>
+        public void UpdateSingleton(ComponentMask singletonComponentMask)
+        {
+            _signature.SetSingletonMatch(singletonComponentMask);
         }
 
         /// <summary>
@@ -80,9 +143,17 @@ namespace LuxEngine
         /// <param name="componentMask">The entity's component mask</param>
         public void UpdateEntity(Entity entity, ComponentMask componentMask)
         {
-            if (Matches(componentMask))
+            if (_signature.Matches(componentMask))
             {
-                RegisterEntity(entity);
+                // Register entity if doesn't already exist in set
+                if (RegisteredEntities.Contains(entity))
+                {
+                    return;
+                }
+
+                RunOnRegisterEntity(entity);
+
+                RegisteredEntities.Add(entity);
             }
             else
             {
@@ -90,45 +161,15 @@ namespace LuxEngine
             }
         }
 
-        /// <summary>
-        /// Checks if a component mask matches a system's signature.
-        /// </summary>
-        /// <param name="componentMask">An entity's component mask</param>
-        /// <returns>
-        /// <c>true</c> if the entity matches the system's signature,
-        /// <c>false</c> otherwise.
-        /// </returns>
-        private bool Matches(ComponentMask componentMask)
-        {
-            return componentMask.Contains(_signature.ComponentMask);
-        }
-
-        /// <summary>
-        /// Unregisters an entity from the system.
-        /// </summary>
-        /// <param name="entity"></param>
         private void UnregisterEntity(Entity entity)
         {
-            // If entity is found and removed from system, call the handler
+            // Unregister entity if exists in set
             if (RegisteredEntities.Remove(entity))
-            {
-                OnUnregisterEntity(entity);
-            }
-        }
-
-        /// <summary>
-        /// Registers an entity to the system. Does nothing if already registered.
-        /// </summary>
-        /// <param name="entity">Entity that was registered</param>
-        private void RegisterEntity(Entity entity)
-        {
-            if (RegisteredEntities.Contains(entity))
             {
                 return;
             }
 
-            OnRegisterEntity(entity);
-            RegisteredEntities.Add(entity);
+            RunOnUnregisterEntity(entity);
         }
 
         /// <summary>
@@ -136,7 +177,7 @@ namespace LuxEngine
         /// components the system needs. Only entities that match the system's
         /// signature will be registered to the system.
         /// </summary>
-        /// <param name="signature">Signature to define</param>
+        /// <param name="signature">System's signature to mutate</param>
         protected abstract void SetSignature(SystemSignature signature);
 
         #region Handlers
@@ -145,25 +186,48 @@ namespace LuxEngine
         /// Called before an entity is registered to the system.
         /// </summary>
         /// <param name="entity">Entity to unregister</param>
-        protected void OnRegisterEntity(Entity entity)
+        protected virtual void OnRegisterEntity(Entity entity) { }
+        protected void RunOnRegisterEntity(Entity entity)
         {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            OnRegisterEntity(entity);
         }
+
 
         /// <summary>
         /// Called after an entity is unregistered from the system.
         /// </summary>
         /// <param name="entity"></param>
-        protected virtual void OnUnregisterEntity(Entity entity)
+        protected virtual void OnUnregisterEntity(Entity entity) { }
+        protected void RunOnUnregisterEntity(Entity entity)
         {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            OnUnregisterEntity(entity);
         }
 
         /// <summary>
         /// Called before an entity in the world is destroyed.
         /// </summary>
         /// <param name="entity">The entity that is about to be destroyed.</param>
-        public virtual void OnDestroyEntity(Entity entity)
+        protected virtual void OnDestroyEntity(Entity entity) { }
+        public void RunOnDestroyEntity(Entity entity)
         {
             UnregisterEntity(entity);
+
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            OnDestroyEntity(entity);
         }
 
         #endregion
@@ -171,37 +235,130 @@ namespace LuxEngine
         #region Phases
 
         /// <summary>
+        /// Singleton components should be added here (and not in Init).
+        /// This phase runs regardless of if the signature matches.
+        /// </summary>
+        protected virtual void InitSingleton() { }
+        public void RunInitSingleton()
+        {
+            if (World == null)
+            {
+                LuxCommon.Assert(false);
+                return;
+            }
+
+            InitSingleton();
+        }
+
+        /// <summary>
         /// Automatically called when the game launches to initialize any non-graphic variables.
         /// </summary>
-        public virtual void Init(GraphicsDeviceManager graphicsDeviceManager)
+        protected virtual void Init() { }
+        public void RunInit()
         {
-            LuxCommon.Assert(World != null);
+            if (World == null)
+            {
+                LuxCommon.Assert(false);
+                return;
+            }
+
+            //UpdateSingleton(World.GetSingletonMask()); // TODO Make GetSingletonMAsk private??
+
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            Init();
         }
 
         /// <summary>
         /// Automatically called when the game launches to load any game assets (graphics, audio etc.)
         /// </summary>
-        public virtual void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager)
+        protected virtual void LoadContent() { }
+        public void RunLoadContent()
         {
+            IsReadyToLoadContent = true;
+
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            LoadContent();
         }
 
-        public virtual void PreUpdate(GameTime gameTime)
+        /// <summary>
+        /// Called before Update
+        /// </summary>
+        /// <param name="gameTime"></param>
+        protected virtual void PreUpdate(GameTime gameTime) { }
+        public void RunPreUpdate(GameTime gameTime)
         {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            PreUpdate(gameTime);
         }
 
-        public virtual void Update(GameTime gameTime)
+        /// <summary>
+        /// Called each frame to update the game.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        protected virtual void Update(GameTime gameTime) { }
+        public void RunUpdate(GameTime gameTime)
         {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            Update(gameTime);
         }
 
-        public virtual void PostUpdate(GameTime gameTime)
+        /// <summary>
+        /// Called after Update
+        /// </summary>
+        /// <param name="gameTime"></param>
+        protected virtual void PostUpdate(GameTime gameTime) { }
+        public void RunPostUpdate(GameTime gameTime)
         {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            PostUpdate(gameTime);
         }
 
         /// <summary>
         /// This is called every frame when the game is ready to draw to the screen.
         /// </summary>
-        public virtual void Draw(GameTime gameTime)
+        protected virtual void PreDraw(GameTime gameTime) { }
+        public void RunPreDraw(GameTime gameTime)
         {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            PreDraw(gameTime);
+        }
+
+        /// <summary>
+        /// This is called every frame when the game is ready to draw to the screen.
+        /// </summary>
+        protected virtual void Draw(GameTime gameTime) { }
+        public void RunDraw(GameTime gameTime)
+        {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            Draw(gameTime);
         }
 
         #endregion

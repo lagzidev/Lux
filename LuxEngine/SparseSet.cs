@@ -81,7 +81,7 @@ namespace LuxEngine
 
         /// <summary>
         /// Adds the given value.
-        /// If the value already exists in the set it will be ignored.
+        /// If the value already exists in the set it will be overriden.
         /// Fails silently if key is outside the valid range.
         /// </summary>
         /// <param name="key">The key of the corresponding value to add</param>
@@ -98,8 +98,8 @@ namespace LuxEngine
 
             if (Contains(key))
             {
+                // Warn the dev that a component is being overriden
                 LuxCommon.Assert(false);
-                return;
             }
 
             // Insert new value in the dense array
