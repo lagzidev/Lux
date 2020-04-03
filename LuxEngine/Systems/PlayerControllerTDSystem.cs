@@ -13,13 +13,17 @@ namespace LuxEngine
         }
     }
 
-    public class Speed : BaseComponent<Speed>
+    public class Moveable : BaseComponent<Moveable>
     {
-        public float Value;
+        public Vector2 MaxSpeed;
+        public Vector2 Velocity;
+        public Vector2 Direction;
 
-        public Speed(int speed)
+        public Moveable(Vector2 maxSpeed)
         {
-            Value = speed;
+            MaxSpeed = maxSpeed;
+            Velocity = Vector2.Zero;
+            Direction = Vector2.Zero;
         }
     }
 
@@ -33,7 +37,7 @@ namespace LuxEngine
             signature.Require<PlayerControlledTD>();
             signature.Require<Transform>();
             signature.Require<Sprite>();
-            signature.Require<Speed>();
+            signature.Require<Moveable>();
             signature.RequireSingleton<InputSingleton>();
         }
 
@@ -44,24 +48,34 @@ namespace LuxEngine
             foreach (var entity in RegisteredEntities)
             {
                 var transform = World.Unpack<Transform>(entity);
-                var speed = World.Unpack<Speed>(entity);
+                var moveable = World.Unpack<Moveable>(entity);
+
+                moveable.Velocity = Vector2.Zero;
 
                 if (input.Up)
                 {
-                    transform.Y -= speed.Value;
+                    moveable.Velocity.Y = -1;
+                    moveable.Direction = new Vector2(0, -1);
+                    transform.Y -= moveable.MaxSpeed.Y;
                 }
                 else if (input.Down)
                 {
-                    transform.Y += speed.Value;
+                    moveable.Velocity.Y = 1;
+                    moveable.Direction = new Vector2(0, 1);
+                    transform.Y += moveable.MaxSpeed.Y;
                 }
 
                 if (input.Right)
                 {
-                    transform.X += speed.Value;
+                    moveable.Velocity.X = 1;
+                    moveable.Direction = new Vector2(1, 0);
+                    transform.X += moveable.MaxSpeed.X;
                 }
                 else if (input.Left)
                 {
-                    transform.X -= speed.Value;
+                    moveable.Velocity.X = -1;
+                    moveable.Direction = new Vector2(-1, 0);
+                    transform.X -= moveable.MaxSpeed.X;
                 }
             }
         }
@@ -84,57 +98,54 @@ namespace LuxEngine
 
         protected override void PreDraw(GameTime gameTime)
         {
-            var input = World.UnpackSingleton<InputSingleton>();
-
             foreach (var entity in RegisteredEntities)
             {
                 var sprite = World.Unpack<Sprite>(entity);
-                bool moving = false;
+                var moveable = World.Unpack<Moveable>(entity);
 
-                if (input.Up)
-                {
-                    SetAnimation(sprite, "WalkUp");
-                    moving = true;
-                }
-                else if (input.Down)
-                {
-                    SetAnimation(sprite, "WalkDown");
-                    moving = true;
-                }
+                // Walking animations
 
-                if (input.Right)
+                if (moveable.Velocity.X == 0)
+                {
+                    if (moveable.Velocity.Y < 0)
+                    {
+                        SetAnimation(sprite, "WalkUp");
+                    }
+                    else if (moveable.Velocity.Y > 0)
+                    {
+                        SetAnimation(sprite, "WalkDown");
+                    }
+                }
+                else if (moveable.Velocity.X > 0)
                 {
                     SetAnimation(sprite, "WalkRight");
-                    moving = true;
                 }
-                else if (input.Left)
+                else if (moveable.Velocity.X < 0)
                 {
                     SetAnimation(sprite, "WalkLeft");
-                    moving = true;
                 }
 
-                if (!moving)
+                // Idle animations
+                if (moveable.Velocity.X == 0 && moveable.Velocity.Y == 0)
                 {
-                    switch (sprite.CurrentAnimationName)
+                    if (moveable.Direction.X == 0)
                     {
-                        case "WalkUp":
+                        if (moveable.Direction.Y < 0)
+                        {
                             SetAnimation(sprite, "IdleUp");
-                            break;
-
-                        case "WalkDown":
+                        }
+                        else if (moveable.Direction.Y > 0)
+                        {
                             SetAnimation(sprite, "IdleDown");
-                            break;
-
-                        case "WalkRight":
-                            SetAnimation(sprite, "IdleRight");
-                            break;
-
-                        case "WalkLeft":
-                            SetAnimation(sprite, "IdleLeft");
-                            break;
-
-                        default:
-                            break;
+                        }
+                    }
+                    else if (moveable.Direction.X > 0)
+                    {
+                        SetAnimation(sprite, "IdleRight");
+                    }
+                    else if (moveable.Direction.X < 0)
+                    {
+                        SetAnimation(sprite, "IdleLeft");
                     }
                 }
             }
