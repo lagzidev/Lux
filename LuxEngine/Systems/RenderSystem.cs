@@ -16,40 +16,53 @@ namespace LuxEngine
         }
     }
 
+    public class SpriteBatchSingleton : BaseComponent<SpriteBatchSingleton>
+    {
+        public SpriteBatch SpriteBatch;
+
+        public SpriteBatchSingleton(GraphicsDevice graphicsDevice)
+        {
+            SpriteBatch = new SpriteBatch(graphicsDevice);
+        }
+    }
+
     public class RenderSystem : BaseSystem<RenderSystem>
     {
-        SpriteBatch _spriteBatch;
-
         protected override void SetSignature(SystemSignature signature)
         {
             signature.Require<Transform>();
             signature.Require<Sprite>();
+            signature.RequireSingleton<SpriteBatchSingleton>();
             signature.RequireSingleton<LoadedTexturesSingleton>();
             signature.RequireSingleton<ScaleMatrixSingleton>();
         }
         // TODO: Assert if using an optional without setting signature.Optional
 
-        protected override void LoadContent()
+        protected override void InitSingleton()
         {
-            _spriteBatch = new SpriteBatch(World.GraphicsDeviceManager.GraphicsDevice);
+            World.AddSingletonComponent(new SpriteBatchSingleton(
+                World.GraphicsDeviceManager.GraphicsDevice));
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void PreDraw(GameTime gameTime)
         {
             World.GraphicsDeviceManager.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             var scaleMatrix = World.UnpackSingleton<ScaleMatrixSingleton>().Matrix;
+            var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
 
-            _spriteBatch.Begin(
+            spriteBatch.Begin(
                 SpriteSortMode.BackToFront,
                 BlendState.AlphaBlend,
                 SamplerState.PointClamp,
                 DepthStencilState.Default,
                 RasterizerState.CullNone,
                 null,
-                scaleMatrix);
-                // , Camera.GetTransformMatrix() // Black bars?
+                scaleMatrix); // Camera.GetTransformMatrix() // todo: Black bars?
+        }
 
+        protected override void Draw(GameTime gameTime)
+        {
             // Get loaded textures
             var loadedTextures = World.UnpackSingleton<LoadedTexturesSingleton>();
 
@@ -73,7 +86,10 @@ namespace LuxEngine
 
                 LuxCommon.Assert(currentAnimationFrame.Scale != Vector2.Zero);
 
-                _spriteBatch.Draw(
+                // Draw to sprite batch
+                var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
+
+                spriteBatch.Draw(
                     loadedTextures.Textures[sprite.TextureName],
                     new Vector2(transformX, transformY),
                     new Rectangle(
@@ -88,8 +104,12 @@ namespace LuxEngine
                     currentAnimationFrame.SpriteEffects,
                     0.8f);
             }
+        }
 
-            _spriteBatch.End();
+        protected override void PostDraw(GameTime gameTime)
+        {
+            var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
+            spriteBatch.End();
         }
     }
 }

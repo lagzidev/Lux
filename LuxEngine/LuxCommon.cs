@@ -25,11 +25,6 @@ namespace LuxEngine
         {
             Console.WriteLine(log);
         }
-
-        public static bool IsBitSet(uint b, int pos)
-        {
-            return (b & (1 << pos)) != 0;
-        }
     }
 
     public enum LuxStatusCode

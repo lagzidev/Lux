@@ -53,7 +53,7 @@ namespace LuxEngine
                 1f);
         }
 
-        protected override void PreDraw(GameTime gameTime)
+        protected override void PrePreDraw(GameTime gameTime)
         {
             if (RegisteredEntities.Count > 1) return;
 

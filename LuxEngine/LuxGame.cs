@@ -18,6 +18,7 @@ namespace LuxEngine
             _worlds = new List<World>();
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = @"Content";
+            //Window.AllowUserResizing = true; // TODO: Consider allowing this
         }
 
         public World CreateWorld()
@@ -66,8 +67,10 @@ namespace LuxEngine
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
+            _worlds.ForEach(x => x.PrePreDraw(gameTime));
             _worlds.ForEach(x => x.PreDraw(gameTime));
             _worlds.ForEach(x => x.Draw(gameTime));
+            _worlds.ForEach(x => x.PostDraw(gameTime));
 
             base.Draw(gameTime);
         }

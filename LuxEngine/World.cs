@@ -451,6 +451,14 @@ namespace LuxEngine
             }
         }
 
+        public virtual void PrePreDraw(GameTime gameTime)
+        {
+            foreach (InternalBaseSystem system in _systems)
+            {
+                system.RunPrePreDraw(gameTime);
+            }
+        }
+
         public virtual void PreDraw(GameTime gameTime)
         {
             foreach (InternalBaseSystem system in _systems)
@@ -464,6 +472,14 @@ namespace LuxEngine
             foreach (InternalBaseSystem system in _systems)
             {
                 system.RunDraw(gameTime);
+            }
+        }
+
+        public virtual void PostDraw(GameTime gameTime)
+        {
+            foreach (InternalBaseSystem system in _systems)
+            {
+                system.RunPostDraw(gameTime);
             }
         }
 

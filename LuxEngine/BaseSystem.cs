@@ -336,6 +336,20 @@ namespace LuxEngine
         /// <summary>
         /// This is called every frame when the game is ready to draw to the screen.
         /// </summary>
+        protected virtual void PrePreDraw(GameTime gameTime) { }
+        public void RunPrePreDraw(GameTime gameTime)
+        {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            PrePreDraw(gameTime);
+        }
+
+        /// <summary>
+        /// This is called every frame when the game is ready to draw to the screen.
+        /// </summary>
         protected virtual void PreDraw(GameTime gameTime) { }
         public void RunPreDraw(GameTime gameTime)
         {
@@ -359,6 +373,20 @@ namespace LuxEngine
             }
 
             Draw(gameTime);
+        }
+
+        /// <summary>
+        /// This is called after Draw
+        /// </summary>
+        protected virtual void PostDraw(GameTime gameTime) { }
+        public void RunPostDraw(GameTime gameTime)
+        {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            PostDraw(gameTime);
         }
 
         #endregion

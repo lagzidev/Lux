@@ -64,7 +64,6 @@
     <Compile Include="Systems\TextureLoaderSystem.cs" />
     <Compile Include="Pipeline\TextureLoader.cs" />
     <Compile Include="Systems\PlayerControllerTDSystem.cs" />
-    <Compile Include="Pipeline\Asperite.cs" />
     <Compile Include="Systems\AnimationSystem.cs" />
     <Compile Include="Systems\SpriteLoaderSystem.cs" />
   </ItemGroup>
@@ -78,22 +77,13 @@
     <Folder Include="Systems\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\lib\FNA\FNA.csproj">
-      <Project>{35253CE1-C864-4CD3-8249-4D1319748E8F}</Project>
-      <Name>FNA</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System.Xml" />
     <Reference Include="System" />
-    <Reference Include="protobuf-net">
-      <HintPath>..\..\Haven with Lux\packages\protobuf-net.2.4.4\lib\net40\protobuf-net.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\Haven with Lux\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +91,12 @@
       <Link>README.md</Link>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\FNA\FNA.csproj">
+      <Project>{35253CE1-C864-4CD3-8249-4D1319748E8F}</Project>
+      <Name>FNA</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\build\CopyFNALibs.targets" />

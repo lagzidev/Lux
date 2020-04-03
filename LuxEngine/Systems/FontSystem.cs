@@ -1,71 +1,81 @@
-﻿//using System;
-//using System.IO;
-//using Microsoft.Xna.Framework;
-//using Microsoft.Xna.Framework.Content;
-//using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using SpriteFontPlus;
+using System.Text;
 
-//namespace LuxEngine
-//{
-//    [Serializable]
-//    public class Text : BaseComponent<Text>
-//    {
-//        public string TextStr;
+namespace LuxEngine
+{
+    [Serializable]
+    public class Text : BaseComponent<Text>
+    {
+        public string TextStr;
+        public string FontName;
+        public int FontSize;
+        public Color Color;
 
-//        public Text(string text)
-//        {
-//            TextStr = text;
-//        }
-//    }
+        public Text(string text, string fontName, int fontSize, Color color)
+        {
+            FontName = fontName;
+            FontSize = fontSize;
+            TextStr = text;
+            Color = color;
+        }
+    }
 
-//    [Serializable]
-//    public class FontSingleton : BaseComponent<FontSingleton>
-//    {
-//        public string FontDescriptorFile;
-//        public string TexturePNGFile;
+    [Serializable]
+    public class FontSingleton : BaseComponent<FontSingleton>
+    {
+        [NonSerialized]
+        public Dictionary<string, DynamicSpriteFont> Fonts;
 
-//        public FontSingleton(string fontDescriptorFile, string texturePNGFile)
-//        {
-//            FontDescriptorFile = fontDescriptorFile;
-//            TexturePNGFile = texturePNGFile;
-//        }
-//    }
+        public FontSingleton()
+        {
+            Fonts = new Dictionary<string, DynamicSpriteFont>();
+        }
+    }
 
-//    public class FontSystem : BaseSystem<FontSystem>
-//    {
-//        private FontRenderer _fontRenderer;
+    public class FontSystem : BaseSystem<FontSystem>
+    {
+        protected override void SetSignature(SystemSignature signature)
+        {
+            signature.Require<Text>();
+            signature.Require<Transform>();
+            signature.RequireSingleton<FontSingleton>();
+        }
 
-//        public void Draw(String message, Vector2 pos, SpriteBatch _spriteBatch)
-//        {
-//            _fontRenderer.DrawText(_spriteBatch, (int)pos.X, (int)pos.Y, message);
-//        }
+        protected override void InitSingleton()
+        {
+            World.AddSingletonComponent(new FontSingleton());
+        }
 
-//        public override Type[] GetRequiredComponents()
-//        {
-//            return new Type[]
-//            {
-//                typeof(Text)
-//            };
-//        }
+        protected override void OnRegisterEntity(Entity entity)
+        {
+            var fonts = World.UnpackSingleton<FontSingleton>();
+            var text = World.Unpack<Text>(entity);
 
-//        public override void LoadContent(GraphicsDevice graphicsDevice, ContentManager contentManager)
-//        {
-//            base.LoadContent(graphicsDevice, contentManager);
+            using (var stream = File.OpenRead($"Fonts/{text.FontName}"))
+            {
+                DynamicSpriteFont font = DynamicSpriteFont.FromTtf(stream, text.FontSize);
+                fonts.Fonts.Add(text.FontName, font);
+            }
+        }
 
-//            var font = World.Unpack<FontSingleton>(World.SingletonEntity);
+        protected override void Draw(GameTime gameTime)
+        {
+            var fonts = World.UnpackSingleton<FontSingleton>();
+            var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
 
-//            string fontFilePath = Path.Combine(contentManager.RootDirectory, font.FontDescriptorFile);
-//            Texture2D fontTexture = contentManager.Load<Texture2D>(font.TexturePNGFile);
-//            FontFile fontFile = FontLoader.Load(fontFilePath);
+            foreach (var entity in RegisteredEntities)
+            {
+                var text = World.Unpack<Text>(entity);
+                var transform = World.Unpack<Transform>(entity);
 
-//            _fontRenderer = new FontRenderer(fontFile, fontTexture);
-//        }
-
-//        public override void Draw(GameTime gameTime)
-//        {
-//            base.Draw(gameTime);
-
-//            // TODO: Maybe extract drawing logic from .DrawText and onto RenderSystem?
-//            //_fontRenderer.DrawText()
-//        }
-//    }
-//}
+                fonts.Fonts[text.FontName].DrawString(spriteBatch, text.TextStr, new Vector2(transform.X, transform.Y), text.Color);
+            }
+        }
+    }
+}
