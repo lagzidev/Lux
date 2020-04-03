@@ -41,6 +41,7 @@ namespace LuxEngine
         public SpriteData SpriteData;
         public string CurrentAnimationName;
         public int CurrentAnimationFrame;
+        public int CurrentTimeInFrameMs;
 
         public Sprite(string textureName)
         {

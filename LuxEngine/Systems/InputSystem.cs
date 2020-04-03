@@ -12,10 +12,15 @@ namespace LuxEngine
         public bool Right;
         public bool Left;
 
+        public bool UpKeyPressed;
+        public bool DownKeyPressed;
+        public bool RightKeyPressed;
+        public bool LeftKeyPressed;
+
         public bool F4KeyPress;
         public bool F4;
 
-        public bool F5KeyUp;
+        public bool F5KeyReleased;
         public bool F5;
 
         public bool F6;
@@ -30,7 +35,7 @@ namespace LuxEngine
             F4KeyPress = false;
             F4 = false;
 
-            F5KeyUp = false;
+            F5KeyReleased = false;
             F5 = false;
 
             F6 = false;
@@ -61,19 +66,34 @@ namespace LuxEngine
             {
                 var input = World.Unpack<InputSingleton>(entity);
 
+                input.UpKeyPressed = KeyPressed(input.Up, keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up));
+                input.DownKeyPressed = KeyPressed(input.Down, keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down));
+                input.RightKeyPressed = KeyPressed(input.Right, keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right));
+                input.LeftKeyPressed = KeyPressed(input.Left, keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left));
+
                 input.Up = keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up);
                 input.Down = keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down);
                 input.Right = keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right);
                 input.Left = keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left);
 
-                input.F4KeyPress = !input.F4 && keyboard.IsKeyDown(Keys.F4);
+                input.F4KeyPress = KeyPressed(input.F4, keyboard.IsKeyDown(Keys.F4));
                 input.F4 = keyboard.IsKeyDown(Keys.F4);
 
-                input.F5KeyUp = input.F5 && keyboard.IsKeyUp(Keys.F5);
+                input.F5KeyReleased = KeyReleased(input.F5, keyboard.IsKeyDown(Keys.F5));
                 input.F5 = keyboard.IsKeyDown(Keys.F5);
 
                 input.F6 = keyboard.IsKeyDown(Keys.F6);
             }
+        }
+
+        private bool KeyPressed(bool wasHeldLastUpdate, bool isHeldNow)
+        {
+            return !wasHeldLastUpdate && isHeldNow;
+        }
+
+        private bool KeyReleased(bool wasHeldLastUpdate, bool isHeldNow)
+        {
+            return wasHeldLastUpdate && !isHeldNow;
         }
 
         ///// <summary>

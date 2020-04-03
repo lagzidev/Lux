@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -67,7 +68,7 @@ namespace LuxEngine
                     transformY += parentTransform.Y;
                 }
 
-                var currentAnimation = sprite.SpriteData.Animations[sprite.CurrentAnimationName];
+                Animation currentAnimation = sprite.SpriteData.Animations[sprite.CurrentAnimationName];
                 var currentAnimationFrame = currentAnimation.Frames[sprite.CurrentAnimationFrame];
 
                 LuxCommon.Assert(currentAnimationFrame.Scale != Vector2.Zero);
@@ -75,7 +76,11 @@ namespace LuxEngine
                 _spriteBatch.Draw(
                     loadedTextures.Textures[sprite.TextureName],
                     new Vector2(transformX, transformY),
-                    new Rectangle(0, 0, currentAnimationFrame.Width, currentAnimationFrame.Height),
+                    new Rectangle(
+                        currentAnimationFrame.TexturePositionX,
+                        currentAnimationFrame.TexturePositionY,
+                        currentAnimationFrame.Width,
+                        currentAnimationFrame.Height),
                     currentAnimationFrame.Color,
                     currentAnimationFrame.Rotation,
                     Vector2.Zero,
