@@ -23,7 +23,6 @@ namespace LuxEngine
         {
             signature.Require<Transform>();
             signature.Require<Sprite>();
-            signature.Require<SpriteTexture>();
             signature.RequireSingleton<LoadedTexturesSingleton>();
             signature.RequireSingleton<ScaleMatrixSingleton>();
         }
@@ -56,7 +55,6 @@ namespace LuxEngine
             foreach (var entity in RegisteredEntities)
             {
                 var sprite = World.Unpack<Sprite>(entity);
-                var spriteTexture = World.Unpack<SpriteTexture>(entity);
                 var transform = World.Unpack<Transform>(entity);
 
                 float transformX = transform.X;
@@ -69,18 +67,20 @@ namespace LuxEngine
                     transformY += parentTransform.Y;
                 }
 
-                // If the scale is zero the sprite won't show, prevent that
-                if (sprite.Scale == Vector2.Zero) sprite.Scale = Vector2.One;
+                var currentAnimation = sprite.SpriteData.Animations[sprite.CurrentAnimationName];
+                var currentAnimationFrame = currentAnimation.Frames[sprite.CurrentAnimationFrame];
+
+                LuxCommon.Assert(currentAnimationFrame.Scale != Vector2.Zero);
 
                 _spriteBatch.Draw(
-                    loadedTextures.Textures[spriteTexture.TextureName],
+                    loadedTextures.Textures[sprite.TextureName],
                     new Vector2(transformX, transformY),
-                    new Rectangle(0, 0, sprite.Width, sprite.Height),
-                    sprite.Color,
-                    sprite.Rotation,
+                    new Rectangle(0, 0, currentAnimationFrame.Width, currentAnimationFrame.Height),
+                    currentAnimationFrame.Color,
+                    currentAnimationFrame.Rotation,
                     Vector2.Zero,
-                    sprite.Scale,
-                    sprite.SpriteEffects,
+                    currentAnimationFrame.Scale,
+                    currentAnimationFrame.SpriteEffects,
                     0.8f);
             }
 

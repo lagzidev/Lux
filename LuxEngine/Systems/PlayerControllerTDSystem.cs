@@ -21,7 +21,7 @@ namespace LuxEngine
         {
             signature.Require<PlayerControlledTD>();
             signature.Require<Transform>();
-            signature.Optional<Animation>();
+            signature.Require<Sprite>();
         }
 
         protected override void Update(GameTime gameTime)
@@ -31,28 +31,28 @@ namespace LuxEngine
             foreach (var entity in RegisteredEntities)
             {
                 var transform = World.Unpack<Transform>(entity);
-                var animationExists = World.TryUnpack(entity, out Animation animation);
+                var sprite = World.Unpack<Sprite>(entity);
 
                 if (input.Up)
                 {
                     transform.Y -= 1;
-                    if (animationExists) animation.CurrentAnimation = "WalkUp";
+                    sprite.CurrentAnimationName = "WalkUp";
                 }
                 else if (input.Down)
                 {
                     transform.Y += 1;
-                    if (animationExists) animation.CurrentAnimation = "WalkDown";
+                    sprite.CurrentAnimationName = "WalkDown";
                 }
 
                 if (input.Right)
                 {
                     transform.X += 1;
-                    if (animationExists) animation.CurrentAnimation = "WalkRight";
+                    sprite.CurrentAnimationName = "WalkRight";
                 }
                 else if (input.Left)
                 {
                     transform.X -= 1;
-                    if (animationExists) animation.CurrentAnimation = "WalkLeft";
+                    sprite.CurrentAnimationName = "WalkLeft";
                 }
             }
         }

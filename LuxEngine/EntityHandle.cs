@@ -28,12 +28,12 @@ namespace LuxEngine
             World.RemoveComponent<T>(Entity);
         }
 
-        public T Unpack<T>()
+        public T Unpack<T>() where T : BaseComponent<T>
         {
             return World.Unpack<T>(Entity);
         }
 
-        public bool TryUnpack<T>(out T outComponent)
+        public bool TryUnpack<T>(out T outComponent) where T : BaseComponent<T>
         {
             return World.TryUnpack<T>(Entity, out outComponent);
         }

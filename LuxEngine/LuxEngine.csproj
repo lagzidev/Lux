@@ -66,6 +66,7 @@
     <Compile Include="Systems\PlayerControllerTDSystem.cs" />
     <Compile Include="Pipeline\Asperite.cs" />
     <Compile Include="Systems\AnimationSystem.cs" />
+    <Compile Include="Systems\SpriteLoaderSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

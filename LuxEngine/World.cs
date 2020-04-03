@@ -145,7 +145,7 @@ namespace LuxEngine
             _entityGenerator.DestroyEntity(entity);
         }
 
-        public bool TryUnpack<T>(Entity entity, out T outComponent)
+        public bool TryUnpack<T>(Entity entity, out T outComponent) where T : BaseComponent<T>
         {
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
             if (null == foundComponentManager)
@@ -166,12 +166,12 @@ namespace LuxEngine
             return true;
         }
 
-        public bool TryUnpackSingleton<T>(Entity entity, out T outComponent)
+        public bool TryUnpackSingleton<T>(out T outComponent) where T : BaseComponent<T>
         {
             return TryUnpack(_singletonEntity, out outComponent);
         }
 
-        public T Unpack<T>(Entity entity)
+        public T Unpack<T>(Entity entity) where T: BaseComponent<T>
         {
             T component;
             bool unpackSuccess = TryUnpack(entity, out component);
@@ -182,7 +182,7 @@ namespace LuxEngine
             return component;
         }
 
-        public T UnpackSingleton<T>()
+        public T UnpackSingleton<T>() where T : BaseComponent<T>
         {
             return Unpack<T>(_singletonEntity);
         }
