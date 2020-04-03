@@ -57,7 +57,7 @@ namespace LuxEngine
             var fonts = World.UnpackSingleton<FontSingleton>();
             var text = World.Unpack<Text>(entity);
 
-            using (var stream = File.OpenRead($"Fonts/{text.FontName}"))
+            using (var stream = File.OpenRead($"{World.ContentManager.RootDirectory}/Fonts/{text.FontName}"))
             {
                 DynamicSpriteFont font = DynamicSpriteFont.FromTtf(stream, text.FontSize);
                 fonts.Fonts.Add(text.FontName, font);
