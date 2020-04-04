@@ -67,6 +67,12 @@ namespace LuxEngine
                 return;
             }
 
+            // Textures that start with "_" are reserved for creation in game
+            if (textureName[0] == '_')
+            {
+                LuxCommon.Assert(false);
+            }
+
             var texturePath = $"{HardCodedConfig.DEFAULT_TEXTURES_FOLDER_NAME}/{textureName}.png";
             Texture2D textureObj = TextureLoader.Load(texturePath, World.ContentManager);
 

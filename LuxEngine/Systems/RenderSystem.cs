@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
-    public class ScaleMatrixSingleton : BaseComponent<ScaleMatrixSingleton>
-    {
-        public Matrix Matrix;
-
-        public ScaleMatrixSingleton()
-        {
-            Matrix = Matrix.Identity;
-        }
-    }
-
     public class SpriteBatchSingleton : BaseComponent<SpriteBatchSingleton>
     {
         public SpriteBatch SpriteBatch;
@@ -34,7 +22,8 @@ namespace LuxEngine
             signature.Require<Sprite>();
             signature.RequireSingleton<SpriteBatchSingleton>();
             signature.RequireSingleton<LoadedTexturesSingleton>();
-            signature.RequireSingleton<ScaleMatrixSingleton>();
+            signature.RequireSingleton<ResolutionSingleton>();
+            signature.Using<SpriteBatchSingleton>();
         }
         // TODO: Assert if using an optional without setting signature.Optional
 
@@ -44,12 +33,21 @@ namespace LuxEngine
                 World.GraphicsDeviceManager.GraphicsDevice));
         }
 
+        protected override void LoadContent()
+        {
+            var loadedTexturesSingleton = World.UnpackSingleton<LoadedTexturesSingleton>();
+
+            // Generate CornflowerBlue texture
+            var texture = new Texture2D(World.GraphicsDeviceManager.GraphicsDevice, 1, 1);
+            texture.SetData(new Color[] { Color.CornflowerBlue });
+            loadedTexturesSingleton.Textures.Add("_CornflowerBlue", texture);
+        } 
+
         protected override void PreDraw(GameTime gameTime)
         {
-            World.GraphicsDeviceManager.GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            var scaleMatrix = World.UnpackSingleton<ScaleMatrixSingleton>().Matrix;
             var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
+            var loadedTextures = World.UnpackSingleton<LoadedTexturesSingleton>();
+            var resolution = World.UnpackSingleton<ResolutionSingleton>();
 
             spriteBatch.Begin(
                 SpriteSortMode.BackToFront,
@@ -58,13 +56,29 @@ namespace LuxEngine
                 DepthStencilState.Default,
                 RasterizerState.CullNone,
                 null,
-                scaleMatrix); // Camera.GetTransformMatrix() // todo: Black bars?
+                resolution.ScaleMatrix); // Camera.GetTransformMatrix()
+
+            spriteBatch.Draw(
+                loadedTextures.Textures["_CornflowerBlue"],
+                new Vector2(0, 0),
+                new Rectangle(
+                    0,
+                    0,
+                    resolution.VWidth,
+                    resolution.VHeight),
+                Color.White,
+                0,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                DrawUtils.CalculateSpriteDepth(SpriteDepth.Wall));
         }
 
         protected override void Draw(GameTime gameTime)
         {
             // Get loaded textures
             var loadedTextures = World.UnpackSingleton<LoadedTexturesSingleton>();
+            var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
 
             foreach (var entity in RegisteredEntities)
             {
@@ -87,8 +101,6 @@ namespace LuxEngine
                 LuxCommon.Assert(currentAnimationFrame.Scale != Vector2.Zero);
 
                 // Draw to sprite batch
-                var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
-
                 spriteBatch.Draw(
                     loadedTextures.Textures[sprite.TextureName],
                     new Vector2(transformX, transformY),
@@ -102,7 +114,7 @@ namespace LuxEngine
                     Vector2.Zero,
                     currentAnimationFrame.Scale,
                     currentAnimationFrame.SpriteEffects,
-                    0.8f);
+                    DrawUtils.CalculateSpriteDepth(currentAnimationFrame.SpriteDepth));
             }
         }
 

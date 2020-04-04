@@ -6,50 +6,58 @@ using Microsoft.Xna.Framework.Graphics;
 namespace LuxEngine
 {
     [Serializable]
-    public class ResolutionSingleton : BaseComponent<ResolutionSingleton>
+    public class GameSettingsSingleton : BaseComponent<GameSettingsSingleton>
     {
-        public readonly int VWidth;
-        public readonly int VHeight;
-        public readonly int RequestedWidth;
-        public readonly int RequestedHeight;
-        public readonly bool FullScreen;
+        public int WindowScale;
+        public bool FullScreen;
 
-        public ResolutionSingleton(int virtualWidth, int virtualHeight, int windowWidth, int windowHeight, bool fullscreen)
+        public GameSettingsSingleton(int windowScale, bool fullscreen)
         {
-            VWidth = virtualWidth;
-            VHeight = virtualHeight;
-            RequestedWidth = windowWidth;
-            RequestedHeight = windowHeight;
+            WindowScale = windowScale;
             FullScreen = fullscreen;
         }
     }
 
+    [Serializable]
+    public class VirtualResolutionSingleton : BaseComponent<VirtualResolutionSingleton>
+    {
+        public Matrix ScaleMatrix;
+        public readonly int VWidth;
+        public readonly int VHeight;
+
+        public VirtualResolutionSingleton(int virtualWidth, int virtualHeight)
+        {
+            ScaleMatrix = Matrix.Identity;
+            VWidth = virtualWidth;
+            VHeight = virtualHeight;
+        }
+    }
+
+    /// <summary>
+    /// Sets the VirtualResolutionSingleton's ScaleMatrix and adjusts the game's
+    /// viewport based on the resolution, and sets the resolutionn
+    /// </summary>
     public class ResolutionSystem : BaseSystem<ResolutionSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
-            signature.Require<ResolutionSingleton>();
-            signature.Require<ScaleMatrixSingleton>();
-        }
-
-        protected override void InitSingleton()
-        {
-            World.AddSingletonComponent(new ScaleMatrixSingleton());
+            signature.Require<VirtualResolutionSingleton>();
+            signature.Require<GameSettingsSingleton>();
         }
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            var resolution = World.Unpack<ResolutionSingleton>(entity);
+            var virtualResolution = World.Unpack<VirtualResolutionSingleton>(entity);
+            var gameSettings = World.Unpack<GameSettingsSingleton>(entity);
 
             // Apply resolution and set new window size
-            ApplyResolutionSettings(World.GraphicsDeviceManager, resolution);
+            ApplyResolutionSettings(World.GraphicsDeviceManager, gameSettings);
 
-            var scaleMatrix = World.UnpackSingleton<ScaleMatrixSingleton>();
             var worldViewport = World.GraphicsDeviceManager.GraphicsDevice.Viewport;
 
-            scaleMatrix.Matrix = Matrix.CreateScale(
-                (float)worldViewport.Width / resolution.VWidth,
-                (float)worldViewport.Width / resolution.VWidth,
+            virtualResolution.ScaleMatrix = Matrix.CreateScale(
+                (float)worldViewport.Width / virtualResolution.VWidth,
+                (float)worldViewport.Width / virtualResolution.VWidth,
                 1f);
         }
 
@@ -75,9 +83,9 @@ namespace LuxEngine
             }
         }
 
-        private static Viewport GetVirtualViewport(ResolutionSingleton resolution)
+        private static Viewport GetVirtualViewport(GameSettingsSingleton gameSettings)
         {
-            float targetAspectRatio = GetVirtualAspectRatio(resolution);
+            float targetAspectRatio = GetVirtualAspectRatio(gameSettings);
 
             // Figure out the largest area that fits in this resolution at the desired aspect ratio
             int width = resolution.RequestedWidth;
@@ -105,9 +113,9 @@ namespace LuxEngine
             return viewport;
         }
 
-        private static float GetVirtualAspectRatio(ResolutionSingleton resolution)
+        private static float GetVirtualAspectRatio(int virtualWidth, int virtualHeight)
         {
-            return (float)resolution.VWidth / (float)resolution.VHeight;
+            return (float)virtualWidth / (float)virtualHeight;
         }
 
         private void ApplyResolutionSettings(GraphicsDeviceManager graphicsDeviceManager, ResolutionSingleton resolution)

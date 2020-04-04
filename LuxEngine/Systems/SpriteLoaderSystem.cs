@@ -16,12 +16,12 @@ namespace LuxEngine
     /// </summary>
     public enum SpriteDepth : int
     {
-        Min = 0, // Front-most
+        Min = 1, // Front-most
 
         Character = 5,
         Wall = 6,
 
-        Max = 10 // Deepest
+        Max = 9 // Deepest
     }
 
     /// <summary>

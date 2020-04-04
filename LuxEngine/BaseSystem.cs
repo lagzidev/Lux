@@ -36,7 +36,7 @@ namespace LuxEngine
         /// Registers the component to the world so that the system could use it.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void Optional<T>() where T : BaseComponent<T>
+        public void Using<T>() where T : BaseComponent<T>
         {
             _system.World.RegisterComponent<T>();
         }

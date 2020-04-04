@@ -16,13 +16,15 @@ namespace LuxEngine
         public string FontName;
         public int FontSize;
         public Color Color;
+        public SpriteDepth Depth;
 
-        public Text(string text, string fontName, int fontSize, Color color)
+        public Text(string text, string fontName, int fontSize, Color color, SpriteDepth depth)
         {
             FontName = fontName;
             FontSize = fontSize;
             TextStr = text;
             Color = color;
+            Depth = depth;
         }
     }
 
@@ -45,6 +47,7 @@ namespace LuxEngine
             signature.Require<Text>();
             signature.Require<Transform>();
             signature.RequireSingleton<FontSingleton>();
+            signature.RequireSingleton<SpriteBatchSingleton>();
         }
 
         protected override void InitSingleton()
@@ -59,7 +62,7 @@ namespace LuxEngine
 
             using (var stream = File.OpenRead($"{World.ContentManager.RootDirectory}/Fonts/{text.FontName}"))
             {
-                DynamicSpriteFont font = DynamicSpriteFont.FromTtf(stream, text.FontSize);
+                DynamicSpriteFont font = DynamicSpriteFont.FromTtf(stream, 14);
                 fonts.Fonts.Add(text.FontName, font);
             }
         }
@@ -74,7 +77,18 @@ namespace LuxEngine
                 var text = World.Unpack<Text>(entity);
                 var transform = World.Unpack<Transform>(entity);
 
-                fonts.Fonts[text.FontName].DrawString(spriteBatch, text.TextStr, new Vector2(transform.X, transform.Y), text.Color);
+                int defaultFontSize = fonts.Fonts[text.FontName].Size;
+                fonts.Fonts[text.FontName].Size = text.FontSize;
+
+                fonts.Fonts[text.FontName].DrawString(
+                    spriteBatch,
+                    text.TextStr,
+                    new Vector2(transform.X, transform.Y),
+                    text.Color,
+                    Vector2.One,
+                    DrawUtils.CalculateSpriteDepth(text.Depth));
+
+                fonts.Fonts[text.FontName].Size = defaultFontSize;
             }
         }
     }

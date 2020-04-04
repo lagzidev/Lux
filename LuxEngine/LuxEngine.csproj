@@ -66,6 +66,7 @@
     <Compile Include="Systems\PlayerControllerTDSystem.cs" />
     <Compile Include="Systems\AnimationSystem.cs" />
     <Compile Include="Systems\SpriteLoaderSystem.cs" />
+    <Compile Include="Utils\DrawUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

@@ -43,7 +43,7 @@ namespace LuxEngine
     }
 
     /// <summary>
-    /// Populates the InputSingleton component
+    /// Populates the InputSingleton component.
     /// </summary>
     public class InputSystem : BaseSystem<InputSystem>
     {
