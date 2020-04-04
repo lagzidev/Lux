@@ -28,8 +28,8 @@ namespace LuxEngine
                 var sprite = World.Unpack<Sprite>(entity);
                 var transform = World.Unpack<Transform>(entity);
 
-                float transformX = transform.X;
-                float transformY = transform.Y;
+                int transformX = transform.X;
+                int transformY = transform.Y;
                 if (World.TryUnpack(entity, out Parent parent))
                 {
                     var parentTransform = World.Unpack<Transform>(parent.ParentEntity);

@@ -68,6 +68,7 @@
     <Compile Include="Systems\Render\FontSystem.cs" />
     <Compile Include="Systems\Render\AnimationSystem.cs" />
     <Compile Include="Systems\Render\CameraSystem.cs" />
+    <Compile Include="Systems\DebugSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

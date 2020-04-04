@@ -6,10 +6,10 @@ namespace LuxEngine
     [Serializable]
     public class Transform : BaseComponent<Transform>
     {
-        public float X;
-        public float Y;
+        public int X;
+        public int Y;
 
-        public Transform(float x, float y)
+        public Transform(int x, int y)
         {
             X = x;
             Y = y;

@@ -9,9 +9,9 @@ namespace LuxEngine
         public float Rotation;
         public Rectangle VisibleArea;
 
-        public Camera()
+        public Camera(float zoom)
         {
-            Zoom = 2.0f;
+            Zoom = zoom;
             Rotation = 0.0f;
             VisibleArea = default;
         }
@@ -57,11 +57,11 @@ namespace LuxEngine
                     0));
 
                 Matrix rotation = Matrix.CreateRotationZ(camera.Rotation);
-                Matrix scale = Matrix.CreateScale(new Vector3(camera.Zoom, camera.Zoom, 1));
+                Matrix scale = Matrix.CreateScale(new Vector3(camera.Zoom, camera.Zoom, 1f));
                 Matrix translation2 = Matrix.CreateTranslation(new Vector3(
                     virtualResolution.VWidth * 0.5f,
                     virtualResolution.VHeight * 0.5f,
-                    0));
+                    0f));
 
                 Matrix transformMatrix = translation * rotation * scale * translation2;
 
@@ -99,11 +99,13 @@ namespace LuxEngine
                 MathHelper.Max(tl.X, MathHelper.Max(tr.X, MathHelper.Max(bl.X, br.X))),
                 MathHelper.Max(tl.Y, MathHelper.Max(tr.Y, MathHelper.Max(bl.Y, br.Y))));
 
-            return new Rectangle(
-                (int)min.X,
-                (int)min.Y,
-                (int)(virtualResolution.VWidth / camera.Zoom),
-                (int)(virtualResolution.VHeight / camera.Zoom));
+            return new Rectangle((int)min.X, (int)min.Y, (int)(max.X - min.X), (int)(max.Y - min.Y));
+
+            //return new Rectangle(
+            //    (int)min.X,
+            //    (int)min.Y,
+            //    (int)(virtualResolution.VWidth / camera.Zoom),
+            //    (int)(virtualResolution.VHeight / camera.Zoom));
         }
     }
 }

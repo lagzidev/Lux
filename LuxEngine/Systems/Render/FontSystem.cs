@@ -33,10 +33,12 @@ namespace LuxEngine
     {
         [NonSerialized]
         public Dictionary<string, DynamicSpriteFont> Fonts;
+        public SpriteBatch SpriteBatch;
 
-        public FontSingleton()
+        public FontSingleton(GraphicsDevice graphicsDevice)
         {
             Fonts = new Dictionary<string, DynamicSpriteFont>();
+            SpriteBatch = new SpriteBatch(graphicsDevice);
         }
     }
 
@@ -52,7 +54,7 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new FontSingleton());
+            World.AddSingletonComponent(new FontSingleton(World.GraphicsDeviceManager.GraphicsDevice));
         }
 
         protected override void OnRegisterEntity(Entity entity)
@@ -67,10 +69,23 @@ namespace LuxEngine
             }
         }
 
+        protected override void PreDraw(GameTime gameTime)
+        {
+            var fonts = World.UnpackSingleton<FontSingleton>();
+
+            fonts.SpriteBatch.Begin(
+                SpriteSortMode.BackToFront,
+                BlendState.AlphaBlend,
+                SamplerState.PointClamp,
+                DepthStencilState.Default,
+                RasterizerState.CullNone,
+                null);
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             var fonts = World.UnpackSingleton<FontSingleton>();
-            var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
+            var resolutionSettings = World.UnpackSingleton<ResolutionSettingsSingleton>();
 
             foreach (var entity in RegisteredEntities)
             {
@@ -78,10 +93,10 @@ namespace LuxEngine
                 var transform = World.Unpack<Transform>(entity);
 
                 int defaultFontSize = fonts.Fonts[text.FontName].Size;
-                fonts.Fonts[text.FontName].Size = text.FontSize;
+                fonts.Fonts[text.FontName].Size = text.FontSize * resolutionSettings.WindowScale;
 
                 fonts.Fonts[text.FontName].DrawString(
-                    spriteBatch,
+                    fonts.SpriteBatch,
                     text.TextStr,
                     new Vector2(transform.X, transform.Y),
                     text.Color,
@@ -90,6 +105,12 @@ namespace LuxEngine
 
                 fonts.Fonts[text.FontName].Size = defaultFontSize;
             }
+        }
+
+        protected override void PostDraw(GameTime gameTime)
+        {
+            var fonts = World.UnpackSingleton<FontSingleton>();
+            fonts.SpriteBatch.End();
         }
     }
 }

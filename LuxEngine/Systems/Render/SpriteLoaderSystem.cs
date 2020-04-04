@@ -18,8 +18,9 @@ namespace LuxEngine
     {
         Min = 1, // Front-most
 
+        OverCharacter = 4,
         Character = 5,
-        Wall = 6,
+        UnderCharacter = 6,
 
         Max = 9 // Deepest
     }

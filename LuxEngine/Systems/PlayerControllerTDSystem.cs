@@ -15,13 +15,15 @@ namespace LuxEngine
 
     public class Moveable : BaseComponent<Moveable>
     {
-        public Vector2 MaxSpeed;
+        public float MaxSpeedX;
+        public float MaxSpeedY;
         public Vector2 Velocity;
         public Vector2 Direction;
 
-        public Moveable(Vector2 maxSpeed)
+        public Moveable(float maxSpeedX, float maxSpeedY)
         {
-            MaxSpeed = maxSpeed;
+            MaxSpeedX = maxSpeedX;
+            MaxSpeedY = maxSpeedY;
             Velocity = Vector2.Zero;
             Direction = Vector2.Zero;
         }
@@ -49,6 +51,7 @@ namespace LuxEngine
             {
                 var transform = World.Unpack<Transform>(entity);
                 var moveable = World.Unpack<Moveable>(entity);
+                float time = 1; //(float)gameTime.ElapsedGameTime.TotalMilliseconds / 10f;
 
                 moveable.Velocity = Vector2.Zero;
 
@@ -56,26 +59,26 @@ namespace LuxEngine
                 {
                     moveable.Velocity.Y = -1;
                     moveable.Direction = new Vector2(0, -1);
-                    transform.Y -= moveable.MaxSpeed.Y;
+                    transform.Y -= (int)(moveable.MaxSpeedY * time);
                 }
                 else if (input.Down)
                 {
                     moveable.Velocity.Y = 1;
                     moveable.Direction = new Vector2(0, 1);
-                    transform.Y += moveable.MaxSpeed.Y;
+                    transform.Y += (int)(moveable.MaxSpeedY * time);
                 }
 
                 if (input.Right)
                 {
                     moveable.Velocity.X = 1;
                     moveable.Direction = new Vector2(1, 0);
-                    transform.X += moveable.MaxSpeed.X;
+                    transform.X += (int)(moveable.MaxSpeedX * time);
                 }
                 else if (input.Left)
                 {
                     moveable.Velocity.X = -1;
                     moveable.Direction = new Vector2(-1, 0);
-                    transform.X -= moveable.MaxSpeed.X;
+                    transform.X -= (int)(moveable.MaxSpeedX * time);
                 }
             }
         }
