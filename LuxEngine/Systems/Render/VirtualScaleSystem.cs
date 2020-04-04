@@ -13,9 +13,19 @@ namespace LuxEngine
 
         public VirtualResolutionSingleton(int virtualWidth, int virtualHeight)
         {
-            ScaleMatrix = Matrix.Identity;
             VWidth = virtualWidth;
             VHeight = virtualHeight;
+        }
+    }
+
+    [Serializable]
+    public class TransformMatrixSingleton : BaseComponent<TransformMatrixSingleton>
+    {
+        public Matrix TransformMatrix;
+
+        public TransformMatrixSingleton()
+        {
+            TransformMatrix = Matrix.Identity;
         }
     }
 
@@ -26,8 +36,14 @@ namespace LuxEngine
     {
         protected override void SetSignature(SystemSignature signature)
         {
+            signature.Require<TransformMatrixSingleton>();
             signature.Require<VirtualResolutionSingleton>();
             signature.Require<ResolutionSettingsSingleton>();
+        }
+
+        protected override void InitSingleton()
+        {
+            World.AddSingletonComponent(new TransformMatrixSingleton());
         }
 
         /// <summary>
@@ -36,15 +52,21 @@ namespace LuxEngine
         protected override void OnRegisterEntity(Entity entity)
         {
             var virtualResolution = World.Unpack<VirtualResolutionSingleton>(entity);
+            var transformMatrix = World.Unpack<TransformMatrixSingleton>(entity);
             var worldViewport = World.GraphicsDeviceManager.GraphicsDevice.Viewport;
 
+            // Save the calculated scale matrix
             virtualResolution.ScaleMatrix = Matrix.CreateScale(
                 (float)worldViewport.Width / virtualResolution.VWidth,
                 (float)worldViewport.Width / virtualResolution.VWidth,
                 1f);
+
+            // Set the transform matrix to the scale matrix (until someone else
+            // like a camera changes it)
+            transformMatrix.TransformMatrix = virtualResolution.ScaleMatrix;
         }
 
-        protected override void PreDraw(GameTime gameTime)
+        protected override void PrePreDraw(GameTime gameTime)
         {
             if (RegisteredEntities.Count == 0) return;
 

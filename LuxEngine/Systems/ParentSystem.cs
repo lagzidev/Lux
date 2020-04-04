@@ -10,11 +10,6 @@ namespace LuxEngine
         {
             ParentEntity = parentEntity;
         }
-
-        public Parent(EntityHandle parentEntity)
-        {
-            ParentEntity = parentEntity.Entity;
-        }
     }
 
     public class ParentSystem : BaseSystem<ParentSystem>

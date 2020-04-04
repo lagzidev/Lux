@@ -32,8 +32,6 @@
     <Compile Include="Old\Character.cs" />
     <Compile Include="Old\GameObject.cs" />
     <Compile Include="Old\Map.cs" />
-    <Compile Include="Old\Utils old\CameraL.cs" />
-    <Compile Include="Old\Utils old\Resolution.cs" />
     <Compile Include="Old\Player.cs" />
     <Compile Include="Old\Scene.cs" />
     <Compile Include="BaseSystem.cs" />
@@ -69,6 +67,7 @@
     <Compile Include="Systems\Render\SpriteLoaderSystem.cs" />
     <Compile Include="Systems\Render\FontSystem.cs" />
     <Compile Include="Systems\Render\AnimationSystem.cs" />
+    <Compile Include="Systems\Render\CameraSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

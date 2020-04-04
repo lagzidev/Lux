@@ -19,7 +19,7 @@ namespace LuxEngine
         protected override void SetSignature(SystemSignature signature)
         {
             signature.RequireSingleton<SpriteBatchSingleton>();
-            signature.Using<VirtualResolutionSingleton>();
+            signature.Using<TransformMatrixSingleton>();
         }
 
         protected override void InitSingleton()
@@ -30,12 +30,12 @@ namespace LuxEngine
 
         protected override void PreDraw(GameTime gameTime)
         {
-            var spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
+            SpriteBatch spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
 
-            Matrix scaleMatrix = Matrix.Identity;
-            if (World.TryUnpackSingleton(out VirtualResolutionSingleton virtualResolution))
+            Matrix transformMatrix = Matrix.Identity;
+            if (World.TryUnpackSingleton(out TransformMatrixSingleton transformMatrixSingleton))
             {
-                scaleMatrix = virtualResolution.ScaleMatrix;
+                transformMatrix = transformMatrixSingleton.TransformMatrix;
             }
 
             spriteBatch.Begin(
@@ -45,7 +45,7 @@ namespace LuxEngine
                 DepthStencilState.Default,
                 RasterizerState.CullNone,
                 null,
-                scaleMatrix); // Camera.GetTransformMatrix()
+                transformMatrix);
         }
 
         protected override void PostDraw(GameTime gameTime)
