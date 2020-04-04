@@ -7,11 +7,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
-    public enum TextureTheme : int
-    {
-        Normal = 0
-    }
-
     [Serializable]
     public class LoadedTexturesSingleton : BaseComponent<LoadedTexturesSingleton>
     {

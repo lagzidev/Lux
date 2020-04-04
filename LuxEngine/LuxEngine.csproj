@@ -53,20 +53,22 @@
     <Compile Include="SparseSet.cs" />
     <Compile Include="Systems.cs" />
     <Compile Include="Systems\CollisionTDSystem.cs" />
-    <Compile Include="Systems\FontSystem.cs" />
     <Compile Include="Systems\InputSystem.cs" />
     <Compile Include="Systems\NetworkSystem.cs" />
     <Compile Include="Systems\ParentSystem.cs" />
     <Compile Include="Systems\PhysicsSystem.cs" />
-    <Compile Include="Systems\RenderSystem.cs" />
-    <Compile Include="Systems\ResolutionSystem.cs" />
     <Compile Include="Systems\SaveSystem.cs" />
-    <Compile Include="Systems\TextureLoaderSystem.cs" />
     <Compile Include="Pipeline\TextureLoader.cs" />
     <Compile Include="Systems\PlayerControllerTDSystem.cs" />
-    <Compile Include="Systems\AnimationSystem.cs" />
-    <Compile Include="Systems\SpriteLoaderSystem.cs" />
     <Compile Include="Utils\DrawUtils.cs" />
+    <Compile Include="Systems\Render\ResolutionSetterSystem.cs" />
+    <Compile Include="Systems\Render\SpriteBatchSystem.cs" />
+    <Compile Include="Systems\Render\SpriteDrawSystem.cs" />
+    <Compile Include="Systems\Render\VirtualScaleSystem.cs" />
+    <Compile Include="Systems\Render\TextureLoaderSystem.cs" />
+    <Compile Include="Systems\Render\SpriteLoaderSystem.cs" />
+    <Compile Include="Systems\Render\FontSystem.cs" />
+    <Compile Include="Systems\Render\AnimationSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
@@ -76,6 +78,7 @@
     <Folder Include="Utils\" />
     <Folder Include="Pipeline\" />
     <Folder Include="Systems\" />
+    <Folder Include="Systems\Render\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />
