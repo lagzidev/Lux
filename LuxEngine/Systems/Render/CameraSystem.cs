@@ -32,6 +32,15 @@ namespace LuxEngine
             World.AddComponent(entity, new Transform(0, 0));
         }
 
+        //protected override void Update(GameTime gameTime)
+        //{
+        //    foreach (var entity in RegisteredEntities)
+        //    {
+        //        var camera = World.Unpack<Camera>(entity);
+        //        camera.Zoom += 0.01f;
+        //    }
+        //}
+
         protected override void PrePreDraw(GameTime gameTime)
         {
             if (RegisteredEntities.Count > 1)
@@ -54,14 +63,14 @@ namespace LuxEngine
                 // Calculate the camera transform matrix
                 Matrix translation = Matrix.CreateTranslation(
                     new Vector3(-new Vector2(transform.X + parentTransform.X, transform.Y + parentTransform.Y),
-                    0));
+                    0f)); // Positioning
 
-                Matrix rotation = Matrix.CreateRotationZ(camera.Rotation);
-                Matrix scale = Matrix.CreateScale(new Vector3(camera.Zoom, camera.Zoom, 1f));
+                Matrix rotation = Matrix.CreateRotationZ(camera.Rotation); // Rotating
+                Matrix scale = Matrix.CreateScale(new Vector3(camera.Zoom, camera.Zoom, 1f)); // Zooming
                 Matrix translation2 = Matrix.CreateTranslation(new Vector3(
                     virtualResolution.VWidth * 0.5f,
                     virtualResolution.VHeight * 0.5f,
-                    0f));
+                    0f)); // Centering
 
                 Matrix transformMatrix = translation * rotation * scale * translation2;
 
@@ -69,8 +78,8 @@ namespace LuxEngine
                 transformMatrix *= virtualResolution.ScaleMatrix;
 
                 //Round the X and Y translation so the camera doesn't jerk as it moves:
-                transformMatrix.M41 = (float)Math.Round(transformMatrix.M41, 0);
-                transformMatrix.M42 = (float)Math.Round(transformMatrix.M42, 0);
+                //transformMatrix.M41 = (float)Math.Round(transformMatrix.M41, 0);
+                //transformMatrix.M42 = (float)Math.Round(transformMatrix.M42, 0);
 
                 // Update the values
                 transformMatrixSingleton.TransformMatrix = transformMatrix;

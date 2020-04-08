@@ -55,7 +55,7 @@ namespace LuxEngine
             }
         }
 
-        public virtual void Update(List<GameObject> objects, Map map)
+        public virtual void Update(List<GameObject> objects, Mapold map)
         {
 
         }

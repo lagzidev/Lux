@@ -40,7 +40,7 @@ namespace LuxEngine
 
             spriteBatch.Begin(
                 SpriteSortMode.BackToFront,
-                BlendState.AlphaBlend,
+                BlendState.AlphaBlend, // Should this be NonMultiplied because I'm multiplying myself?
                 SamplerState.PointClamp,
                 DepthStencilState.Default,
                 RasterizerState.CullNone,

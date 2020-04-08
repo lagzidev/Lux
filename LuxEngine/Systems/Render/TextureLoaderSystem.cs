@@ -68,7 +68,7 @@ namespace LuxEngine
                 LuxCommon.Assert(false);
             }
 
-            var texturePath = $"{HardCodedConfig.DEFAULT_TEXTURES_FOLDER_NAME}/{textureName}.png";
+            string texturePath = $"{HardCodedConfig.DEFAULT_TEXTURES_FOLDER_NAME}/{textureName}.png";
             Texture2D textureObj = TextureLoader.Load(texturePath, World.ContentManager);
 
             loadedTexturesSingleton.Textures.Add(textureName, textureObj);

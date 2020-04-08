@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace LuxEngine
 {
-    public class Map
+    public class Mapold
     {
         public List<Wall> Walls = new List<Wall>();
         Texture2D wallImage;
@@ -16,7 +16,7 @@ namespace LuxEngine
         public int MapHeight = 9;
         public int TileSize = 32;
 
-        public Map()
+        public Mapold()
         {
         }
 

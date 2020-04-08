@@ -92,6 +92,8 @@ namespace LuxEngine
             {
                 SpriteData spriteData = jsonSerializer.Deserialize<SpriteData>(reader);
                 sprite.SpriteData = spriteData;
+
+                // If fails here, check if your aseprite animation has tags
                 sprite.CurrentAnimationName = sprite.SpriteData.Animations.Keys.First();
             }
         }
