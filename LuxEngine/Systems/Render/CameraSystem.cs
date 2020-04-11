@@ -86,8 +86,8 @@ namespace LuxEngine
                 //Round the X and Y translation so the camera doesn't jerk as it moves:
                 //transformMatrix.M22 = (float)Math.Round(transformMatrix.M22, 0);
                 //transformMatrix.M11 = (float)Math.Round(transformMatrix.M11, 0);
-                transformMatrix.M41 = (float)Math.Round(transformMatrix.M41, 0);
-                transformMatrix.M42 = (float)Math.Round(transformMatrix.M42, 0);
+                //transformMatrix.M41 = (float)Math.Round(transformMatrix.M41, 0);
+                //transformMatrix.M42 = (float)Math.Round(transformMatrix.M42, 0);
 
                 // Update the values
                 transformMatrixSingleton.TransformMatrix = transformMatrix;
