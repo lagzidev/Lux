@@ -20,35 +20,32 @@ namespace LuxEngine
     {
         protected override void SetSignature(SystemSignature signature)
         {
+            signature.Require<Camera>();
             signature.RequireSingleton<SpriteBatchSingleton>();
-            signature.RequireSingleton<VirtualResolutionSingleton>();
-            signature.Using<TransformMatrixSingleton>();
         }
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new SpriteBatchSingleton(
-                LuxGame.Graphics.GraphicsDevice));
+            World.AddSingletonComponent(new SpriteBatchSingleton(LuxGame.Graphics.GraphicsDevice));
         }
 
         protected override void LoadContent()
         {
-            var virtualResolution = World.UnpackSingleton<VirtualResolutionSingleton>();
             var spriteBatchSingleton = World.UnpackSingleton<SpriteBatchSingleton>();
 
-            // Must be recreated when device is reset (and LoadContent is called on device reset)
             spriteBatchSingleton.RenderTarget = new RenderTarget2D(
                 LuxGame.Graphics.GraphicsDevice,
-                virtualResolution.VWidth,
-                virtualResolution.VHeight);
+                LuxGame.Width,
+                LuxGame.Height);
         }
 
         protected override void PreDraw(GameTime gameTime)
         {
             var spriteBatchSingleton = World.UnpackSingleton<SpriteBatchSingleton>();
-            var virtualResolution = World.UnpackSingleton<VirtualResolutionSingleton>();
 
+            // Everything will be drawn to our render target
             LuxGame.Graphics.GraphicsDevice.SetRenderTarget(spriteBatchSingleton.RenderTarget);
+            //LuxGame.Graphics.GraphicsDevice.Viewport = LuxGame.Viewport;
             LuxGame.Graphics.GraphicsDevice.Clear(Color.Beige);
 
             spriteBatchSingleton.SpriteBatch.Begin(
@@ -61,6 +58,8 @@ namespace LuxEngine
 
         protected override void PostDraw(GameTime gameTime)
         {
+            LuxCommon.Assert(RegisteredEntities.Count == 1); // No support for multiple cameras yet
+
             var spriteBatchSingleton = World.UnpackSingleton<SpriteBatchSingleton>();
             SpriteBatch spriteBatch = spriteBatchSingleton.SpriteBatch;
 
@@ -70,35 +69,35 @@ namespace LuxEngine
             // Reset render target
             LuxGame.Graphics.GraphicsDevice.SetRenderTarget(null);
 
-            // Get transform matrix
-            Matrix transformMatrix = Matrix.Identity;
-            if (World.TryUnpackSingleton(out TransformMatrixSingleton transformMatrixSingleton))
+            foreach (var entity in RegisteredEntities)
             {
-                transformMatrix = transformMatrixSingleton.TransformMatrix;
+                Camera camera = World.Unpack<Camera>(entity);
+
+                // Draw from render target to the actual screen using the matrices for zoom, scaling, etc.
+                spriteBatch.Begin(
+                    SpriteSortMode.Immediate,
+                    BlendState.Opaque,
+                    SamplerState.PointClamp,
+                    DepthStencilState.Default,
+                    RasterizerState.CullNone,
+                    null,
+                    /*camera.Matrix * */LuxGame.ScreenMatrix); // Order matters
+
+                // TODO: Make sure this works with multiple cameras
+
+                spriteBatch.Draw(
+                    spriteBatchSingleton.RenderTarget,
+                    new Vector2(0, 0),
+                    new Rectangle(0, 0, spriteBatchSingleton.RenderTarget.Width, spriteBatchSingleton.RenderTarget.Height),
+                    Color.White,
+                    0f,
+                    Vector2.Zero,
+                    Vector2.One,
+                    SpriteEffects.None,
+                    0.5f);
+
+                spriteBatch.End();
             }
-
-            // Draw to the actual screen with the matrix for zoom, scaling, etc.
-            spriteBatch.Begin(
-                SpriteSortMode.Immediate,
-                BlendState.Opaque,
-                SamplerState.PointClamp,
-                DepthStencilState.Default,
-                RasterizerState.CullNone,
-                null,
-                transformMatrix * Matrix.CreateScale(1.01f));
-
-            spriteBatch.Draw(
-                spriteBatchSingleton.RenderTarget,
-                new Vector2(0,0),
-                new Rectangle(0,0, spriteBatchSingleton.RenderTarget.Width, spriteBatchSingleton.RenderTarget.Height),
-                Color.White,
-                0f,
-                Vector2.Zero,
-                Vector2.One,
-                SpriteEffects.None,
-                0.5f);
-
-            spriteBatch.End();
         }
     }
 }

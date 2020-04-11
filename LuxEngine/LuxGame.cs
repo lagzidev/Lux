@@ -32,6 +32,10 @@ namespace LuxEngine
         public static Matrix ScreenMatrix;
 
         private static int viewPadding = 0;
+
+        /// <summary>
+        /// Is currently resizing the window
+        /// </summary>
         private static bool resizing;
 
         // Content directory
@@ -185,7 +189,7 @@ namespace LuxEngine
             }
 
             // Apply view padding
-            var aspect = viewHeight / (float)viewWidth;
+            float aspect = viewHeight / (float)viewWidth;
             viewWidth -= ViewPadding * 2;
             viewHeight -= (int)(aspect * ViewPadding * 2);
 

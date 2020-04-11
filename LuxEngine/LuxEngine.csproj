@@ -57,10 +57,8 @@
     <Compile Include="Systems\SaveSystem.cs" />
     <Compile Include="Systems\PlayerControllerTDSystem.cs" />
     <Compile Include="Utils\DrawUtils.cs" />
-    <Compile Include="Systems\Render\ResolutionSetterSystem.cs" />
     <Compile Include="Systems\Render\SpriteBatchSystem.cs" />
     <Compile Include="Systems\Render\SpriteDrawSystem.cs" />
-    <Compile Include="Systems\Render\VirtualScaleSystem.cs" />
     <Compile Include="Systems\Render\TextureLoaderSystem.cs" />
     <Compile Include="Systems\Render\SpriteLoaderSystem.cs" />
     <Compile Include="Systems\Render\FontSystem.cs" />

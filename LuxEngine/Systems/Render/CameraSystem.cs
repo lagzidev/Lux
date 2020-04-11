@@ -8,6 +8,7 @@ namespace LuxEngine
         public float Zoom;
         public float Rotation;
         public Rectangle VisibleArea;
+        public Matrix Matrix;
 
         public Camera(float zoom)
         {
@@ -23,8 +24,6 @@ namespace LuxEngine
         {
             signature.Require<Parent>();
             signature.Require<Camera>();
-            signature.RequireSingleton<TransformMatrixSingleton>();
-            signature.RequireSingleton<VirtualResolutionSingleton>();
         }
 
         protected override void OnRegisterEntity(Entity entity)
@@ -49,9 +48,6 @@ namespace LuxEngine
                 LuxCommon.Assert(false);
             }
 
-            var transformMatrixSingleton = World.UnpackSingleton<TransformMatrixSingleton>();
-            var virtualResolution = World.UnpackSingleton<VirtualResolutionSingleton>();
-
             foreach (var entity in RegisteredEntities)
             {
                 var camera = World.Unpack<Camera>(entity);
@@ -74,41 +70,32 @@ namespace LuxEngine
 
                 // Centering
                 Matrix translation2 = Matrix.CreateTranslation(new Vector3(
-                    (int)(virtualResolution.VWidth * 0.5f),
-                    (int)(virtualResolution.VHeight * 0.5f),
+                    (int)(LuxGame.Width * 0.5f),
+                    (int)(LuxGame.Height * 0.5f),
                     0f));
 
                 Matrix transformMatrix = translation * rotation * scale * translation2;
 
                 // Combine the camera's transform matrix with the scale matrix
-                transformMatrix *= virtualResolution.ScaleMatrix;
-
-                //Round the X and Y translation so the camera doesn't jerk as it moves:
-                //transformMatrix.M22 = (float)Math.Round(transformMatrix.M22, 0);
-                //transformMatrix.M11 = (float)Math.Round(transformMatrix.M11, 0);
-                //transformMatrix.M41 = (float)Math.Round(transformMatrix.M41, 0);
-                //transformMatrix.M42 = (float)Math.Round(transformMatrix.M42, 0);
+                //transformMatrix *= LuxGame.ScreenMatrix;
 
                 // Update the values
-                transformMatrixSingleton.TransformMatrix = transformMatrix;
-                camera.VisibleArea = CalculateVisibleArea(camera, virtualResolution, transformMatrix);
+                camera.Matrix = transformMatrix;
+                camera.VisibleArea = CalculateVisibleArea(transformMatrix);
             }
         }
 
         /// <summary>
         /// Calculates the screenRect based on where the camera currently is.
         /// </summary>
-        private Rectangle CalculateVisibleArea(
-            Camera camera,
-            VirtualResolutionSingleton virtualResolution,
-            Matrix finalScaleMatrix)
+        private Rectangle CalculateVisibleArea(Matrix finalScaleMatrix)
         {
             Matrix inverseViewMatrix = Matrix.Invert(finalScaleMatrix);
 
             Vector2 tl = Vector2.Transform(Vector2.Zero, inverseViewMatrix);
-            Vector2 tr = Vector2.Transform(new Vector2(virtualResolution.VWidth, 0), inverseViewMatrix);
-            Vector2 bl = Vector2.Transform(new Vector2(0, virtualResolution.VHeight), inverseViewMatrix);
-            Vector2 br = Vector2.Transform(new Vector2(virtualResolution.VWidth, virtualResolution.VHeight), inverseViewMatrix);
+            Vector2 tr = Vector2.Transform(new Vector2(LuxGame.Width, 0), inverseViewMatrix);
+            Vector2 bl = Vector2.Transform(new Vector2(0, LuxGame.Height), inverseViewMatrix);
+            Vector2 br = Vector2.Transform(new Vector2(LuxGame.Width, LuxGame.Height), inverseViewMatrix);
             Vector2 min = new Vector2(
                 MathHelper.Min(tl.X, MathHelper.Min(tr.X, MathHelper.Min(bl.X, br.X))),
                 MathHelper.Min(tl.Y, MathHelper.Min(tr.Y, MathHelper.Min(bl.Y, br.Y))));

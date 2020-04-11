@@ -85,7 +85,6 @@ namespace LuxEngine
         protected override void Draw(GameTime gameTime)
         {
             var fonts = World.UnpackSingleton<FontSingleton>();
-            var resolutionSettings = World.UnpackSingleton<ResolutionSettingsSingleton>();
 
             foreach (var entity in RegisteredEntities)
             {
@@ -93,7 +92,7 @@ namespace LuxEngine
                 var transform = World.Unpack<Transform>(entity);
 
                 int defaultFontSize = fonts.Fonts[text.FontName].Size;
-                fonts.Fonts[text.FontName].Size = text.FontSize * resolutionSettings.WindowScale;
+                fonts.Fonts[text.FontName].Size = text.FontSize; //* resolutionSettings.WindowScale; // todo scale
 
                 fonts.Fonts[text.FontName].DrawString(
                     fonts.SpriteBatch,
