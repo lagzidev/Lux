@@ -18,9 +18,9 @@ namespace LuxEngine
     {
         Min = 1, // Front-most
 
-        OverCharacter = 4,
-        Character = 5,
-        UnderCharacter = 6,
+        OverCharacter = 3,
+        Character = 4,
+        BehindCharacter = 5,
 
         Max = 9 // Deepest
     }
@@ -37,16 +37,16 @@ namespace LuxEngine
     [Serializable]
     public class Sprite : BaseComponent<Sprite>
     {
-        public readonly string TextureName;
+        public readonly string SpriteName;
 
         public SpriteData SpriteData;
         public string CurrentAnimationName;
         public int CurrentAnimationFrame;
         public int CurrentTimeInFrameMs;
 
-        public Sprite(string textureName)
+        public Sprite(string spriteName)
         {
-            TextureName = textureName;
+            SpriteName = spriteName;
         }
     }
 
@@ -64,7 +64,7 @@ namespace LuxEngine
         {
             var sprite = World.Unpack<Sprite>(entity);
 
-            var path = $"{World.ContentManager.RootDirectory}/Textures/{sprite.TextureName}.json";
+            var path = $"{World.ContentManager.RootDirectory}/Textures/{sprite.SpriteName}.json";
 
             // TODO: Instead of saving a Sprite, save a Sprite[][], with each having a string that labels
             // the animation
@@ -96,6 +96,8 @@ namespace LuxEngine
                 // If fails here, check if your aseprite animation has tags
                 sprite.CurrentAnimationName = sprite.SpriteData.Animations.Keys.First();
             }
+
+            World.AddComponent(entity, new TextureComponent(sprite.SpriteName));
         }
     }
 }

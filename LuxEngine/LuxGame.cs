@@ -23,7 +23,7 @@ namespace LuxEngine
 
         public World CreateWorld()
         {
-            World newWorld = new World(GraphicsDeviceManager, Content);
+            World newWorld = new World(GraphicsDeviceManager, Content, Window);
             _worlds.Add(newWorld);
 
             return newWorld;

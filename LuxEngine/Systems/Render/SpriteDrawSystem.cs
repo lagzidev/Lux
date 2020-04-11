@@ -10,6 +10,7 @@ namespace LuxEngine
         {
             signature.Require<Transform>();
             signature.Require<Sprite>();
+            signature.Require<TextureComponent>();
             signature.RequireSingleton<SpriteBatchSingleton>();
             signature.RequireSingleton<LoadedTexturesSingleton>();
             signature.RequireSingleton<VirtualResolutionSingleton>();
@@ -27,6 +28,7 @@ namespace LuxEngine
             {
                 var sprite = World.Unpack<Sprite>(entity);
                 var transform = World.Unpack<Transform>(entity);
+                var texture = World.Unpack<TextureComponent>(entity);
 
                 int transformX = transform.X;
                 int transformY = transform.Y;
@@ -44,7 +46,7 @@ namespace LuxEngine
 
                 // Draw to sprite batch
                 spriteBatch.Draw(
-                    loadedTextures.Textures[sprite.TextureName],
+                    loadedTextures.Textures[texture.Name],
                     new Vector2(transformX, transformY),
                     new Rectangle(
                         currentAnimationFrame.TexturePositionX,

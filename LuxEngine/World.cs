@@ -46,10 +46,11 @@ namespace LuxEngine
 
         public readonly GraphicsDeviceManager GraphicsDeviceManager;
         public readonly ContentManager ContentManager;
+        public readonly GameWindow Window;
 
         private Entity _singletonEntity;
 
-        public World(GraphicsDeviceManager graphicsDeviceManager, ContentManager contentManager)
+        public World(GraphicsDeviceManager graphicsDeviceManager, ContentManager contentManager, GameWindow window)
         {
             _entityGenerator = new EntityGenerator();
             _entityMasks = new Dictionary<Entity, ComponentMask>();
@@ -64,6 +65,7 @@ namespace LuxEngine
 
             GraphicsDeviceManager = graphicsDeviceManager;
             ContentManager = contentManager;
+            Window = window;
         }
 
         public void InitWorld()
@@ -206,6 +208,13 @@ namespace LuxEngine
             }
         }
 
+        /// <summary>
+        /// When called from within a system, the component is added only after
+        /// the phase ends.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="component"></param>
         public void AddComponent<T>(Entity entity, BaseComponent<T> component) where T : BaseComponent<T>
         {
             // If iterating systems, add the component afterwards instead of now

@@ -19,6 +19,18 @@ namespace LuxEngine
         }
     }
 
+    public class TextureComponent : BaseComponent<TextureComponent>
+    {
+        public string Name;
+        //public string[] OtherTexturesToLoad;
+
+        public TextureComponent(string textureName) //params string[] otherTexturesToLoad
+        {
+            Name = textureName;
+            //OtherTexturesToLoad = otherTexturesToLoad;
+        }
+    }
+
     /// <summary>
     /// Responsible for loading sprite textures (.png files)
     /// </summary>
@@ -26,7 +38,7 @@ namespace LuxEngine
     {
         protected override void SetSignature(SystemSignature signature)
         {
-            signature.Require<Sprite>();
+            signature.Require<TextureComponent>();
             signature.RequireSingleton<LoadedTexturesSingleton>();
         }
 
@@ -54,7 +66,7 @@ namespace LuxEngine
         private void AddTexture(Entity entity)
         {
             var loadedTexturesSingleton = World.UnpackSingleton<LoadedTexturesSingleton>();
-            string textureName = World.Unpack<Sprite>(entity).TextureName;
+            string textureName = World.Unpack<TextureComponent>(entity).Name;
 
             // If texture is already loaded, no need to load it again
             if (loadedTexturesSingleton.Textures.ContainsKey(textureName))
