@@ -13,9 +13,6 @@ namespace LuxEngine
             signature.Require<TextureComponent>();
             signature.RequireSingleton<SpriteBatchSingleton>();
             signature.RequireSingleton<LoadedTexturesSingleton>();
-            signature.RequireSingleton<VirtualResolutionSingleton>();
-            signature.RequireSingleton<ResolutionSettingsSingleton>();
-            signature.RequireSingleton<SpriteBatchSingleton>();
         }
 
         protected override void Draw(GameTime gameTime)

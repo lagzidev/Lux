@@ -54,7 +54,7 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new FontSingleton(World.GraphicsDeviceManager.GraphicsDevice));
+            World.AddSingletonComponent(new FontSingleton(LuxGame.Graphics.GraphicsDevice));
         }
 
         protected override void OnRegisterEntity(Entity entity)
@@ -62,7 +62,7 @@ namespace LuxEngine
             var fonts = World.UnpackSingleton<FontSingleton>();
             var text = World.Unpack<Text>(entity);
 
-            using (var stream = File.OpenRead($"{World.ContentManager.RootDirectory}/Fonts/{text.FontName}"))
+            using (var stream = File.OpenRead($"{LuxGame.ContentDirectory}/Fonts/{text.FontName}"))
             {
                 DynamicSpriteFont font = DynamicSpriteFont.FromTtf(stream, 14);
                 fonts.Fonts.Add(text.FontName, font);

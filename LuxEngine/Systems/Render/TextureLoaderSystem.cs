@@ -11,7 +11,7 @@ namespace LuxEngine
     public class LoadedTexturesSingleton : BaseComponent<LoadedTexturesSingleton>
     {
         [NonSerialized]
-        public Dictionary<string, Texture2D> Textures;
+        public readonly Dictionary<string, Texture2D> Textures;
 
         public LoadedTexturesSingleton()
         {
@@ -81,7 +81,7 @@ namespace LuxEngine
             }
 
             string texturePath = $"{HardCodedConfig.DEFAULT_TEXTURES_FOLDER_NAME}/{textureName}.png";
-            Texture2D textureObj = TextureLoader.Load(texturePath, World.ContentManager);
+            Texture2D textureObj = TextureLoader.Load(texturePath, LuxGame.Instance.Content);
 
             loadedTexturesSingleton.Textures.Add(textureName, textureObj);
         }

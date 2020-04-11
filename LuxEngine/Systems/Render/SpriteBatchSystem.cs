@@ -28,7 +28,7 @@ namespace LuxEngine
         protected override void InitSingleton()
         {
             World.AddSingletonComponent(new SpriteBatchSingleton(
-                World.GraphicsDeviceManager.GraphicsDevice));
+                LuxGame.Graphics.GraphicsDevice));
         }
 
         protected override void LoadContent()
@@ -38,7 +38,7 @@ namespace LuxEngine
 
             // Must be recreated when device is reset (and LoadContent is called on device reset)
             spriteBatchSingleton.RenderTarget = new RenderTarget2D(
-                World.GraphicsDeviceManager.GraphicsDevice,
+                LuxGame.Graphics.GraphicsDevice,
                 virtualResolution.VWidth,
                 virtualResolution.VHeight);
         }
@@ -48,8 +48,8 @@ namespace LuxEngine
             var spriteBatchSingleton = World.UnpackSingleton<SpriteBatchSingleton>();
             var virtualResolution = World.UnpackSingleton<VirtualResolutionSingleton>();
 
-            World.GraphicsDeviceManager.GraphicsDevice.SetRenderTarget(spriteBatchSingleton.RenderTarget);
-            World.GraphicsDeviceManager.GraphicsDevice.Clear(Color.Beige);
+            LuxGame.Graphics.GraphicsDevice.SetRenderTarget(spriteBatchSingleton.RenderTarget);
+            LuxGame.Graphics.GraphicsDevice.Clear(Color.Beige);
 
             spriteBatchSingleton.SpriteBatch.Begin(
                 SpriteSortMode.BackToFront, // Defferred?
@@ -68,7 +68,7 @@ namespace LuxEngine
             spriteBatch.End();
 
             // Reset render target
-            World.GraphicsDeviceManager.GraphicsDevice.SetRenderTarget(null);
+            LuxGame.Graphics.GraphicsDevice.SetRenderTarget(null);
 
             // Get transform matrix
             Matrix transformMatrix = Matrix.Identity;

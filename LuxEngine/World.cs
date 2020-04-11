@@ -4,13 +4,13 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
     public class World
     {
+        private Entity _singletonEntity;
+
         private EntityGenerator _entityGenerator;
         private Dictionary<Entity, ComponentMask> _entityMasks;
 
@@ -44,13 +44,7 @@ namespace LuxEngine
             }
         }
 
-        public readonly GraphicsDeviceManager GraphicsDeviceManager;
-        public readonly ContentManager ContentManager;
-        public readonly GameWindow Window;
-
-        private Entity _singletonEntity;
-
-        public World(GraphicsDeviceManager graphicsDeviceManager, ContentManager contentManager, GameWindow window)
+        public World()
         {
             _entityGenerator = new EntityGenerator();
             _entityMasks = new Dictionary<Entity, ComponentMask>();
@@ -62,10 +56,6 @@ namespace LuxEngine
 
             _initialized = false;
             _paused = false;
-
-            GraphicsDeviceManager = graphicsDeviceManager;
-            ContentManager = contentManager;
-            Window = window;
         }
 
         public void InitWorld()
@@ -410,7 +400,7 @@ namespace LuxEngine
 
         #region Phases
 
-        public virtual void InitSingleton()
+        public virtual void Init()
         {
             _inInitSingleton = true;
             foreach (InternalBaseSystem system in _systems)
@@ -418,10 +408,7 @@ namespace LuxEngine
                 system.RunInitSingleton();
             }
             _inInitSingleton = false;
-        }
 
-        public virtual void Init()
-        {
             foreach (InternalBaseSystem system in _systems)
             {
                 system.RunInit();
@@ -436,43 +423,21 @@ namespace LuxEngine
             }
         }
 
-        public virtual void PreUpdate(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             foreach (InternalBaseSystem system in _systems)
             {
                 system.RunPreUpdate(gameTime);
             }
-        }
 
-        public virtual void Update(GameTime gameTime)
-        {
             foreach (InternalBaseSystem system in _systems)
             {
                 system.RunUpdate(gameTime);
             }
-        }
 
-        public virtual void PostUpdate(GameTime gameTime)
-        {
             foreach (InternalBaseSystem system in _systems)
             {
                 system.RunPostUpdate(gameTime);
-            }
-        }
-
-        public virtual void PrePreDraw(GameTime gameTime)
-        {
-            foreach (InternalBaseSystem system in _systems)
-            {
-                system.RunPrePreDraw(gameTime);
-            }
-        }
-
-        public virtual void PreDraw(GameTime gameTime)
-        {
-            foreach (InternalBaseSystem system in _systems)
-            {
-                system.RunPreDraw(gameTime);
             }
         }
 
@@ -480,12 +445,19 @@ namespace LuxEngine
         {
             foreach (InternalBaseSystem system in _systems)
             {
+                system.RunPrePreDraw(gameTime);
+            }
+
+            foreach (InternalBaseSystem system in _systems)
+            {
+                system.RunPreDraw(gameTime);
+            }
+
+            foreach (InternalBaseSystem system in _systems)
+            {
                 system.RunDraw(gameTime);
             }
-        }
 
-        public virtual void PostDraw(GameTime gameTime)
-        {
             foreach (InternalBaseSystem system in _systems)
             {
                 system.RunPostDraw(gameTime);

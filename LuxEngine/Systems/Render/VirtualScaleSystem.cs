@@ -53,7 +53,7 @@ namespace LuxEngine
         {
             var virtualResolution = World.Unpack<VirtualResolutionSingleton>(entity);
             var transformMatrix = World.Unpack<TransformMatrixSingleton>(entity);
-            var worldViewport = World.GraphicsDeviceManager.GraphicsDevice.Viewport;
+            var worldViewport = LuxGame.Instance.GraphicsDevice.Viewport;
 
             // Save the calculated scale matrix
             virtualResolution.ScaleMatrix = Matrix.CreateScale(
@@ -72,17 +72,17 @@ namespace LuxEngine
 
             foreach (var entity in RegisteredEntities)
             {
-                var windowSize = World.GraphicsDeviceManager.GraphicsDevice.PresentationParameters.Bounds;
+                var windowSize = LuxGame.Instance.GraphicsDevice.PresentationParameters.Bounds;
 
                 // Resize the viewport to the whole window
-                World.GraphicsDeviceManager.GraphicsDevice.Viewport =
+                LuxGame.Instance.GraphicsDevice.Viewport =
                     new Viewport(0, 0, windowSize.Width, windowSize.Height);
 
                 // Clear to Black
-                World.GraphicsDeviceManager.GraphicsDevice.Clear(Color.Black);
+                LuxGame.Instance.GraphicsDevice.Clear(Color.Black);
 
                 // Calculate Proper Viewport according to Aspect Ratio
-                World.GraphicsDeviceManager.GraphicsDevice.Viewport = GetVirtualViewport(entity);
+                LuxGame.Instance.GraphicsDevice.Viewport = GetVirtualViewport(entity);
 
                 // Now sprites will be drawn only within the viewport
                 // with black bars on the sides
@@ -94,7 +94,7 @@ namespace LuxEngine
             var gameSettings = World.Unpack<ResolutionSettingsSingleton>(entity);
             var virtualResolution = World.Unpack<VirtualResolutionSingleton>(entity);
 
-            var graphicsDevice = World.GraphicsDeviceManager.GraphicsDevice;
+            var graphicsDevice = LuxGame.Instance.GraphicsDevice;
 
             // Full screen sizes
             int viewportWidth = graphicsDevice.DisplayMode.Width;
@@ -105,7 +105,7 @@ namespace LuxEngine
                 float targetAspectRatio = (float)virtualResolution.VWidth / (float)virtualResolution.VHeight;
 
                 // Calculate sizes based on game settings
-                viewportWidth = World.GraphicsDeviceManager.PreferredBackBufferWidth;
+                viewportWidth = LuxGame.Graphics.PreferredBackBufferWidth;
                 viewportHeight = (int)(viewportWidth / targetAspectRatio + .5f); // Force round up
             }
 

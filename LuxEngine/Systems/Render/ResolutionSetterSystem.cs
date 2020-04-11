@@ -33,7 +33,7 @@ namespace LuxEngine
         {
             var resolutionSettings = World.Unpack<ResolutionSettingsSingleton>(entity);
             var virtualResolution = World.Unpack<VirtualResolutionSingleton>(entity);
-            var graphicsDeviceManager = World.GraphicsDeviceManager;
+            var graphicsDeviceManager = LuxGame.Graphics;
 
             var preferredWidth = virtualResolution.VWidth * resolutionSettings.WindowScale;
             var preferredHeight = virtualResolution.VHeight * resolutionSettings.WindowScale;

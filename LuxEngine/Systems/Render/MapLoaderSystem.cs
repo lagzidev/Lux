@@ -1,18 +1,11 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TiledSharp;
 
 namespace LuxEngine
 {
-    //[Serializable]
-    //public class TilesetSingleton : BaseComponent<TilesetSingleton>
-    //{
-    //    public TilesetSingleton()
-    //    {
-    //    }
-    //}
-
     [Serializable]
     public class Map : BaseComponent<Map>
     {
@@ -35,7 +28,6 @@ namespace LuxEngine
             signature.Require<Map>();
             signature.RequireSingleton<SpriteBatchSingleton>();
             signature.RequireSingleton<LoadedTexturesSingleton>();
-            //signature.RequireSingleton<TilesetSingleton>();
         }
 
         protected override void InitSingleton()
@@ -48,7 +40,7 @@ namespace LuxEngine
             var loadedTextures = World.UnpackSingleton<LoadedTexturesSingleton>();
             Map mapComponent = World.Unpack<Map>(entity);
 
-            string mapFilePath = $"{World.ContentManager.RootDirectory}/{HardCodedConfig.DEFAULT_MAPS_FOLDER_NAME}/{mapComponent.MapFileName}.tmx";
+            string mapFilePath = $"{LuxGame.ContentDirectory}/{HardCodedConfig.DEFAULT_MAPS_FOLDER_NAME}/{mapComponent.MapFileName}.tmx";
             TmxMap map = new TmxMap(mapFilePath);
 
             // For every used tileset

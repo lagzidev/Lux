@@ -64,7 +64,7 @@ namespace LuxEngine
         {
             var sprite = World.Unpack<Sprite>(entity);
 
-            var path = $"{World.ContentManager.RootDirectory}/Textures/{sprite.SpriteName}.json";
+            var path = $"{LuxGame.ContentDirectory}/Textures/{sprite.SpriteName}.json";
 
             // TODO: Instead of saving a Sprite, save a Sprite[][], with each having a string that labels
             // the animation
