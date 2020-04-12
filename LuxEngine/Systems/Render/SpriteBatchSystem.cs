@@ -45,13 +45,11 @@ namespace LuxEngine
 
             // Everything will be drawn to our render target
             LuxGame.Graphics.GraphicsDevice.SetRenderTarget(spriteBatchSingleton.RenderTarget);
-            //LuxGame.Graphics.GraphicsDevice.Viewport = LuxGame.Viewport;
-            LuxGame.Graphics.GraphicsDevice.Clear(Color.Beige);
 
             spriteBatchSingleton.SpriteBatch.Begin(
-                SpriteSortMode.BackToFront, // Defferred?
+                SpriteSortMode.BackToFront,
                 BlendState.AlphaBlend,
-                SamplerState.PointClamp, // Wrap?
+                SamplerState.PointWrap,
                 DepthStencilState.Default,
                 RasterizerState.CullNone);
         }
@@ -66,8 +64,10 @@ namespace LuxEngine
             // End batch drawing on the render target
             spriteBatch.End();
 
-            // Reset render target
+            // Reset render target and draw to actual screen
             LuxGame.Graphics.GraphicsDevice.SetRenderTarget(null);
+            LuxGame.Graphics.GraphicsDevice.Viewport = LuxGame.Viewport;
+            LuxGame.Graphics.GraphicsDevice.Clear(Color.Black);
 
             foreach (var entity in RegisteredEntities)
             {
@@ -75,13 +75,13 @@ namespace LuxEngine
 
                 // Draw from render target to the actual screen using the matrices for zoom, scaling, etc.
                 spriteBatch.Begin(
-                    SpriteSortMode.Immediate,
-                    BlendState.Opaque,
+                    SpriteSortMode.Deferred,
+                    BlendState.NonPremultiplied,
                     SamplerState.PointClamp,
                     DepthStencilState.Default,
                     RasterizerState.CullNone,
                     null,
-                    /*camera.Matrix * */LuxGame.ScreenMatrix); // Order matters
+                    camera.Matrix * LuxGame.ScreenMatrix); // Order matters
 
                 // TODO: Make sure this works with multiple cameras
 
@@ -94,7 +94,7 @@ namespace LuxEngine
                     Vector2.Zero,
                     Vector2.One,
                     SpriteEffects.None,
-                    0.5f);
+                    0.0f);
 
                 spriteBatch.End();
             }

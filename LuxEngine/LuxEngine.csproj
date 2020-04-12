@@ -44,7 +44,6 @@
     <Compile Include="HardCodedConfig.cs" />
     <Compile Include="ComponentMask.cs" />
     <Compile Include="LuxCommon.cs" />
-    <Compile Include="Camera.cs" />
     <Compile Include="BMFont.cs" />
     <Compile Include="ECS.cs" />
     <Compile Include="Benchmark.cs" />
@@ -65,10 +64,13 @@
     <Compile Include="Systems\Render\AnimationSystem.cs" />
     <Compile Include="Systems\Render\CameraSystem.cs" />
     <Compile Include="Systems\DebugSystem.cs" />
-    <Compile Include="Systems\Physics\CollisionSystem.cs" />
+    <Compile Include="Systems\Physics\MapCollisionSystem.cs" />
     <Compile Include="Systems\Render\MapLoaderSystem.cs" />
     <Compile Include="Utils\TextureLoader.cs" />
     <Compile Include="LuxGame.cs" />
+    <Compile Include="Systems\Render\MapFocusSystem.cs" />
+    <Compile Include="Systems\Networking\ServerSystem.cs" />
+    <Compile Include="Systems\Networking\ClientSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
@@ -79,6 +81,7 @@
     <Folder Include="Systems\" />
     <Folder Include="Systems\Render\" />
     <Folder Include="Systems\Physics\" />
+    <Folder Include="Systems\Networking\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />

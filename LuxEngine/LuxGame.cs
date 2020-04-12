@@ -67,6 +67,7 @@ namespace LuxEngine
 
             Width = width;
             Height = height;
+            ScreenMatrix = Matrix.Identity;
 
             Graphics = new GraphicsDeviceManager(this);
             Graphics.DeviceReset += OnGraphicsReset;
@@ -107,7 +108,7 @@ namespace LuxEngine
             IsMouseVisible = false;
             IsFixedTimeStep = false;
 
-            GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+            //GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
         }
 
 #if !CONSOLE
@@ -194,7 +195,8 @@ namespace LuxEngine
             viewHeight -= (int)(aspect * ViewPadding * 2);
 
             // Update screen matrix
-            ScreenMatrix = Matrix.CreateScale(viewWidth / (float)Width);
+            float scale = viewWidth / (float)Width;
+            ScreenMatrix = Matrix.CreateScale(scale, scale, 0f);
 
             // Update viewport
             Viewport = new Viewport
@@ -203,10 +205,21 @@ namespace LuxEngine
                 Y = (int)(screenHeight / 2 - viewHeight / 2),
                 Width = viewWidth,
                 Height = viewHeight,
-                MinDepth = 0,
-                MaxDepth = 1
+                MinDepth = 0f,
+                MaxDepth = 1f
             };
         }
+
+        // TODO
+        //protected override void OnActivated(object sender, EventArgs args)
+        //{
+        //    base.OnActivated(sender, args);
+        //}
+
+        //protected override void OnDeactivated(object sender, EventArgs args)
+        //{
+        //    base.OnDeactivated(sender, args);
+        //}
 
         /// <summary>
         /// Creates a new ECS world
@@ -227,7 +240,7 @@ namespace LuxEngine
         }
 
         /// <summary>
-        /// Automatically called when your game launches to load any game assets (graphics, audio etc.)
+        /// Automatically called after Initialize when your game launches to load any game assets (graphics, audio etc.)
         /// In XNA (not in FNA, maybe in MonoGame) it's called on device reset.
         /// </summary>
         protected override void LoadContent()

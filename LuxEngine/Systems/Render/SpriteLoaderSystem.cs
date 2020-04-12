@@ -62,34 +62,14 @@ namespace LuxEngine
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            var sprite = World.Unpack<Sprite>(entity);
-
-            var path = $"{LuxGame.ContentDirectory}/Textures/{sprite.SpriteName}.json";
-
-            // TODO: Instead of saving a Sprite, save a Sprite[][], with each having a string that labels
-            // the animation
-
-            JsonSerializer jsonSerializer = new JsonSerializer();
-
-            //using (StreamWriter sw = new StreamWriter(path))
-            //using (JsonWriter writer = new JsonTextWriter(sw))
-            //{
-            //    // 11, 25, 0, 0, Color.White, 0, new Vector2(20, 20), SpriteEffects.None, SpriteDepth.Character
-            //    var sd = new SpriteData();
-            //    var anim = new Animation();
-            //    var frame = new AnimationFrame();
-
-            //    anim.Frames = new List<AnimationFrame> { frame };
-            //    sd.Animations = new Dictionary<string, Animation>();
-            //    sd.Animations.Add("Fly", anim);
-
-            //    jsonSerializer.Serialize(writer, sd);
-            //}
+            Sprite sprite = World.Unpack<Sprite>(entity);
+            string path = $"{LuxGame.ContentDirectory}/Textures/{sprite.SpriteName}.json";
 
             // Load sprite data into the sprite component
             using (StreamReader sw = new StreamReader(path))
             using (JsonReader reader = new JsonTextReader(sw))
             {
+                JsonSerializer jsonSerializer = new JsonSerializer();
                 SpriteData spriteData = jsonSerializer.Deserialize<SpriteData>(reader);
                 sprite.SpriteData = spriteData;
 

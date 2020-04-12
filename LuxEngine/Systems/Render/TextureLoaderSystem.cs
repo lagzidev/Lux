@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml.Serialization;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
@@ -22,17 +19,15 @@ namespace LuxEngine
     public class TextureComponent : BaseComponent<TextureComponent>
     {
         public string Name;
-        //public string[] OtherTexturesToLoad;
 
-        public TextureComponent(string textureName) //params string[] otherTexturesToLoad
+        public TextureComponent(string textureName)
         {
             Name = textureName;
-            //OtherTexturesToLoad = otherTexturesToLoad;
         }
     }
 
     /// <summary>
-    /// Responsible for loading sprite textures (.png files)
+    /// Responsible for loading textures (.png files)
     /// </summary>
     public class TextureLoaderSystem : BaseSystem<TextureLoaderSystem>
     {
@@ -57,6 +52,8 @@ namespace LuxEngine
 
         protected override void OnRegisterEntity(Entity entity)
         {
+            // If LoadContent was already called, load the texture.
+            // Otherwise LoadContent will load it for us
             if (IsReadyToLoadContent)
             {
                 AddTexture(entity);
@@ -71,6 +68,13 @@ namespace LuxEngine
             // If texture is already loaded, no need to load it again
             if (loadedTexturesSingleton.Textures.ContainsKey(textureName))
             {
+                return;
+            }
+
+            // Invalid texture name
+            if (textureName.Length == 0)
+            {
+                LuxCommon.Assert(false);
                 return;
             }
 
