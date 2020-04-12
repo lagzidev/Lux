@@ -50,7 +50,6 @@
     <Compile Include="SparseSet.cs" />
     <Compile Include="Systems.cs" />
     <Compile Include="Systems\InputSystem.cs" />
-    <Compile Include="Systems\NetworkSystem.cs" />
     <Compile Include="Systems\ParentSystem.cs" />
     <Compile Include="Systems\PhysicsSystem.cs" />
     <Compile Include="Systems\SaveSystem.cs" />

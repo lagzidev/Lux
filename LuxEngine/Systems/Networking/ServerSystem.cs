@@ -10,10 +10,15 @@ namespace LuxEngine
         public IPAddress IPAddress;
         public int Port;
 
+        [NonSerialized]
+        public IPEndPoint Endpoint;
+
+
         public ServerInfo(IPAddress ipAddress, int port)
         {
             IPAddress = ipAddress;
             Port = port;
+            Endpoint = new IPEndPoint(IPAddress, Port);
         }
     }
 
