@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Net;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using Microsoft.Xna.Framework;
 
 namespace LuxEngine
@@ -10,63 +9,53 @@ namespace LuxEngine
     [Serializable]
     public class ConnectionToServer : BaseComponent<ConnectionToServer>
     {
-        [NonSerialized]
-        public UdpClient Client;
-
-        public ConnectionToServer(IPEndPoint serverEP)
-        {
-            Client = new UdpClient();
-            Client.Connect(serverEP);
-        }
     }
 
+    /// <summary>
+    /// Responsible for managing a client connected to a server
+    /// </summary>
     public class ClientSystem : BaseSystem<ClientSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
-            signature.Require<ServerInfo>();
-            signature.Using<ConnectionToServer>();
+            signature.Require<Connection>();
+            signature.Require<ConnectionToServer>();
+            signature.RequireSingleton<InputSingleton>();
         }
 
-        protected override void OnRegisterEntity(Entity entity)
+        protected override void LoadFrame(GameTime gameTime)
         {
-            if (World.TryUnpack<ConnectionToServer>(entity, out _))
+            var input = World.UnpackSingleton<InputSingleton>();
+
+            //LuxMessage luxMessage = new LuxMessage();
+
+            //foreach (var entity in RegisteredEntities)
+            //{
+            //    var connection = World.Unpack<Connection>(entity);
+
+            //    using (MemoryStream memStream = new MemoryStream())
+            //    {
+            //        Serializer.Serialize(memStream, input);
+            //        byte[] data = memStream.ToArray();
+            //        connection.Socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, connection.Endpoint, new AsyncCallback(SendCallback), connection);
+            //    }
+            //}
+        }
+
+        private static void SendCallback(IAsyncResult ar)
+        {
+            try
             {
-                // There's new server information, replace the current connection
-                World.RemoveComponent<ConnectionToServer>(entity);
+                // Retrieve the socket from the state object.  
+                Connection connection = (Connection)ar.AsyncState;
+
+                // Complete sending the data to the remote device.  
+                int bytesSent = connection.Socket.EndSend(ar);
+                Console.WriteLine("Sent {0} bytes to server.", bytesSent);
             }
-
-            var serverInfo = World.Unpack<ServerInfo>(entity);
-            World.AddComponent(entity, new ConnectionToServer(serverInfo.Endpoint));
-
-            //// Receive the response from the remote device.  
-            //Receive(client);
-            //connection.receiveDone.WaitOne();
-
-            //// Write the response to the console.  
-            //Console.WriteLine("Response received : {0}", response);
-        }
-
-        protected override void PreUpdate(GameTime gameTime)
-        {
-            foreach (var entity in RegisteredEntities)
+            catch (Exception e)
             {
-                var serverInfo = World.Unpack<ServerInfo>(entity);
-
-                if (World.TryUnpack(entity, out ConnectionToServer connection))
-                {
-                    byte[] data = Encoding.ASCII.GetBytes("hey");
-                    connection.Client.SendAsync(data, data.Length);
-                }
-            }
-        }
-
-        protected override void OnUnregisterEntity(Entity entity)
-        {
-            if (World.TryUnpack(entity, out ConnectionToServer connection))
-            {
-                connection.Client.Close();
-                World.RemoveComponent<ConnectionToServer>(entity);
+                Console.WriteLine(e.ToString());
             }
         }
     }

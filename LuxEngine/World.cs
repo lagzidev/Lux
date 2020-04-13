@@ -427,6 +427,11 @@ namespace LuxEngine
         {
             foreach (InternalBaseSystem system in _systems)
             {
+                system.RunLoadFrame(gameTime);
+            }
+
+            foreach (InternalBaseSystem system in _systems)
+            {
                 system.RunPreUpdate(gameTime);
             }
 
@@ -445,7 +450,7 @@ namespace LuxEngine
         {
             foreach (InternalBaseSystem system in _systems)
             {
-                system.RunPrePreDraw(gameTime);
+                system.RunLoadDraw(gameTime);
             }
 
             foreach (InternalBaseSystem system in _systems)

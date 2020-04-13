@@ -34,7 +34,7 @@ namespace LuxEngine
             World.AddComponent(entity, new Transform(0, 0));
         }
 
-        protected override void PrePreDraw(GameTime gameTime)
+        protected override void PreDraw(GameTime gameTime)
         {
             if (RegisteredEntities.Count > 1)
             {

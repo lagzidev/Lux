@@ -1,0 +1,31 @@
+﻿syntax = "proto3";
+package LuxMessage;
+
+message LuxMessage
+{
+    oneof message
+    {
+        Input input = 1;
+    }
+}
+
+message Input
+{
+    bool Up = 1;
+    bool Down = 2;
+    bool Right = 3;
+    bool Left = 4;
+
+    bool UpKeyPressed = 5;
+    bool DownKeyPressed = 6;
+    bool RightKeyPressed = 7;
+    bool LeftKeyPressed = 8;
+
+    bool F4KeyPress = 9;
+    bool F4 = 10;
+
+    bool F5KeyReleased = 11;
+    bool F5 = 12;
+
+    bool F6 = 13;
+}

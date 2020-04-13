@@ -99,7 +99,7 @@ namespace LuxEngine
             }
         }
 
-        protected override void PrePreDraw(GameTime gameTime)
+        protected override void LoadDraw(GameTime gameTime)
         {
             foreach (var entity in RegisteredEntities)
             {

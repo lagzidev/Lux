@@ -164,7 +164,7 @@ namespace LuxEngine
         private void UnregisterEntity(Entity entity)
         {
             // Unregister entity if exists in set
-            if (RegisteredEntities.Remove(entity))
+            if (!RegisteredEntities.Remove(entity))
             {
                 return;
             }
@@ -289,6 +289,22 @@ namespace LuxEngine
         }
 
         /// <summary>
+        /// First phase to be called each frame.
+        /// Use this to load state from disk or from over the network.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        protected virtual void LoadFrame(GameTime gameTime) { }
+        public void RunLoadFrame(GameTime gameTime)
+        {
+            if (!_signature.SingletonMatches)
+            {
+                return;
+            }
+
+            LoadFrame(gameTime);
+        }
+
+        /// <summary>
         /// Called before Update
         /// </summary>
         /// <param name="gameTime"></param>
@@ -334,21 +350,23 @@ namespace LuxEngine
         }
 
         /// <summary>
-        /// This is called every frame when the game is ready to draw to the screen.
+        /// First draw phase that is called every frame.
+        /// Prepare state that PreDraw needs here.
         /// </summary>
-        protected virtual void PrePreDraw(GameTime gameTime) { }
-        public void RunPrePreDraw(GameTime gameTime)
+        protected virtual void LoadDraw(GameTime gameTime) { }
+        public void RunLoadDraw(GameTime gameTime)
         {
             if (!_signature.SingletonMatches)
             {
                 return;
             }
 
-            PrePreDraw(gameTime);
+            LoadDraw(gameTime);
         }
 
         /// <summary>
-        /// This is called every frame when the game is ready to draw to the screen.
+        /// Called every frame before the game is ready to draw to the screen.
+        /// Prepare draw related state here (update animations, etc.)
         /// </summary>
         protected virtual void PreDraw(GameTime gameTime) { }
         public void RunPreDraw(GameTime gameTime)
@@ -362,7 +380,7 @@ namespace LuxEngine
         }
 
         /// <summary>
-        /// This is called every frame when the game is ready to draw to the screen.
+        /// Called every frame when the game is ready to draw to the screen.
         /// </summary>
         protected virtual void Draw(GameTime gameTime) { }
         public void RunDraw(GameTime gameTime)
@@ -376,7 +394,8 @@ namespace LuxEngine
         }
 
         /// <summary>
-        /// This is called after Draw
+        /// Called every frame after Draw.
+        /// Use this for cleanup (e.g. SpriteBatch.End)
         /// </summary>
         protected virtual void PostDraw(GameTime gameTime) { }
         public void RunPostDraw(GameTime gameTime)
