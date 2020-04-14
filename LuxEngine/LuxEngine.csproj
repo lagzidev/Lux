@@ -75,10 +75,15 @@
     <Compile Include="Utils\TextureLoader.cs" />
     <Compile Include="LuxGame.cs" />
     <Compile Include="Systems\Render\MapFocusSystem.cs" />
-    <Compile Include="Systems\Networking\ServerSystem.cs" />
+    <Compile Include="Systems\Networking\PacketReceiverSystem.cs" />
     <Compile Include="Systems\Networking\ClientSystem.cs" />
     <Compile Include="Systems\Networking\ConnectionSystem.cs" />
+    <Compile Include="Systems\Networking\PacketSenderSystem.cs" />
     <Compile Include="Protobuf\LuxMessage.cs" />
+    <Compile Include="Systems\Networking\ServerSystem.cs" />
+    <Compile Include="Systems\Networking\AuthServerSystem.cs" />
+    <Compile Include="Systems\Networking\RSAKeysGeneratorSystem.cs" />
+    <Compile Include="Systems\Networking\AuthClientSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
@@ -129,6 +134,7 @@
     </None>
     <None Include="packages.config" />
     <None Include="Protobuf\LuxMessage.proto" />
+    <None Include="Utils\UtilsGuidelines.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FNA\FNA.csproj">

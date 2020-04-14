@@ -44,6 +44,8 @@ namespace LuxEngine
             }
         }
 
+        public bool DrawDisabled;
+
         public World()
         {
             _entityGenerator = new EntityGenerator();
@@ -56,6 +58,8 @@ namespace LuxEngine
 
             _initialized = false;
             _paused = false;
+
+            DrawDisabled = false;
         }
 
         public void InitWorld()
@@ -448,6 +452,11 @@ namespace LuxEngine
 
         public virtual void Draw(GameTime gameTime)
         {
+            if (DrawDisabled)
+            {
+                return;
+            }
+
             foreach (InternalBaseSystem system in _systems)
             {
                 system.RunLoadDraw(gameTime);

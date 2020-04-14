@@ -18,14 +18,21 @@ def main():
     protobuf_files_path = '{0}/Protobuf'.format(project_dir)
 
     for filename in os.listdir(protobuf_files_path):
+        if not filename.endswith('.proto'):
+            continue
+
         filepath = '{0}/{1}'.format(protobuf_files_path, filename)
-        subprocess.run([
+        result = subprocess.run([
             protoc_path, 
             '--proto_path=' + protobuf_files_path,
             '--proto_path=' + protoc_include_path,
             '--csharp_out=' + protobuf_files_path,
             filepath])
 
+        # If failed, exit
+        if result.returncode != 0:
+            return result.returncode
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

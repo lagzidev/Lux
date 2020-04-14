@@ -48,8 +48,8 @@ namespace LuxEngine
                 var transform = World.Unpack<Transform>(entity);
                 Entity parentEntity = World.Unpack<Parent>(entity).ParentEntity;
 
-                int transformX = transform.X;
-                int transformY = transform.Y;
+                float transformX = transform.X;
+                float transformY = transform.Y;
                 if (World.TryUnpack(parentEntity, out Transform parentTransform))
                 {
                     transformX += parentTransform.X;

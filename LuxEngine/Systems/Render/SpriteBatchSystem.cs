@@ -77,7 +77,7 @@ namespace LuxEngine
                 spriteBatch.Begin(
                     SpriteSortMode.Deferred,
                     BlendState.NonPremultiplied,
-                    SamplerState.PointClamp,
+                    SamplerState.PointWrap,
                     DepthStencilState.Default,
                     RasterizerState.CullNone,
                     null,

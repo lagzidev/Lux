@@ -27,8 +27,8 @@ namespace LuxEngine
                 var transform = World.Unpack<Transform>(entity);
                 var texture = World.Unpack<TextureComponent>(entity);
 
-                int transformX = transform.X;
-                int transformY = transform.Y;
+                float transformX = transform.X;
+                float transformY = transform.Y;
                 if (World.TryUnpack(entity, out Parent parent))
                 {
                     var parentTransform = World.Unpack<Transform>(parent.ParentEntity);

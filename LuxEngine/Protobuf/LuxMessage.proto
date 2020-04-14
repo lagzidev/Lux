@@ -1,14 +1,107 @@
 ﻿syntax = "proto3";
-package LuxMessage;
+package LuxProtobuf;
 
-message LuxMessage
+enum Status
 {
-    oneof message
+    NON_MATCHING_PROTOCOL_VERSIONS = 0;
+}
+
+message NetworkPacket
+{
+    int32 PacketID = 1;
+    repeated NetworkMessage messages = 2;
+}
+
+message NetworkMessage
+{
+    oneof Message
     {
-        Input input = 1;
+        Handshake Handshake = 1;
+        Failure Failure = 2;
+
+        ServerInfoRequest ServerInfoRequest = 3;
+        ServerInfoResponse ServerInfoResponse = 4;
+
+        LoginStart LoginStart = 5;
+        LoginSuccess LoginSuccess = 6;
+
+        KeepAliveRequest KeepAliveRequest = 7;
+
+        Input Input = 8;
     }
 }
 
+/* ==== Handshake ==== */
+
+/* Sent by client */
+message Handshake
+{
+    int32 ProtocolVersion = 1;
+}
+
+/* ==== Server Information ==== */
+
+/* Sent by client */
+message ServerInfoRequest
+{
+    int32 ProtocolVersion = 1;
+}
+
+/* Sent by server */
+message ServerInfoResponse
+{
+    string JSONResponse = 1;
+    /*
+        "ServerID": "someuuid",
+        "ServerName": "awesomeness"
+    */
+}
+
+
+/* ==== Authentication ==== */
+
+/* Sent by client */
+message LoginStart
+{
+    string Username = 1;
+    string EncryptedPassword = 2;
+}
+
+/* Sent by server */
+message EncryptionKeyRequest
+{
+    string RSAPublicKey = 1;
+}
+
+/* Sent by client */
+/* After this message is sent/received, all packets will be encrypted */
+message EncryptionKeyResponse
+{
+    string RSAEncryptedEncryptionKey = 1;
+}
+
+/* Sent by server */
+message LoginSuccess
+{
+    string SessionToken = 1;
+}
+
+/* Sent by server */
+/* Sent on timeout, encryption failure etc.. */
+message Failure
+{
+    Status Status = 1;
+}
+
+/* Sent by client */
+message KeepAliveRequest
+{
+}
+
+
+/* ==== In Game ==== */
+
+/* Sent by client */
 message Input
 {
     bool Up = 1;

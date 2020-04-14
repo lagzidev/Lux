@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace LuxMessage {
+namespace LuxProtobuf {
 
   /// <summary>Holder for reflection information generated from LuxMessage.proto</summary>
   public static partial class LuxMessageReflection {
@@ -24,34 +24,71 @@ namespace LuxMessage {
     static LuxMessageReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChBMdXhNZXNzYWdlLnByb3RvEgpMdXhNZXNzYWdlIjsKCkx1eE1lc3NhZ2US",
-            "IgoFaW5wdXQYASABKAsyES5MdXhNZXNzYWdlLklucHV0SABCCQoHbWVzc2Fn",
-            "ZSLsAQoFSW5wdXQSCgoCVXAYASABKAgSDAoERG93bhgCIAEoCBINCgVSaWdo",
+            "ChBMdXhNZXNzYWdlLnByb3RvEgtMdXhQcm90b2J1ZiJQCg1OZXR3b3JrUGFj",
+            "a2V0EhAKCFBhY2tldElEGAEgASgFEi0KCG1lc3NhZ2VzGAIgAygLMhsuTHV4",
+            "UHJvdG9idWYuTmV0d29ya01lc3NhZ2UirwMKDk5ldHdvcmtNZXNzYWdlEisK",
+            "CUhhbmRzaGFrZRgBIAEoCzIWLkx1eFByb3RvYnVmLkhhbmRzaGFrZUgAEicK",
+            "B0ZhaWx1cmUYAiABKAsyFC5MdXhQcm90b2J1Zi5GYWlsdXJlSAASOwoRU2Vy",
+            "dmVySW5mb1JlcXVlc3QYAyABKAsyHi5MdXhQcm90b2J1Zi5TZXJ2ZXJJbmZv",
+            "UmVxdWVzdEgAEj0KElNlcnZlckluZm9SZXNwb25zZRgEIAEoCzIfLkx1eFBy",
+            "b3RvYnVmLlNlcnZlckluZm9SZXNwb25zZUgAEi0KCkxvZ2luU3RhcnQYBSAB",
+            "KAsyFy5MdXhQcm90b2J1Zi5Mb2dpblN0YXJ0SAASMQoMTG9naW5TdWNjZXNz",
+            "GAYgASgLMhkuTHV4UHJvdG9idWYuTG9naW5TdWNjZXNzSAASOQoQS2VlcEFs",
+            "aXZlUmVxdWVzdBgHIAEoCzIdLkx1eFByb3RvYnVmLktlZXBBbGl2ZVJlcXVl",
+            "c3RIABIjCgVJbnB1dBgIIAEoCzISLkx1eFByb3RvYnVmLklucHV0SABCCQoH",
+            "TWVzc2FnZSIkCglIYW5kc2hha2USFwoPUHJvdG9jb2xWZXJzaW9uGAEgASgF",
+            "IiwKEVNlcnZlckluZm9SZXF1ZXN0EhcKD1Byb3RvY29sVmVyc2lvbhgBIAEo",
+            "BSIqChJTZXJ2ZXJJbmZvUmVzcG9uc2USFAoMSlNPTlJlc3BvbnNlGAEgASgJ",
+            "IjkKCkxvZ2luU3RhcnQSEAoIVXNlcm5hbWUYASABKAkSGQoRRW5jcnlwdGVk",
+            "UGFzc3dvcmQYAiABKAkiLAoURW5jcnlwdGlvbktleVJlcXVlc3QSFAoMUlNB",
+            "UHVibGljS2V5GAEgASgJIjoKFUVuY3J5cHRpb25LZXlSZXNwb25zZRIhChlS",
+            "U0FFbmNyeXB0ZWRFbmNyeXB0aW9uS2V5GAEgASgJIiQKDExvZ2luU3VjY2Vz",
+            "cxIUCgxTZXNzaW9uVG9rZW4YASABKAkiLgoHRmFpbHVyZRIjCgZTdGF0dXMY",
+            "ASABKA4yEy5MdXhQcm90b2J1Zi5TdGF0dXMiEgoQS2VlcEFsaXZlUmVxdWVz",
+            "dCLsAQoFSW5wdXQSCgoCVXAYASABKAgSDAoERG93bhgCIAEoCBINCgVSaWdo",
             "dBgDIAEoCBIMCgRMZWZ0GAQgASgIEhQKDFVwS2V5UHJlc3NlZBgFIAEoCBIW",
             "Cg5Eb3duS2V5UHJlc3NlZBgGIAEoCBIXCg9SaWdodEtleVByZXNzZWQYByAB",
             "KAgSFgoOTGVmdEtleVByZXNzZWQYCCABKAgSEgoKRjRLZXlQcmVzcxgJIAEo",
             "CBIKCgJGNBgKIAEoCBIVCg1GNUtleVJlbGVhc2VkGAsgASgIEgoKAkY1GAwg",
-            "ASgIEgoKAkY2GA0gASgIYgZwcm90bzM="));
+            "ASgIEgoKAkY2GA0gASgIKiwKBlN0YXR1cxIiCh5OT05fTUFUQ0hJTkdfUFJP",
+            "VE9DT0xfVkVSU0lPTlMQAGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::LuxMessage.LuxMessage), global::LuxMessage.LuxMessage.Parser, new[]{ "Input" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LuxMessage.Input), global::LuxMessage.Input.Parser, new[]{ "Up", "Down", "Right", "Left", "UpKeyPressed", "DownKeyPressed", "RightKeyPressed", "LeftKeyPressed", "F4KeyPress", "F4", "F5KeyReleased", "F5", "F6" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::LuxProtobuf.Status), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.NetworkPacket), global::LuxProtobuf.NetworkPacket.Parser, new[]{ "PacketID", "Messages" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.NetworkMessage), global::LuxProtobuf.NetworkMessage.Parser, new[]{ "Handshake", "Failure", "ServerInfoRequest", "ServerInfoResponse", "LoginStart", "LoginSuccess", "KeepAliveRequest", "Input" }, new[]{ "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.Handshake), global::LuxProtobuf.Handshake.Parser, new[]{ "ProtocolVersion" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.ServerInfoRequest), global::LuxProtobuf.ServerInfoRequest.Parser, new[]{ "ProtocolVersion" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.ServerInfoResponse), global::LuxProtobuf.ServerInfoResponse.Parser, new[]{ "JSONResponse" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.LoginStart), global::LuxProtobuf.LoginStart.Parser, new[]{ "Username", "EncryptedPassword" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.EncryptionKeyRequest), global::LuxProtobuf.EncryptionKeyRequest.Parser, new[]{ "RSAPublicKey" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.EncryptionKeyResponse), global::LuxProtobuf.EncryptionKeyResponse.Parser, new[]{ "RSAEncryptedEncryptionKey" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.LoginSuccess), global::LuxProtobuf.LoginSuccess.Parser, new[]{ "SessionToken" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.Failure), global::LuxProtobuf.Failure.Parser, new[]{ "Status" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.KeepAliveRequest), global::LuxProtobuf.KeepAliveRequest.Parser, null, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.Input), global::LuxProtobuf.Input.Parser, new[]{ "Up", "Down", "Right", "Left", "UpKeyPressed", "DownKeyPressed", "RightKeyPressed", "LeftKeyPressed", "F4KeyPress", "F4", "F5KeyReleased", "F5", "F6" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum Status {
+    [pbr::OriginalName("NON_MATCHING_PROTOCOL_VERSIONS")] NonMatchingProtocolVersions = 0,
+  }
+
+  #endregion
+
   #region Messages
-  public sealed partial class LuxMessage : pb::IMessage<LuxMessage> {
-    private static readonly pb::MessageParser<LuxMessage> _parser = new pb::MessageParser<LuxMessage>(() => new LuxMessage());
+  public sealed partial class NetworkPacket : pb::IMessage<NetworkPacket> {
+    private static readonly pb::MessageParser<NetworkPacket> _parser = new pb::MessageParser<NetworkPacket>(() => new NetworkPacket());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<LuxMessage> Parser { get { return _parser; } }
+    public static pb::MessageParser<NetworkPacket> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxMessage.LuxMessageReflection.Descriptor.MessageTypes[0]; }
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -60,15 +97,185 @@ namespace LuxMessage {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LuxMessage() {
+    public NetworkPacket() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LuxMessage(LuxMessage other) : this() {
+    public NetworkPacket(NetworkPacket other) : this() {
+      packetID_ = other.packetID_;
+      messages_ = other.messages_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NetworkPacket Clone() {
+      return new NetworkPacket(this);
+    }
+
+    /// <summary>Field number for the "PacketID" field.</summary>
+    public const int PacketIDFieldNumber = 1;
+    private int packetID_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int PacketID {
+      get { return packetID_; }
+      set {
+        packetID_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "messages" field.</summary>
+    public const int MessagesFieldNumber = 2;
+    private static readonly pb::FieldCodec<global::LuxProtobuf.NetworkMessage> _repeated_messages_codec
+        = pb::FieldCodec.ForMessage(18, global::LuxProtobuf.NetworkMessage.Parser);
+    private readonly pbc::RepeatedField<global::LuxProtobuf.NetworkMessage> messages_ = new pbc::RepeatedField<global::LuxProtobuf.NetworkMessage>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::LuxProtobuf.NetworkMessage> Messages {
+      get { return messages_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as NetworkPacket);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(NetworkPacket other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (PacketID != other.PacketID) return false;
+      if(!messages_.Equals(other.messages_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (PacketID != 0) hash ^= PacketID.GetHashCode();
+      hash ^= messages_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (PacketID != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(PacketID);
+      }
+      messages_.WriteTo(output, _repeated_messages_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (PacketID != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PacketID);
+      }
+      size += messages_.CalculateSize(_repeated_messages_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(NetworkPacket other) {
+      if (other == null) {
+        return;
+      }
+      if (other.PacketID != 0) {
+        PacketID = other.PacketID;
+      }
+      messages_.Add(other.messages_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            PacketID = input.ReadInt32();
+            break;
+          }
+          case 18: {
+            messages_.AddEntriesFrom(input, _repeated_messages_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class NetworkMessage : pb::IMessage<NetworkMessage> {
+    private static readonly pb::MessageParser<NetworkMessage> _parser = new pb::MessageParser<NetworkMessage>(() => new NetworkMessage());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<NetworkMessage> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[1]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NetworkMessage() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NetworkMessage(NetworkMessage other) : this() {
       switch (other.MessageCase) {
+        case MessageOneofCase.Handshake:
+          Handshake = other.Handshake.Clone();
+          break;
+        case MessageOneofCase.Failure:
+          Failure = other.Failure.Clone();
+          break;
+        case MessageOneofCase.ServerInfoRequest:
+          ServerInfoRequest = other.ServerInfoRequest.Clone();
+          break;
+        case MessageOneofCase.ServerInfoResponse:
+          ServerInfoResponse = other.ServerInfoResponse.Clone();
+          break;
+        case MessageOneofCase.LoginStart:
+          LoginStart = other.LoginStart.Clone();
+          break;
+        case MessageOneofCase.LoginSuccess:
+          LoginSuccess = other.LoginSuccess.Clone();
+          break;
+        case MessageOneofCase.KeepAliveRequest:
+          KeepAliveRequest = other.KeepAliveRequest.Clone();
+          break;
         case MessageOneofCase.Input:
           Input = other.Input.Clone();
           break;
@@ -78,15 +285,92 @@ namespace LuxMessage {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LuxMessage Clone() {
-      return new LuxMessage(this);
+    public NetworkMessage Clone() {
+      return new NetworkMessage(this);
     }
 
-    /// <summary>Field number for the "input" field.</summary>
-    public const int InputFieldNumber = 1;
+    /// <summary>Field number for the "Handshake" field.</summary>
+    public const int HandshakeFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LuxMessage.Input Input {
-      get { return messageCase_ == MessageOneofCase.Input ? (global::LuxMessage.Input) message_ : null; }
+    public global::LuxProtobuf.Handshake Handshake {
+      get { return messageCase_ == MessageOneofCase.Handshake ? (global::LuxProtobuf.Handshake) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.Handshake;
+      }
+    }
+
+    /// <summary>Field number for the "Failure" field.</summary>
+    public const int FailureFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.Failure Failure {
+      get { return messageCase_ == MessageOneofCase.Failure ? (global::LuxProtobuf.Failure) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.Failure;
+      }
+    }
+
+    /// <summary>Field number for the "ServerInfoRequest" field.</summary>
+    public const int ServerInfoRequestFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.ServerInfoRequest ServerInfoRequest {
+      get { return messageCase_ == MessageOneofCase.ServerInfoRequest ? (global::LuxProtobuf.ServerInfoRequest) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.ServerInfoRequest;
+      }
+    }
+
+    /// <summary>Field number for the "ServerInfoResponse" field.</summary>
+    public const int ServerInfoResponseFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.ServerInfoResponse ServerInfoResponse {
+      get { return messageCase_ == MessageOneofCase.ServerInfoResponse ? (global::LuxProtobuf.ServerInfoResponse) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.ServerInfoResponse;
+      }
+    }
+
+    /// <summary>Field number for the "LoginStart" field.</summary>
+    public const int LoginStartFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.LoginStart LoginStart {
+      get { return messageCase_ == MessageOneofCase.LoginStart ? (global::LuxProtobuf.LoginStart) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.LoginStart;
+      }
+    }
+
+    /// <summary>Field number for the "LoginSuccess" field.</summary>
+    public const int LoginSuccessFieldNumber = 6;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.LoginSuccess LoginSuccess {
+      get { return messageCase_ == MessageOneofCase.LoginSuccess ? (global::LuxProtobuf.LoginSuccess) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.LoginSuccess;
+      }
+    }
+
+    /// <summary>Field number for the "KeepAliveRequest" field.</summary>
+    public const int KeepAliveRequestFieldNumber = 7;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.KeepAliveRequest KeepAliveRequest {
+      get { return messageCase_ == MessageOneofCase.KeepAliveRequest ? (global::LuxProtobuf.KeepAliveRequest) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.KeepAliveRequest;
+      }
+    }
+
+    /// <summary>Field number for the "Input" field.</summary>
+    public const int InputFieldNumber = 8;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.Input Input {
+      get { return messageCase_ == MessageOneofCase.Input ? (global::LuxProtobuf.Input) message_ : null; }
       set {
         message_ = value;
         messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.Input;
@@ -94,10 +378,17 @@ namespace LuxMessage {
     }
 
     private object message_;
-    /// <summary>Enum of possible cases for the "message" oneof.</summary>
+    /// <summary>Enum of possible cases for the "Message" oneof.</summary>
     public enum MessageOneofCase {
       None = 0,
-      Input = 1,
+      Handshake = 1,
+      Failure = 2,
+      ServerInfoRequest = 3,
+      ServerInfoResponse = 4,
+      LoginStart = 5,
+      LoginSuccess = 6,
+      KeepAliveRequest = 7,
+      Input = 8,
     }
     private MessageOneofCase messageCase_ = MessageOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -113,17 +404,24 @@ namespace LuxMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as LuxMessage);
+      return Equals(other as NetworkMessage);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(LuxMessage other) {
+    public bool Equals(NetworkMessage other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (!object.Equals(Handshake, other.Handshake)) return false;
+      if (!object.Equals(Failure, other.Failure)) return false;
+      if (!object.Equals(ServerInfoRequest, other.ServerInfoRequest)) return false;
+      if (!object.Equals(ServerInfoResponse, other.ServerInfoResponse)) return false;
+      if (!object.Equals(LoginStart, other.LoginStart)) return false;
+      if (!object.Equals(LoginSuccess, other.LoginSuccess)) return false;
+      if (!object.Equals(KeepAliveRequest, other.KeepAliveRequest)) return false;
       if (!object.Equals(Input, other.Input)) return false;
       if (MessageCase != other.MessageCase) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -132,6 +430,13 @@ namespace LuxMessage {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
+      if (messageCase_ == MessageOneofCase.Handshake) hash ^= Handshake.GetHashCode();
+      if (messageCase_ == MessageOneofCase.Failure) hash ^= Failure.GetHashCode();
+      if (messageCase_ == MessageOneofCase.ServerInfoRequest) hash ^= ServerInfoRequest.GetHashCode();
+      if (messageCase_ == MessageOneofCase.ServerInfoResponse) hash ^= ServerInfoResponse.GetHashCode();
+      if (messageCase_ == MessageOneofCase.LoginStart) hash ^= LoginStart.GetHashCode();
+      if (messageCase_ == MessageOneofCase.LoginSuccess) hash ^= LoginSuccess.GetHashCode();
+      if (messageCase_ == MessageOneofCase.KeepAliveRequest) hash ^= KeepAliveRequest.GetHashCode();
       if (messageCase_ == MessageOneofCase.Input) hash ^= Input.GetHashCode();
       hash ^= (int) messageCase_;
       if (_unknownFields != null) {
@@ -147,8 +452,36 @@ namespace LuxMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (messageCase_ == MessageOneofCase.Input) {
+      if (messageCase_ == MessageOneofCase.Handshake) {
         output.WriteRawTag(10);
+        output.WriteMessage(Handshake);
+      }
+      if (messageCase_ == MessageOneofCase.Failure) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Failure);
+      }
+      if (messageCase_ == MessageOneofCase.ServerInfoRequest) {
+        output.WriteRawTag(26);
+        output.WriteMessage(ServerInfoRequest);
+      }
+      if (messageCase_ == MessageOneofCase.ServerInfoResponse) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ServerInfoResponse);
+      }
+      if (messageCase_ == MessageOneofCase.LoginStart) {
+        output.WriteRawTag(42);
+        output.WriteMessage(LoginStart);
+      }
+      if (messageCase_ == MessageOneofCase.LoginSuccess) {
+        output.WriteRawTag(50);
+        output.WriteMessage(LoginSuccess);
+      }
+      if (messageCase_ == MessageOneofCase.KeepAliveRequest) {
+        output.WriteRawTag(58);
+        output.WriteMessage(KeepAliveRequest);
+      }
+      if (messageCase_ == MessageOneofCase.Input) {
+        output.WriteRawTag(66);
         output.WriteMessage(Input);
       }
       if (_unknownFields != null) {
@@ -159,6 +492,27 @@ namespace LuxMessage {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (messageCase_ == MessageOneofCase.Handshake) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Handshake);
+      }
+      if (messageCase_ == MessageOneofCase.Failure) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Failure);
+      }
+      if (messageCase_ == MessageOneofCase.ServerInfoRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerInfoRequest);
+      }
+      if (messageCase_ == MessageOneofCase.ServerInfoResponse) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerInfoResponse);
+      }
+      if (messageCase_ == MessageOneofCase.LoginStart) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(LoginStart);
+      }
+      if (messageCase_ == MessageOneofCase.LoginSuccess) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(LoginSuccess);
+      }
+      if (messageCase_ == MessageOneofCase.KeepAliveRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(KeepAliveRequest);
+      }
       if (messageCase_ == MessageOneofCase.Input) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Input);
       }
@@ -169,14 +523,56 @@ namespace LuxMessage {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(LuxMessage other) {
+    public void MergeFrom(NetworkMessage other) {
       if (other == null) {
         return;
       }
       switch (other.MessageCase) {
+        case MessageOneofCase.Handshake:
+          if (Handshake == null) {
+            Handshake = new global::LuxProtobuf.Handshake();
+          }
+          Handshake.MergeFrom(other.Handshake);
+          break;
+        case MessageOneofCase.Failure:
+          if (Failure == null) {
+            Failure = new global::LuxProtobuf.Failure();
+          }
+          Failure.MergeFrom(other.Failure);
+          break;
+        case MessageOneofCase.ServerInfoRequest:
+          if (ServerInfoRequest == null) {
+            ServerInfoRequest = new global::LuxProtobuf.ServerInfoRequest();
+          }
+          ServerInfoRequest.MergeFrom(other.ServerInfoRequest);
+          break;
+        case MessageOneofCase.ServerInfoResponse:
+          if (ServerInfoResponse == null) {
+            ServerInfoResponse = new global::LuxProtobuf.ServerInfoResponse();
+          }
+          ServerInfoResponse.MergeFrom(other.ServerInfoResponse);
+          break;
+        case MessageOneofCase.LoginStart:
+          if (LoginStart == null) {
+            LoginStart = new global::LuxProtobuf.LoginStart();
+          }
+          LoginStart.MergeFrom(other.LoginStart);
+          break;
+        case MessageOneofCase.LoginSuccess:
+          if (LoginSuccess == null) {
+            LoginSuccess = new global::LuxProtobuf.LoginSuccess();
+          }
+          LoginSuccess.MergeFrom(other.LoginSuccess);
+          break;
+        case MessageOneofCase.KeepAliveRequest:
+          if (KeepAliveRequest == null) {
+            KeepAliveRequest = new global::LuxProtobuf.KeepAliveRequest();
+          }
+          KeepAliveRequest.MergeFrom(other.KeepAliveRequest);
+          break;
         case MessageOneofCase.Input:
           if (Input == null) {
-            Input = new global::LuxMessage.Input();
+            Input = new global::LuxProtobuf.Input();
           }
           Input.MergeFrom(other.Input);
           break;
@@ -194,7 +590,70 @@ namespace LuxMessage {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            global::LuxMessage.Input subBuilder = new global::LuxMessage.Input();
+            global::LuxProtobuf.Handshake subBuilder = new global::LuxProtobuf.Handshake();
+            if (messageCase_ == MessageOneofCase.Handshake) {
+              subBuilder.MergeFrom(Handshake);
+            }
+            input.ReadMessage(subBuilder);
+            Handshake = subBuilder;
+            break;
+          }
+          case 18: {
+            global::LuxProtobuf.Failure subBuilder = new global::LuxProtobuf.Failure();
+            if (messageCase_ == MessageOneofCase.Failure) {
+              subBuilder.MergeFrom(Failure);
+            }
+            input.ReadMessage(subBuilder);
+            Failure = subBuilder;
+            break;
+          }
+          case 26: {
+            global::LuxProtobuf.ServerInfoRequest subBuilder = new global::LuxProtobuf.ServerInfoRequest();
+            if (messageCase_ == MessageOneofCase.ServerInfoRequest) {
+              subBuilder.MergeFrom(ServerInfoRequest);
+            }
+            input.ReadMessage(subBuilder);
+            ServerInfoRequest = subBuilder;
+            break;
+          }
+          case 34: {
+            global::LuxProtobuf.ServerInfoResponse subBuilder = new global::LuxProtobuf.ServerInfoResponse();
+            if (messageCase_ == MessageOneofCase.ServerInfoResponse) {
+              subBuilder.MergeFrom(ServerInfoResponse);
+            }
+            input.ReadMessage(subBuilder);
+            ServerInfoResponse = subBuilder;
+            break;
+          }
+          case 42: {
+            global::LuxProtobuf.LoginStart subBuilder = new global::LuxProtobuf.LoginStart();
+            if (messageCase_ == MessageOneofCase.LoginStart) {
+              subBuilder.MergeFrom(LoginStart);
+            }
+            input.ReadMessage(subBuilder);
+            LoginStart = subBuilder;
+            break;
+          }
+          case 50: {
+            global::LuxProtobuf.LoginSuccess subBuilder = new global::LuxProtobuf.LoginSuccess();
+            if (messageCase_ == MessageOneofCase.LoginSuccess) {
+              subBuilder.MergeFrom(LoginSuccess);
+            }
+            input.ReadMessage(subBuilder);
+            LoginSuccess = subBuilder;
+            break;
+          }
+          case 58: {
+            global::LuxProtobuf.KeepAliveRequest subBuilder = new global::LuxProtobuf.KeepAliveRequest();
+            if (messageCase_ == MessageOneofCase.KeepAliveRequest) {
+              subBuilder.MergeFrom(KeepAliveRequest);
+            }
+            input.ReadMessage(subBuilder);
+            KeepAliveRequest = subBuilder;
+            break;
+          }
+          case 66: {
+            global::LuxProtobuf.Input subBuilder = new global::LuxProtobuf.Input();
             if (messageCase_ == MessageOneofCase.Input) {
               subBuilder.MergeFrom(Input);
             }
@@ -208,6 +667,1202 @@ namespace LuxMessage {
 
   }
 
+  /// <summary>
+  /// Sent by client 
+  /// </summary>
+  public sealed partial class Handshake : pb::IMessage<Handshake> {
+    private static readonly pb::MessageParser<Handshake> _parser = new pb::MessageParser<Handshake>(() => new Handshake());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Handshake> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[2]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Handshake() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Handshake(Handshake other) : this() {
+      protocolVersion_ = other.protocolVersion_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Handshake Clone() {
+      return new Handshake(this);
+    }
+
+    /// <summary>Field number for the "ProtocolVersion" field.</summary>
+    public const int ProtocolVersionFieldNumber = 1;
+    private int protocolVersion_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int ProtocolVersion {
+      get { return protocolVersion_; }
+      set {
+        protocolVersion_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Handshake);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Handshake other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (ProtocolVersion != other.ProtocolVersion) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (ProtocolVersion != 0) hash ^= ProtocolVersion.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (ProtocolVersion != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(ProtocolVersion);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (ProtocolVersion != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(ProtocolVersion);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Handshake other) {
+      if (other == null) {
+        return;
+      }
+      if (other.ProtocolVersion != 0) {
+        ProtocolVersion = other.ProtocolVersion;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            ProtocolVersion = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Sent by client 
+  /// </summary>
+  public sealed partial class ServerInfoRequest : pb::IMessage<ServerInfoRequest> {
+    private static readonly pb::MessageParser<ServerInfoRequest> _parser = new pb::MessageParser<ServerInfoRequest>(() => new ServerInfoRequest());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ServerInfoRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[3]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ServerInfoRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ServerInfoRequest(ServerInfoRequest other) : this() {
+      protocolVersion_ = other.protocolVersion_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ServerInfoRequest Clone() {
+      return new ServerInfoRequest(this);
+    }
+
+    /// <summary>Field number for the "ProtocolVersion" field.</summary>
+    public const int ProtocolVersionFieldNumber = 1;
+    private int protocolVersion_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int ProtocolVersion {
+      get { return protocolVersion_; }
+      set {
+        protocolVersion_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ServerInfoRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ServerInfoRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (ProtocolVersion != other.ProtocolVersion) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (ProtocolVersion != 0) hash ^= ProtocolVersion.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (ProtocolVersion != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(ProtocolVersion);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (ProtocolVersion != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(ProtocolVersion);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ServerInfoRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.ProtocolVersion != 0) {
+        ProtocolVersion = other.ProtocolVersion;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            ProtocolVersion = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Sent by server 
+  /// </summary>
+  public sealed partial class ServerInfoResponse : pb::IMessage<ServerInfoResponse> {
+    private static readonly pb::MessageParser<ServerInfoResponse> _parser = new pb::MessageParser<ServerInfoResponse>(() => new ServerInfoResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ServerInfoResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ServerInfoResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ServerInfoResponse(ServerInfoResponse other) : this() {
+      jSONResponse_ = other.jSONResponse_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ServerInfoResponse Clone() {
+      return new ServerInfoResponse(this);
+    }
+
+    /// <summary>Field number for the "JSONResponse" field.</summary>
+    public const int JSONResponseFieldNumber = 1;
+    private string jSONResponse_ = "";
+    /// <summary>
+    ///
+    ///"ServerID": "someuuid",
+    ///"ServerName": "awesomeness"
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string JSONResponse {
+      get { return jSONResponse_; }
+      set {
+        jSONResponse_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ServerInfoResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ServerInfoResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (JSONResponse != other.JSONResponse) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (JSONResponse.Length != 0) hash ^= JSONResponse.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (JSONResponse.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(JSONResponse);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (JSONResponse.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(JSONResponse);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ServerInfoResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.JSONResponse.Length != 0) {
+        JSONResponse = other.JSONResponse;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            JSONResponse = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Sent by client 
+  /// </summary>
+  public sealed partial class LoginStart : pb::IMessage<LoginStart> {
+    private static readonly pb::MessageParser<LoginStart> _parser = new pb::MessageParser<LoginStart>(() => new LoginStart());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<LoginStart> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[5]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public LoginStart() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public LoginStart(LoginStart other) : this() {
+      username_ = other.username_;
+      encryptedPassword_ = other.encryptedPassword_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public LoginStart Clone() {
+      return new LoginStart(this);
+    }
+
+    /// <summary>Field number for the "Username" field.</summary>
+    public const int UsernameFieldNumber = 1;
+    private string username_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Username {
+      get { return username_; }
+      set {
+        username_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "EncryptedPassword" field.</summary>
+    public const int EncryptedPasswordFieldNumber = 2;
+    private string encryptedPassword_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string EncryptedPassword {
+      get { return encryptedPassword_; }
+      set {
+        encryptedPassword_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as LoginStart);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(LoginStart other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Username != other.Username) return false;
+      if (EncryptedPassword != other.EncryptedPassword) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Username.Length != 0) hash ^= Username.GetHashCode();
+      if (EncryptedPassword.Length != 0) hash ^= EncryptedPassword.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Username.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Username);
+      }
+      if (EncryptedPassword.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(EncryptedPassword);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Username.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Username);
+      }
+      if (EncryptedPassword.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(EncryptedPassword);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(LoginStart other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Username.Length != 0) {
+        Username = other.Username;
+      }
+      if (other.EncryptedPassword.Length != 0) {
+        EncryptedPassword = other.EncryptedPassword;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Username = input.ReadString();
+            break;
+          }
+          case 18: {
+            EncryptedPassword = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Sent by server 
+  /// </summary>
+  public sealed partial class EncryptionKeyRequest : pb::IMessage<EncryptionKeyRequest> {
+    private static readonly pb::MessageParser<EncryptionKeyRequest> _parser = new pb::MessageParser<EncryptionKeyRequest>(() => new EncryptionKeyRequest());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<EncryptionKeyRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[6]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public EncryptionKeyRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public EncryptionKeyRequest(EncryptionKeyRequest other) : this() {
+      rSAPublicKey_ = other.rSAPublicKey_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public EncryptionKeyRequest Clone() {
+      return new EncryptionKeyRequest(this);
+    }
+
+    /// <summary>Field number for the "RSAPublicKey" field.</summary>
+    public const int RSAPublicKeyFieldNumber = 1;
+    private string rSAPublicKey_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string RSAPublicKey {
+      get { return rSAPublicKey_; }
+      set {
+        rSAPublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as EncryptionKeyRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(EncryptionKeyRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (RSAPublicKey != other.RSAPublicKey) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (RSAPublicKey.Length != 0) hash ^= RSAPublicKey.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (RSAPublicKey.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(RSAPublicKey);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (RSAPublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(RSAPublicKey);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(EncryptionKeyRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.RSAPublicKey.Length != 0) {
+        RSAPublicKey = other.RSAPublicKey;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            RSAPublicKey = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// After this message is sent/received, all packets will be encrypted 
+  /// </summary>
+  public sealed partial class EncryptionKeyResponse : pb::IMessage<EncryptionKeyResponse> {
+    private static readonly pb::MessageParser<EncryptionKeyResponse> _parser = new pb::MessageParser<EncryptionKeyResponse>(() => new EncryptionKeyResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<EncryptionKeyResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[7]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public EncryptionKeyResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public EncryptionKeyResponse(EncryptionKeyResponse other) : this() {
+      rSAEncryptedEncryptionKey_ = other.rSAEncryptedEncryptionKey_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public EncryptionKeyResponse Clone() {
+      return new EncryptionKeyResponse(this);
+    }
+
+    /// <summary>Field number for the "RSAEncryptedEncryptionKey" field.</summary>
+    public const int RSAEncryptedEncryptionKeyFieldNumber = 1;
+    private string rSAEncryptedEncryptionKey_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string RSAEncryptedEncryptionKey {
+      get { return rSAEncryptedEncryptionKey_; }
+      set {
+        rSAEncryptedEncryptionKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as EncryptionKeyResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(EncryptionKeyResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (RSAEncryptedEncryptionKey != other.RSAEncryptedEncryptionKey) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (RSAEncryptedEncryptionKey.Length != 0) hash ^= RSAEncryptedEncryptionKey.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (RSAEncryptedEncryptionKey.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(RSAEncryptedEncryptionKey);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (RSAEncryptedEncryptionKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(RSAEncryptedEncryptionKey);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(EncryptionKeyResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.RSAEncryptedEncryptionKey.Length != 0) {
+        RSAEncryptedEncryptionKey = other.RSAEncryptedEncryptionKey;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            RSAEncryptedEncryptionKey = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Sent by server 
+  /// </summary>
+  public sealed partial class LoginSuccess : pb::IMessage<LoginSuccess> {
+    private static readonly pb::MessageParser<LoginSuccess> _parser = new pb::MessageParser<LoginSuccess>(() => new LoginSuccess());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<LoginSuccess> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[8]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public LoginSuccess() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public LoginSuccess(LoginSuccess other) : this() {
+      sessionToken_ = other.sessionToken_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public LoginSuccess Clone() {
+      return new LoginSuccess(this);
+    }
+
+    /// <summary>Field number for the "SessionToken" field.</summary>
+    public const int SessionTokenFieldNumber = 1;
+    private string sessionToken_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string SessionToken {
+      get { return sessionToken_; }
+      set {
+        sessionToken_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as LoginSuccess);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(LoginSuccess other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (SessionToken != other.SessionToken) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (SessionToken.Length != 0) hash ^= SessionToken.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (SessionToken.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(SessionToken);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (SessionToken.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(SessionToken);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(LoginSuccess other) {
+      if (other == null) {
+        return;
+      }
+      if (other.SessionToken.Length != 0) {
+        SessionToken = other.SessionToken;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            SessionToken = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Sent on timeout, encryption failure etc.. 
+  /// </summary>
+  public sealed partial class Failure : pb::IMessage<Failure> {
+    private static readonly pb::MessageParser<Failure> _parser = new pb::MessageParser<Failure>(() => new Failure());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Failure> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[9]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Failure() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Failure(Failure other) : this() {
+      status_ = other.status_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Failure Clone() {
+      return new Failure(this);
+    }
+
+    /// <summary>Field number for the "Status" field.</summary>
+    public const int StatusFieldNumber = 1;
+    private global::LuxProtobuf.Status status_ = global::LuxProtobuf.Status.NonMatchingProtocolVersions;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.Status Status {
+      get { return status_; }
+      set {
+        status_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Failure);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Failure other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Status != other.Status) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) hash ^= Status.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Status);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Failure other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+        Status = other.Status;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            Status = (global::LuxProtobuf.Status) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Sent by client 
+  /// </summary>
+  public sealed partial class KeepAliveRequest : pb::IMessage<KeepAliveRequest> {
+    private static readonly pb::MessageParser<KeepAliveRequest> _parser = new pb::MessageParser<KeepAliveRequest>(() => new KeepAliveRequest());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<KeepAliveRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[10]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public KeepAliveRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public KeepAliveRequest(KeepAliveRequest other) : this() {
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public KeepAliveRequest Clone() {
+      return new KeepAliveRequest(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as KeepAliveRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(KeepAliveRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(KeepAliveRequest other) {
+      if (other == null) {
+        return;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Sent by client 
+  /// </summary>
   public sealed partial class Input : pb::IMessage<Input> {
     private static readonly pb::MessageParser<Input> _parser = new pb::MessageParser<Input>(() => new Input());
     private pb::UnknownFieldSet _unknownFields;
@@ -216,7 +1871,7 @@ namespace LuxMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxMessage.LuxMessageReflection.Descriptor.MessageTypes[1]; }
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

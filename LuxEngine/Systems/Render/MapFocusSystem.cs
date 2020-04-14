@@ -11,16 +11,16 @@ namespace LuxEngine
             signature.RequireSingleton<LoadedMapsSingleton>();
         }
 
-        protected override void PreDraw(GameTime gameTime)
-        {
-            var loadedMaps = World.UnpackSingleton<LoadedMapsSingleton>();
-            TmxMap currentMap = loadedMaps.Maps[loadedMaps.CurrentMapName];
+        //protected override void PreDraw(GameTime gameTime)
+        //{
+        //    var loadedMaps = World.UnpackSingleton<LoadedMapsSingleton>();
+        //    TmxMap currentMap = loadedMaps.Maps[loadedMaps.CurrentMapName];
 
-            foreach (var entity in RegisteredEntities)
-            {
-                var camera = World.Unpack<Camera>(entity);
-                camera.Limits = new Rectangle(0, 0, currentMap.Width, currentMap.Height);
-            }
-        }
+        //    foreach (var entity in RegisteredEntities)
+        //    {
+        //        var camera = World.Unpack<Camera>(entity);
+        //        camera.Limits = new Rectangle(0, 0, currentMap.Width, currentMap.Height);
+        //    }
+        //}
     }
 }

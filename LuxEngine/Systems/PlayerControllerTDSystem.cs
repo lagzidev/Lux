@@ -43,6 +43,15 @@ namespace LuxEngine
             signature.RequireSingleton<InputSingleton>();
         }
 
+        protected override void PostDraw(GameTime gameTime)
+        {
+            foreach (var entity in RegisteredEntities)
+            {
+                var transform = World.Unpack<Transform>(entity);
+                Console.WriteLine($"X: {transform.X} Y {transform.Y}");
+            }
+        }
+
         protected override void Update(GameTime gameTime)
         {
             var input = World.UnpackSingleton<InputSingleton>();
@@ -51,7 +60,7 @@ namespace LuxEngine
             {
                 var transform = World.Unpack<Transform>(entity);
                 var moveable = World.Unpack<Moveable>(entity);
-                float time = 1; //(float)gameTime.ElapsedGameTime.TotalMilliseconds / 10f;
+                float time = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 
                 moveable.Velocity = Vector2.Zero;
 
@@ -59,26 +68,26 @@ namespace LuxEngine
                 {
                     moveable.Velocity.Y = -1;
                     moveable.Direction = new Vector2(0, -1);
-                    transform.Y -= (int)(moveable.MaxSpeedY * time);
+                    transform.Y -= 1.1f; // (1000f / time); // MaxSpeed = pixels per second
                 }
                 else if (input.Down)
                 {
                     moveable.Velocity.Y = 1;
                     moveable.Direction = new Vector2(0, 1);
-                    transform.Y += (int)(moveable.MaxSpeedY * time);
+                    transform.Y += moveable.MaxSpeedY / (1000f / time);
                 }
 
                 if (input.Right)
                 {
                     moveable.Velocity.X = 1;
                     moveable.Direction = new Vector2(1, 0);
-                    transform.X += (int)(moveable.MaxSpeedX * time);
+                    transform.X += moveable.MaxSpeedX / (1000f / time);
                 }
                 else if (input.Left)
                 {
                     moveable.Velocity.X = -1;
                     moveable.Direction = new Vector2(-1, 0);
-                    transform.X -= (int)(moveable.MaxSpeedX * time);
+                    transform.X -= moveable.MaxSpeedX / (1000f / time);
                 }
             }
         }

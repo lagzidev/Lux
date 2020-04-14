@@ -1,62 +1,70 @@
 ﻿using System;
-using System.IO;
-using System.Net.Sockets;
-using System.Text;
+using System.Net;
+using LuxProtobuf;
 using Microsoft.Xna.Framework;
 
 namespace LuxEngine
 {
     [Serializable]
-    public class ConnectionToServer : BaseComponent<ConnectionToServer>
+    public class IsClientSingleton : BaseComponent<IsClientSingleton>
     {
     }
 
     /// <summary>
-    /// Responsible for managing a client connected to a server
+    /// Temporary system TODO
     /// </summary>
     public class ClientSystem : BaseSystem<ClientSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
             signature.Require<Connection>();
-            signature.Require<ConnectionToServer>();
-            signature.RequireSingleton<InputSingleton>();
+            signature.RequireSingleton<IsClientSingleton>();
+            //signature.RequireSingleton<InputSingleton>();
         }
 
-        protected override void LoadFrame(GameTime gameTime)
+        protected override void InitSingleton()
         {
-            var input = World.UnpackSingleton<InputSingleton>();
-
-            //LuxMessage luxMessage = new LuxMessage();
-
-            //foreach (var entity in RegisteredEntities)
-            //{
-            //    var connection = World.Unpack<Connection>(entity);
-
-            //    using (MemoryStream memStream = new MemoryStream())
-            //    {
-            //        Serializer.Serialize(memStream, input);
-            //        byte[] data = memStream.ToArray();
-            //        connection.Socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, connection.Endpoint, new AsyncCallback(SendCallback), connection);
-            //    }
-            //}
+            // Set the world to be a client
+            World.AddSingletonComponent(new IsClientSingleton());
         }
 
-        private static void SendCallback(IAsyncResult ar)
+        protected override void Init()
         {
-            try
-            {
-                // Retrieve the socket from the state object.  
-                Connection connection = (Connection)ar.AsyncState;
-
-                // Complete sending the data to the remote device.  
-                int bytesSent = connection.Socket.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to server.", bytesSent);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+            // Connect to a server
+            EntityHandle connection = World.CreateEntity();
+            connection.AddComponent(new Connection(IPAddress.Parse("127.0.0.1"), 1337));
         }
+
+        //protected override void OnRegisterEntity(Entity entity)
+        //{
+        //    var connection = World.Unpack<Connection>(entity);
+
+        //    // Send a connect message
+        //    connection.MessagesToSend.Enqueue(new NetworkMessage()
+        //    {
+        //        Login = new Login()
+        //        {
+        //            Username = "Lagzi",
+        //            Password = "123456"
+        //        }
+        //    });
+        //}
+
+        //protected override void LoadFrame(GameTime gameTime)
+        //{
+        //    var input = World.UnpackSingleton<InputSingleton>();
+        //    var messagesSingleton = World.UnpackSingleton<NetworkMessagesSingleton>();
+
+        //    // Send a message to the server indicating that the user logged into the server
+        //    NetworkMessage message = new NetworkMessage
+        //    {
+        //        Input = new Input
+        //        {
+        //            Right = true
+        //        }
+        //    };
+
+        //    messagesSingleton.MessagesToSend.Enqueue(message);
+        //}
     }
 }

@@ -3,6 +3,8 @@ namespace LuxEngine
 {
     public static class HardCodedConfig
     {
+        public const int PROTOCOL_VERSION = 1;
+
         public const int MAX_COMPONENTS_PER_TYPE = 2048;
         public const int MAX_GAME_COMPONENT_TYPES = 64;
 
