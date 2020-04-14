@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">FNA.Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">anycpu</Platform>
     <ProjectGuid>{21119BDA-C1A5-4374-B978-064E93CCB5CD}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -8,12 +8,12 @@
     <AssemblyName>LuxEngine</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|anycpu' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'FNA.Debug|anycpu' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <OutputPath>bin\FNA.Debug</OutputPath>
+    <DefineConstants>DEBUG;FNA;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
@@ -24,12 +24,15 @@
         </Command>
       </CustomCommands>
     </CustomCommands>
+    <IntermediateOutputPath>obj\Debug</IntermediateOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|anycpu' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'FNA.Release|anycpu' ">
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin\FNA.Release</OutputPath>
+    <DefineConstants>FNA;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <IntermediateOutputPath>obj\Release</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Old\Animation\AnimatedObject.cs" />
@@ -84,6 +87,7 @@
     <Compile Include="Systems\Networking\AuthServerSystem.cs" />
     <Compile Include="Systems\Networking\RSAKeysGeneratorSystem.cs" />
     <Compile Include="Systems\Networking\AuthClientSystem.cs" />
+    <Compile Include="Misc\Time.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
@@ -96,6 +100,7 @@
     <Folder Include="Systems\Physics\" />
     <Folder Include="Systems\Networking\" />
     <Folder Include="Protobuf\" />
+    <Folder Include="Misc\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />

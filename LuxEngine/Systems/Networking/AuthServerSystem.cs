@@ -32,7 +32,7 @@ namespace LuxEngine
             signature.RequireSingleton<UsersSingleton>();
         }
 
-        protected override void PreUpdate(GameTime gameTime)
+        protected override void PreUpdate()
         {
             foreach (var entity in RegisteredEntities)
             {

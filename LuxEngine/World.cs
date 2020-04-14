@@ -427,26 +427,26 @@ namespace LuxEngine
             }
         }
 
-        public virtual void Update(GameTime gameTime)
+        public virtual void Update()
         {
             foreach (InternalBaseSystem system in _systems)
             {
-                system.RunLoadFrame(gameTime);
+                system.RunLoadFrame();
             }
 
             foreach (InternalBaseSystem system in _systems)
             {
-                system.RunPreUpdate(gameTime);
+                system.RunPreUpdate();
             }
 
             foreach (InternalBaseSystem system in _systems)
             {
-                system.RunUpdate(gameTime);
+                system.RunUpdate();
             }
 
             foreach (InternalBaseSystem system in _systems)
             {
-                system.RunPostUpdate(gameTime);
+                system.RunPostUpdate();
             }
         }
 

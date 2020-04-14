@@ -50,8 +50,8 @@ namespace LuxEngine
                 SpriteSortMode.BackToFront,
                 BlendState.AlphaBlend,
                 SamplerState.PointWrap,
-                DepthStencilState.Default,
-                RasterizerState.CullNone);
+                null,
+                null);
         }
 
         protected override void PostDraw(GameTime gameTime)
@@ -78,8 +78,8 @@ namespace LuxEngine
                     SpriteSortMode.Deferred,
                     BlendState.NonPremultiplied,
                     SamplerState.PointWrap,
-                    DepthStencilState.Default,
-                    RasterizerState.CullNone,
+                    null,
+                    null,
                     null,
                     camera.Matrix * LuxGame.ScreenMatrix); // Order matters
 

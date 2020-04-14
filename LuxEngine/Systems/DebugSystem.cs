@@ -20,7 +20,7 @@ namespace LuxEngine
             signature.Require<DebugInfo>();
         }
 
-        protected override void Update(GameTime gameTime)
+        protected override void Update()
         {
             foreach (var entity in RegisteredEntities)
             {

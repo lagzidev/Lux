@@ -14,7 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\FNA\FNA.csproj" />
-      <ProjectReference Include="..\LuxEngine\LuxEngine.csproj" />
       <ProjectReference Include="..\..\SpriteFontPlus\src\SpriteFontPlus.FNA.csproj" />
+      <ProjectReference Include="..\LuxEngine\LuxEngine.csproj" />
     </ItemGroup>
 </Project>

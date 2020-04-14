@@ -34,9 +34,9 @@ namespace LuxEngine
             _worlds.ForEach(x => x.LoadContent());
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            _worlds.ForEach(x => x.Update(gameTime));
+            _worlds.ForEach(x => x.Update());
         }
 
         public void Draw(GameTime gameTime)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -109,6 +108,7 @@ namespace LuxEngine
             IsFixedTimeStep = false;
 
             //GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+            // TODO: support scanodes ? https://github.com/FNA-XNA/FNA/wiki/7:-FNA-Environment-Variables#fna_graphics_backbuffer_scale_nearest
         }
 
 #if !CONSOLE
@@ -152,6 +152,7 @@ namespace LuxEngine
             }
 #endif
         }
+
 
         public static void SetFullscreen()
         {
@@ -256,8 +257,15 @@ namespace LuxEngine
         /// </summary>
         protected override void Update(GameTime gameTime)
         {
-            _ecs.Update(gameTime);
-            base.Update(gameTime);
+            Time.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            _ecs.Update();
+
+#if FNA
+			// MonoGame only updates old-school XNA Components in Update which we dont care about. FNA's core FrameworkDispatcher needs
+			// Update called though so we do so here.
+			FrameworkDispatcher.Update();
+#endif
         }
 
         /// <summary>

@@ -57,7 +57,7 @@ namespace LuxEngine
             World.AddSingletonComponent(new InputSingleton());
         }
 
-        protected override void PreUpdate(GameTime gameTime)
+        protected override void PreUpdate()
         {
             KeyboardState keyboard = Keyboard.GetState();
             //MouseState mouse = Mouse.GetState();

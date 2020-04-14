@@ -52,7 +52,7 @@ namespace LuxEngine
             }
         }
 
-        protected override void Update(GameTime gameTime)
+        protected override void Update()
         {
             var input = World.UnpackSingleton<InputSingleton>();
 
@@ -60,7 +60,6 @@ namespace LuxEngine
             {
                 var transform = World.Unpack<Transform>(entity);
                 var moveable = World.Unpack<Moveable>(entity);
-                float time = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 
                 moveable.Velocity = Vector2.Zero;
 
@@ -68,26 +67,26 @@ namespace LuxEngine
                 {
                     moveable.Velocity.Y = -1;
                     moveable.Direction = new Vector2(0, -1);
-                    transform.Y -= 1.1f; // (1000f / time); // MaxSpeed = pixels per second
+                    transform.Y -= 1f; // (1000f / time); // MaxSpeed = pixels per second
                 }
                 else if (input.Down)
                 {
                     moveable.Velocity.Y = 1;
                     moveable.Direction = new Vector2(0, 1);
-                    transform.Y += moveable.MaxSpeedY / (1000f / time);
+                    transform.Y += moveable.MaxSpeedY * Time.DeltaTime;
                 }
 
                 if (input.Right)
                 {
                     moveable.Velocity.X = 1;
                     moveable.Direction = new Vector2(1, 0);
-                    transform.X += moveable.MaxSpeedX / (1000f / time);
+                    transform.X += moveable.MaxSpeedX * Time.DeltaTime;
                 }
                 else if (input.Left)
                 {
                     moveable.Velocity.X = -1;
                     moveable.Direction = new Vector2(-1, 0);
-                    transform.X -= moveable.MaxSpeedX / (1000f / time);
+                    transform.X -= moveable.MaxSpeedX * Time.DeltaTime;
                 }
             }
         }

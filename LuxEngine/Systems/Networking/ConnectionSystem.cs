@@ -102,7 +102,7 @@ namespace LuxEngine
             signature.Require<Connection>();
         }
 
-        protected override void LoadFrame(GameTime gameTime)
+        protected override void LoadFrame()
         {
             foreach (var entity in RegisteredEntities)
             {

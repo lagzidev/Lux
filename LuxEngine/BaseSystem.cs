@@ -293,60 +293,60 @@ namespace LuxEngine
         /// Use this to load state from disk or from over the network.
         /// </summary>
         /// <param name="gameTime"></param>
-        protected virtual void LoadFrame(GameTime gameTime) { }
-        public void RunLoadFrame(GameTime gameTime)
+        protected virtual void LoadFrame() { }
+        public void RunLoadFrame()
         {
             if (!_signature.SingletonMatches)
             {
                 return;
             }
 
-            LoadFrame(gameTime);
+            LoadFrame();
         }
 
         /// <summary>
         /// Called before Update
         /// </summary>
         /// <param name="gameTime"></param>
-        protected virtual void PreUpdate(GameTime gameTime) { }
-        public void RunPreUpdate(GameTime gameTime)
+        protected virtual void PreUpdate() { }
+        public void RunPreUpdate()
         {
             if (!_signature.SingletonMatches)
             {
                 return;
             }
 
-            PreUpdate(gameTime);
+            PreUpdate();
         }
 
         /// <summary>
         /// Called each frame to update the game.
         /// </summary>
         /// <param name="gameTime"></param>
-        protected virtual void Update(GameTime gameTime) { }
-        public void RunUpdate(GameTime gameTime)
+        protected virtual void Update() { }
+        public void RunUpdate()
         {
             if (!_signature.SingletonMatches)
             {
                 return;
             }
 
-            Update(gameTime);
+            Update();
         }
 
         /// <summary>
         /// Called after Update
         /// </summary>
         /// <param name="gameTime"></param>
-        protected virtual void PostUpdate(GameTime gameTime) { }
-        public void RunPostUpdate(GameTime gameTime)
+        protected virtual void PostUpdate() { }
+        public void RunPostUpdate()
         {
             if (!_signature.SingletonMatches)
             {
                 return;
             }
 
-            PostUpdate(gameTime);
+            PostUpdate();
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace LuxEngine
             signature.Require<Connection>();
         }
 
-        protected override void LoadFrame(GameTime gameTime)
+        protected override void LoadFrame()
         {
             // For each connection
             foreach (var entity in RegisteredEntities)
