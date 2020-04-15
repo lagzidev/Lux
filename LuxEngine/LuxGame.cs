@@ -211,7 +211,7 @@ namespace LuxEngine
             };
         }
 
-        // TODO
+        // TODO onactivated
         //protected override void OnActivated(object sender, EventArgs args)
         //{
         //    base.OnActivated(sender, args);

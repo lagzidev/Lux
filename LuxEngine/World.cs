@@ -81,6 +81,7 @@ namespace LuxEngine
 
             _systems = new LuxIterator<AInternalSystem>(_postponedSystemActions);
             _componentManagers = new Dictionary<int, BaseComponentManager>();
+            _previousComponentManagers = new Dictionary<int, BaseComponentManager>();
 
             _paused = false;
 
@@ -162,7 +163,7 @@ namespace LuxEngine
                 return false;
             }
 
-            if (!foundComponentManager.GetComponent(entity, out AComponent<T> component))
+            if (!foundComponentManager.GetComponent(entity, out T component))
             {
                 outComponent = null;
                 return false;
@@ -183,7 +184,7 @@ namespace LuxEngine
 
             var foundComponentManager = (ComponentManager<T>)_previousComponentManagers[AComponent<T>.ComponentType];
 
-            if (!foundComponentManager.GetComponent(entity, out AComponent <T> component))
+            if (!foundComponentManager.GetComponent(entity, out T component))
             {
                 outComponent = null;
                 return false;
@@ -237,7 +238,7 @@ namespace LuxEngine
         /// <typeparam name="T"></typeparam>
         /// <param name="entity"></param>
         /// <param name="component"></param>
-        public void AddComponent<T>(Entity entity, AComponent<T> component) where T : AComponent<T>
+        public void AddComponent<T>(Entity entity, T component) where T : AComponent<T>
         {
             // If iterating systems, add the component afterwards instead of now
             if (_systems.IsIterating)
@@ -365,16 +366,15 @@ namespace LuxEngine
         /// Saves the current state of the components into a seperate dataset.
         /// Only copies components for which KeepPreviousState was called.
         /// </summary>
-        private void CopyPreviousState()
+        private void SavePreviousState<T>(T component) where T : AComponent<T>
         {
-            foreach (int key in _previousComponentManagers.Keys)
-            {
-                // TODO: Make sure this is copy by value and not reference
-                _previousComponentManagers[key] = _componentManagers[key];
-            }
+            // TODO: Save the component into _previousComponentManager or alternatively,
+            // find a more lightweight data storage solution. Something dynamic like
+            // a Dictionary<Entity, Dictionary<ComponentType, Component> might be lighter
+            // then a ComponentManager, but might be more demanding performance wise.
         }
 
-        private ComponentManager<T> _getComponentManager<T>()
+        private ComponentManager<T> _getComponentManager<T>() where T : AComponent<T>
         {
             if (AComponent<T>.ComponentType == -1)
             {
@@ -437,7 +437,7 @@ namespace LuxEngine
 
                 // Deserialize the component data
                 IFormatter formatter = new BinaryFormatter();
-                BaseSparseSet components = (BaseSparseSet)formatter.Deserialize(reader.BaseStream);
+                ISparseSet components = (ISparseSet)formatter.Deserialize(reader.BaseStream);
 
                 // Create a component manager
                 componentManagers[componentTypeID] =
@@ -490,8 +490,6 @@ namespace LuxEngine
 
         internal virtual void Update()
         {
-            CopyPreviousState();
-
             foreach (AInternalSystem system in _systems)
             {
                 system.RunIntegrate();

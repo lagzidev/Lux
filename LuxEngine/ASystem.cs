@@ -159,7 +159,7 @@ namespace LuxEngine
         /// <returns><c>true</c> if the component exists, <c>false</c> otherwise.</returns>
         public bool UnpackSingleton<T>(out T outComponent) where T : AComponent<T>
         {
-            return UnpackSingleton<T>(out outComponent);
+            return World.UnpackSingleton(out outComponent);
         }
 
         /// <summary>

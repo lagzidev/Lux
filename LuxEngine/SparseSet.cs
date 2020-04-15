@@ -7,8 +7,7 @@ using System.Runtime.Serialization;
 
 namespace LuxEngine
 {
-    [Serializable]
-    public abstract class BaseSparseSet
+    internal interface ISparseSet
     {
     }
 
@@ -16,7 +15,7 @@ namespace LuxEngine
     /// Represents an unordered sparse set of natural numbers, and provides constant-time operations on it.
     /// </summary>
     [Serializable]
-    public sealed class SparseSet<T> : BaseSparseSet, IEnumerable<T>, ISerializable
+    public sealed class SparseSet<T> : ISparseSet, IEnumerable<T>, ISerializable
     {
         /// <summary>
         /// Contains the actual data packed tightly in memory.
