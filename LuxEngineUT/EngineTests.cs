@@ -17,8 +17,7 @@ namespace LuxEngineUT
         public void CreateWorldSanity()
         {
             World world = _engine.CreateWorld();
-
-            EntityHandle entity = world.CreateEntity();
+            Entity entity = world.CreateEntity();
         }
 
         [Test]

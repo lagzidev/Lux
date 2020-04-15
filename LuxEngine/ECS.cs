@@ -34,11 +34,6 @@ namespace LuxEngine
             _worlds.ForEach(x => x.LoadContent());
         }
 
-        public void Integrate()
-        {
-            _worlds.ForEach(x => x.Integrate());
-        }
-
         public void Update()
         {
             _worlds.ForEach(x => x.Update());

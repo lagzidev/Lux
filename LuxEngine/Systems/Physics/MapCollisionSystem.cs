@@ -10,7 +10,7 @@ namespace LuxEngine
 
     public class MapCollisionSystem : ASystem<MapCollisionSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Transform>();
             signature.Require<Sprite>();

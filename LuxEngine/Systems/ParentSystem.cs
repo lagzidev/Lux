@@ -14,7 +14,7 @@ namespace LuxEngine
 
     public class ParentSystem : ASystem<ParentSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Parent>();
         }
@@ -29,7 +29,7 @@ namespace LuxEngine
                 if (destroyedEntity == parent.ParentEntity)
                 {
                     // Remove its child component
-                    _world.RemoveComponent<Parent>(entity);
+                    RemoveComponent<Parent>(entity);
                 }
             }
         }

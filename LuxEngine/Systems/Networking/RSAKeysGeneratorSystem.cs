@@ -13,7 +13,7 @@ namespace LuxEngine.Systems.Networking
 
     public class RSAKeysGeneratorSystem : ASystem<RSAKeysGeneratorSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<RSAKeyPair>();
         }

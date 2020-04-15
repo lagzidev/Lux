@@ -55,14 +55,14 @@ namespace LuxEngine
     /// </summary>
     public class SpriteLoaderSystem : ASystem<SpriteLoaderSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Sprite>();
         }
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            Sprite sprite = _world.Unpack<Sprite>(entity);
+            Unpack(entity, out Sprite sprite);
             string path = $"{LuxGame.ContentDirectory}/Textures/{sprite.SpriteName}.json";
 
             // Load sprite data into the sprite component
@@ -77,7 +77,7 @@ namespace LuxEngine
                 sprite.CurrentAnimationName = sprite.SpriteData.Animations.Keys.First();
             }
 
-            _world.AddComponent(entity, new TextureComponent(sprite.SpriteName));
+            AddComponent(entity, new TextureComponent(sprite.SpriteName));
         }
     }
 }

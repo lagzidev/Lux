@@ -47,14 +47,14 @@ namespace LuxEngine
     /// </summary>
     public class InputSystem : ASystem<InputSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<InputSingleton>();
         }
 
         protected override void InitSingleton()
         {
-            _world.AddSingletonComponent(new InputSingleton());
+            AddSingletonComponent(new InputSingleton());
         }
 
         protected override void LoadFrame()
@@ -64,7 +64,7 @@ namespace LuxEngine
 
             foreach (var entity in RegisteredEntities)
             {
-                var input = _world.Unpack<InputSingleton>(entity);
+                Unpack(entity, out InputSingleton input);
 
                 input.UpKeyPressed = KeyPressed(input.Up, keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up));
                 input.DownKeyPressed = KeyPressed(input.Down, keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down));

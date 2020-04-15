@@ -33,7 +33,7 @@ namespace LuxEngine
 
     public class MapLoaderSystem : ASystem<MapLoaderSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Map>();
             signature.RequireSingleton<SpriteBatchSingleton>();
@@ -43,47 +43,49 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            _world.AddSingletonComponent(new LoadedMapsSingleton());
+            AddSingletonComponent(new LoadedMapsSingleton());
         }
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            var loadedTextures = _world.UnpackSingleton<LoadedTexturesSingleton>();
-            var loadedMaps = _world.UnpackSingleton<LoadedMapsSingleton>();
-            string mapName = _world.Unpack<Map>(entity).MapName;
+            UnpackSingleton(out LoadedTexturesSingleton loadedTextures);
+            UnpackSingleton(out LoadedMapsSingleton loadedMaps);
+            Unpack(entity, out Map map);
 
-            string mapFilePath = $"{LuxGame.ContentDirectory}/{HardCodedConfig.DEFAULT_MAPS_FOLDER_NAME}/{mapName}.tmx";
-            TmxMap map = new TmxMap(mapFilePath);
+            string mapFilePath = $"{LuxGame.ContentDirectory}/{HardCodedConfig.DEFAULT_MAPS_FOLDER_NAME}/{map.MapName}.tmx";
+            TmxMap tmxMap = new TmxMap(mapFilePath);
 
             // For every used tileset
-            for (int i = 0; i < map.Tilesets.Count; i++)
+            for (int i = 0; i < tmxMap.Tilesets.Count; i++)
             {
-                if (!loadedTextures.Textures.ContainsKey(map.Tilesets[i].Name))
+                if (!loadedTextures.Textures.ContainsKey(tmxMap.Tilesets[i].Name))
                 {
                     // Add texture
-                    EntityHandle tileset = _world.CreateEntity();
-                    tileset.AddComponent(new TextureComponent(map.Tilesets[i].Name));
+                    Entity tileset = CreateEntity();
+                    AddComponent(tileset, new TextureComponent(tmxMap.Tilesets[i].Name));
                 }
             }
 
-            loadedMaps.Maps.Add(mapName, map);
-            loadedMaps.CurrentMapName = mapName;
+            loadedMaps.Maps.Add(map.MapName, tmxMap);
+            loadedMaps.CurrentMapName = map.MapName;
         }
 
         protected override void Draw()
         {
-            SpriteBatch spriteBatch = _world.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
-            var loadedTextures = _world.UnpackSingleton<LoadedTexturesSingleton>();
-            var loadedMaps = _world.UnpackSingleton<LoadedMapsSingleton>();
+            UnpackSingleton(out SpriteBatchSingleton spriteBatchSingleton);
+            SpriteBatch spriteBatch = spriteBatchSingleton.Batch;
+
+            UnpackSingleton(out LoadedTexturesSingleton loadedTextures);
+            UnpackSingleton(out LoadedMapsSingleton loadedMaps);
 
             foreach (Entity entity in RegisteredEntities)
             {
-                string mapName = _world.Unpack<Map>(entity).MapName;
-                TmxMap map = loadedMaps.Maps[mapName];
+                Unpack(entity, out Map map);
+                TmxMap tmxMap = loadedMaps.Maps[map.MapName];
 
-                foreach (TmxLayer layer in map.Layers)
+                foreach (TmxLayer layer in tmxMap.Layers)
                 {
-                    foreach (var tileset in map.Tilesets)
+                    foreach (var tileset in tmxMap.Tilesets)
                     {
                         for (int i = 0; i < layer.Tiles.Count; i++)
                         {
@@ -98,8 +100,8 @@ namespace LuxEngine
                             int column = tileFrame % tilesetTilesWide;
                             int row = (int)Math.Floor((double)tileFrame / (double)tilesetTilesWide);
 
-                            float x = (i % map.Width) * map.TileWidth;
-                            float y = (float)Math.Floor(i / (double)map.Width) * map.TileHeight;
+                            float x = (i % tmxMap.Width) * tmxMap.TileWidth;
+                            float y = (float)Math.Floor(i / (double)tmxMap.Width) * tmxMap.TileHeight;
 
                             Rectangle tilesetRec = new Rectangle((tileset.TileWidth * column) + column + 1, (tileset.TileHeight * row) + row + 1, tileset.TileWidth, tileset.TileHeight);
 

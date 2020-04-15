@@ -5,7 +5,7 @@ namespace LuxEngine.Systems.Networking
 {
     public class AuthClientSystem : ASystem<AuthClientSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Connection>();
             signature.RequireSingleton<IsClientSingleton>();

@@ -31,7 +31,7 @@ namespace LuxEngine
 
     public class AnimationSystem : ASystem<AnimationSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Sprite>();
         }
@@ -40,7 +40,7 @@ namespace LuxEngine
         {
             foreach (var entity in RegisteredEntities)
             {
-                var sprite = _world.Unpack<Sprite>(entity);
+                Unpack(entity, out Sprite sprite);
 
                 Animation currentAnimation = sprite.SpriteData.Animations[sprite.CurrentAnimationName];
                 AnimationFrame currentFrame = currentAnimation.Frames[sprite.CurrentAnimationFrame];

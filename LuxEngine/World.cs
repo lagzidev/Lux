@@ -201,7 +201,17 @@ namespace LuxEngine
 
         #endregion Unpacking
 
-        public void AddSingletonComponent<T>(AComponent<T> component) where T : AComponent<T>
+
+
+        /// <summary>
+        /// Adds a component to the globally accessible singleton entity.
+        /// </summary>
+        /// <typeparam name="T">The component type</typeparam>
+        /// <param name="component">The component to add</param>
+        /// <remarks>
+        /// TODO: I changed AComponent<T> to T, so if stuff got fucked maybe its this
+        /// </remarks>
+        public void AddSingletonComponent<T>(T component) where T : AComponent<T>
         {
             // If iterating systems, add the component afterwards instead of now
             if (_systems.IsIterating)
@@ -312,7 +322,7 @@ namespace LuxEngine
         public void RegisterSystem<T>() where T : ASystem<T>, new()
         {
             T system = new T { World = this };
-            system.ApplySignature();
+            system.SetSignature(system.Signature);
             _systems.Add(system);
         }
 

@@ -3,7 +3,7 @@ namespace LuxEngine
 {
     public class TransformInterpolationSystem : ASystem<TransformInterpolationSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Transform>();
             signature.KeepPreviousState<Transform>();

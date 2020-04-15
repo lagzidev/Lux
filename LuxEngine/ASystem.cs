@@ -84,7 +84,7 @@ namespace LuxEngine
         /// signature will be registered to the system.
         /// </summary>
         /// <param name="signature">System's signature to mutate</param>
-        protected abstract void SetSignature(SystemSignature signature);
+        public abstract void SetSignature(SystemSignature signature);
 
         /// <summary>
         /// Updates an entity's registration status based on its component mask.
@@ -186,6 +186,16 @@ namespace LuxEngine
         }
 
         /// <summary>
+        /// Adds a component to the globally accessible singleton entity.
+        /// </summary>
+        /// <typeparam name="T">The component type</typeparam>
+        /// <param name="component">The component to add</param>
+        public void AddSingletonComponent<T>(T component) where T : AComponent<T>
+        {
+            World.AddSingletonComponent(component);
+        }
+
+        /// <summary>
         /// Removes a component from an entity
         /// </summary>
         /// <typeparam name="T">Type of the component to remove</typeparam>
@@ -193,6 +203,18 @@ namespace LuxEngine
         public void RemoveComponent<T>(Entity entity) where T : AComponent<T>
         {
             World.RemoveComponent<T>(entity);
+        }
+
+        // TODO: Add remove singleton component ?
+
+        public Entity CreateEntity()
+        {
+            return World.CreateEntity();
+        }
+
+        public void DestroyEntity(Entity entity)
+        {
+            World.DestroyEntity(entity);
         }
 
         #endregion

@@ -6,7 +6,7 @@ namespace LuxEngine
 {
     public class SpriteDrawSystem : ASystem<SpriteDrawSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Transform>();
             signature.Require<Sprite>();
@@ -18,22 +18,24 @@ namespace LuxEngine
         protected override void Draw()
         {
             // Get loaded textures
-            var loadedTextures = _world.UnpackSingleton<LoadedTexturesSingleton>();
-            var spriteBatch = _world.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
+            UnpackSingleton(out LoadedTexturesSingleton loadedTextures);
+            UnpackSingleton(out SpriteBatchSingleton spriteBatch);
 
             foreach (var entity in RegisteredEntities)
             {
-                var sprite = _world.Unpack<Sprite>(entity);
-                var transform = _world.Unpack<Transform>(entity);
-                var texture = _world.Unpack<TextureComponent>(entity);
+                Unpack(entity, out Sprite sprite);
+                Unpack(entity, out Transform transform);
+                Unpack(entity, out TextureComponent texture);
 
                 float transformX = transform.X;
                 float transformY = transform.Y;
-                if (_world.TryUnpack(entity, out Parent parent))
+                if (Unpack(entity, out Parent parent))
                 {
-                    var parentTransform = _world.Unpack<Transform>(parent.ParentEntity);
-                    transformX += parentTransform.X;
-                    transformY += parentTransform.Y;
+                    if (Unpack(parent.ParentEntity, out Transform parentTransform))
+                    {
+                        transformX += parentTransform.X;
+                        transformY += parentTransform.Y;
+                    }
                 }
 
                 Animation currentAnimation = sprite.SpriteData.Animations[sprite.CurrentAnimationName];
@@ -42,7 +44,7 @@ namespace LuxEngine
                 LuxCommon.Assert(currentAnimationFrame.Scale != Vector2.Zero);
 
                 // Draw to sprite batch
-                spriteBatch.Draw(
+                spriteBatch.Batch.Draw(
                     loadedTextures.Textures[texture.Name],
                     new Vector2((float)(transformX * Time.Alpha), (float)(transformY * Time.Alpha)),
                     new Rectangle(

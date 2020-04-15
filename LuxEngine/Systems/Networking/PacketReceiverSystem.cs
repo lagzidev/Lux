@@ -17,14 +17,14 @@ namespace LuxEngine
 
     public class PacketReceiverSystem : ASystem<PacketReceiverSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Connection>();
         }
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            var connection = _world.Unpack<Connection>(entity);
+            Unpack(entity, out Connection connection);
 
             // Initialize connection's socket and endpoint
             //connection.Socket = new Socket(connection.IPAddress.AddressFamily, SocketType.Dgram, ProtocolType.Udp);

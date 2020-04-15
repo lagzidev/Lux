@@ -24,7 +24,7 @@ namespace LuxEngine
 
     public class UserServerSystem : ASystem<UserServerSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Connection>();
             signature.RequireSingleton<IsServerSingleton>();

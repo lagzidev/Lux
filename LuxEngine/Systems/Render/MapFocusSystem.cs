@@ -5,7 +5,7 @@ namespace LuxEngine
 {
     public class MapFocusSystem : ASystem<MapFocusSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Camera>();
             signature.RequireSingleton<LoadedMapsSingleton>();

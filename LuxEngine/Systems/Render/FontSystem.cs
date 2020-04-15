@@ -44,7 +44,7 @@ namespace LuxEngine
 
     public class FontSystem : ASystem<FontSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Text>();
             signature.Require<Transform>();
@@ -54,13 +54,13 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            _world.AddSingletonComponent(new FontSingleton(LuxGame.Graphics.GraphicsDevice));
+            AddSingletonComponent(new FontSingleton(LuxGame.Graphics.GraphicsDevice));
         }
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            var fonts = _world.UnpackSingleton<FontSingleton>();
-            var text = _world.Unpack<Text>(entity);
+            UnpackSingleton(out FontSingleton fonts);
+            Unpack(entity, out Text text);
 
             using (var stream = File.OpenRead($"{LuxGame.ContentDirectory}/Fonts/{text.FontName}"))
             {
@@ -71,7 +71,7 @@ namespace LuxEngine
 
         protected override void PreDraw()
         {
-            var fonts = _world.UnpackSingleton<FontSingleton>();
+            UnpackSingleton(out FontSingleton fonts);
 
             fonts.SpriteBatch.Begin(
                 SpriteSortMode.BackToFront,
@@ -84,12 +84,12 @@ namespace LuxEngine
 
         protected override void Draw()
         {
-            var fonts = _world.UnpackSingleton<FontSingleton>();
+            UnpackSingleton(out FontSingleton fonts);
 
             foreach (var entity in RegisteredEntities)
             {
-                var text = _world.Unpack<Text>(entity);
-                var transform = _world.Unpack<Transform>(entity);
+                Unpack(entity, out Text text);
+                Unpack(entity, out Transform transform);
 
                 int defaultFontSize = fonts.Fonts[text.FontName].Size;
                 fonts.Fonts[text.FontName].Size = text.FontSize; //* resolutionSettings.WindowScale; // todo scale
@@ -108,7 +108,7 @@ namespace LuxEngine
 
         protected override void PostDraw()
         {
-            var fonts = _world.UnpackSingleton<FontSingleton>();
+            UnpackSingleton(out FontSingleton fonts);
             fonts.SpriteBatch.End();
         }
     }

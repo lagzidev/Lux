@@ -15,7 +15,7 @@ namespace LuxEngine
     /// </summary>
     public class ClientSystem : ASystem<ClientSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Connection>();
             signature.RequireSingleton<IsClientSingleton>();
@@ -32,7 +32,7 @@ namespace LuxEngine
         {
             // Connect to a server
             Entity connection = CreateEntity();
-            connection.AddComponent(new Connection(IPAddress.Parse("127.0.0.1"), 1337));
+            AddComponent(connection, new Connection(IPAddress.Parse("127.0.0.1"), 1337));
         }
 
         //protected override void OnRegisterEntity(Entity entity)

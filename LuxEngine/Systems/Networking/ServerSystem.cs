@@ -15,7 +15,7 @@ namespace LuxEngine
     /// </summary>
     public class ServerSystem : ASystem<ServerSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Using<Connection>();
             signature.RequireSingleton<IsServerSingleton>();
@@ -24,13 +24,13 @@ namespace LuxEngine
         protected override void InitSingleton()
         {
             // Set the world to be a server
-            _world.AddSingletonComponent(new IsServerSingleton());
+           AddSingletonComponent(new IsServerSingleton());
         }
 
         protected override void Init()
         {
             // Set a connection to any IP addresses
-            Entity connection = _world.CreateEntity();
+            Entity connection = CreateEntity();
             
             AddComponent(connection, new Connection(IPAddress.Any, 1337));
             // TODO: Figure out how to randomize the client port (to avoid collisions in the same network)

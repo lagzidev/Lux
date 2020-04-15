@@ -11,7 +11,7 @@ namespace LuxEngine
 {
     public class PacketSenderSystem : ASystem<PacketSenderSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Connection>();
         }

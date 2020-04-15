@@ -263,7 +263,6 @@ namespace LuxEngine
             // If accumulated enough time to run a tick, start ticking
             while (Time.Accumulator >= Time.Timestep)
             {
-                _ecs.Integrate();
                 Time.Tick();
                 _ecs.Update();
             }

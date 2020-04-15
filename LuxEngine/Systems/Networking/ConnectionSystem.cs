@@ -97,7 +97,7 @@ namespace LuxEngine
     /// </summary>
     public class ConnectionSystem : ASystem<ConnectionSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Connection>();
         }
@@ -110,7 +110,7 @@ namespace LuxEngine
                 if (connection.ConnectionState == ConnectionState.Disconnected)
                 {
                     // TODO: Make sure this is OKAY to do here
-                    _world.DestroyEntity(entity);
+                    DestroyEntity(entity);
                 }
             }
         }

@@ -23,7 +23,7 @@ namespace LuxEngine
 
     public class CameraSystem : ASystem<CameraSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<Parent>();
             signature.Require<Camera>();
@@ -31,7 +31,7 @@ namespace LuxEngine
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            _world.AddComponent(entity, new Transform(0, 0));
+            AddComponent(entity, new Transform(0, 0));
         }
 
         protected override void PreDraw()
@@ -44,13 +44,13 @@ namespace LuxEngine
 
             foreach (var entity in RegisteredEntities)
             {
-                var camera = _world.Unpack<Camera>(entity);
-                var transform = _world.Unpack<Transform>(entity);
-                Entity parentEntity = _world.Unpack<Parent>(entity).ParentEntity;
+                Unpack(entity, out Camera camera);
+                Unpack(entity, out Transform transform);
+                Unpack(entity, out Parent parent);
 
                 float transformX = transform.X;
                 float transformY = transform.Y;
-                if (_world.TryUnpack(parentEntity, out Transform parentTransform))
+                if (Unpack(parent.Entity, out Transform parentTransform))
                 {
                     transformX += parentTransform.X;
                     transformY += parentTransform.Y;

@@ -34,7 +34,7 @@ namespace LuxEngine
         //TODO: Components to implement:
         // PhysicsWorld, Grounded, GameInput (DynamicPhysics?) https://youtu.be/W3aieHjyNvw?t=156
 
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<PlayerControlledTD>();
             signature.Require<Transform>();
@@ -47,19 +47,19 @@ namespace LuxEngine
         {
             foreach (var entity in RegisteredEntities)
             {
-                var transform = _world.Unpack<Transform>(entity);
+                Unpack(entity, out Transform transform);
                 Console.WriteLine($"X: {transform.X} Y {transform.Y}");
             }
         }
 
         protected override void Update()
         {
-            var input = _world.UnpackSingleton<InputSingleton>();
+            UnpackSingleton(out InputSingleton input);
 
             foreach (var entity in RegisteredEntities)
             {
-                var transform = _world.Unpack<Transform>(entity);
-                var moveable = _world.Unpack<Moveable>(entity);
+                Unpack(entity, out Transform transform);
+                Unpack(entity, out Moveable moveable);
 
                 moveable.Velocity = Vector2.Zero;
 
@@ -111,8 +111,8 @@ namespace LuxEngine
         {
             foreach (var entity in RegisteredEntities)
             {
-                var sprite = _world.Unpack<Sprite>(entity);
-                var moveable = _world.Unpack<Moveable>(entity);
+                Unpack(entity, out Sprite sprite);
+                Unpack(entity, out Moveable moveable);
 
                 // Walking animations
 

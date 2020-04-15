@@ -31,7 +31,7 @@ namespace LuxEngine
     /// </summary>
     public class TextureLoaderSystem : ASystem<TextureLoaderSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<TextureComponent>();
             signature.RequireSingleton<LoadedTexturesSingleton>();
@@ -39,7 +39,7 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            _world.AddSingletonComponent(new LoadedTexturesSingleton());
+            AddSingletonComponent(new LoadedTexturesSingleton());
         }
 
         protected override void LoadContent()
@@ -62,32 +62,32 @@ namespace LuxEngine
 
         private void AddTexture(Entity entity)
         {
-            var loadedTexturesSingleton = _world.UnpackSingleton<LoadedTexturesSingleton>();
-            string textureName = _world.Unpack<TextureComponent>(entity).Name;
+            UnpackSingleton(out LoadedTexturesSingleton loadedTextures);
+            Unpack(entity, out TextureComponent texture);
 
             // If texture is already loaded, no need to load it again
-            if (loadedTexturesSingleton.Textures.ContainsKey(textureName))
+            if (loadedTextures.Textures.ContainsKey(texture.Name))
             {
                 return;
             }
 
             // Invalid texture name
-            if (textureName.Length == 0)
+            if (texture.Name.Length == 0)
             {
                 LuxCommon.Assert(false);
                 return;
             }
 
             // Textures that start with "_" are reserved for creation in game
-            if (textureName[0] == '_')
+            if (texture.Name[0] == '_')
             {
                 LuxCommon.Assert(false);
             }
 
-            string texturePath = $"{HardCodedConfig.DEFAULT_TEXTURES_FOLDER_NAME}/{textureName}.png";
+            string texturePath = $"{HardCodedConfig.DEFAULT_TEXTURES_FOLDER_NAME}/{texture.Name}.png";
             Texture2D textureObj = TextureLoader.Load(texturePath, LuxGame.Instance.Content);
 
-            loadedTexturesSingleton.Textures.Add(textureName, textureObj);
+            loadedTextures.Textures.Add(texture.Name, textureObj);
         }
     }
 }

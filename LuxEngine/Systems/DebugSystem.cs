@@ -15,7 +15,7 @@ namespace LuxEngine
 
     public class DebugSystem : ASystem<DebugSystem>
     {
-        protected override void SetSignature(SystemSignature signature)
+        public override void SetSignature(SystemSignature signature)
         {
             signature.Require<DebugInfo>();
         }
@@ -24,9 +24,9 @@ namespace LuxEngine
         {
             foreach (var entity in RegisteredEntities)
             {
-                var debugInfo = _world.Unpack<DebugInfo>(entity);
+                Unpack(entity, out DebugInfo debugInfo);
 
-                if (_world.TryUnpack(entity, out Transform transform))
+                if (Unpack(entity, out Transform transform))
                 {
                     Console.WriteLine($"X: {transform.X} Y {transform.Y} - {debugInfo.Name}");
                 }
