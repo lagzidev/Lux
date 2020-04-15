@@ -3,7 +3,7 @@ using TiledSharp;
 
 namespace LuxEngine
 {
-    public class MapFocusSystem : BaseSystem<MapFocusSystem>
+    public class MapFocusSystem : ASystem<MapFocusSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {

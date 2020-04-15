@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
-    public class Camera : BaseComponent<Camera>
+    public class Camera : AComponent<Camera>
     {
         public Vector2 Zoom;
         public float Rotation;
@@ -21,7 +21,7 @@ namespace LuxEngine
         }
     }
 
-    public class CameraSystem : BaseSystem<CameraSystem>
+    public class CameraSystem : ASystem<CameraSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -31,10 +31,10 @@ namespace LuxEngine
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            World.AddComponent(entity, new Transform(0, 0));
+            _world.AddComponent(entity, new Transform(0, 0));
         }
 
-        protected override void PreDraw(GameTime gameTime)
+        protected override void PreDraw()
         {
             if (RegisteredEntities.Count > 1)
             {
@@ -44,13 +44,13 @@ namespace LuxEngine
 
             foreach (var entity in RegisteredEntities)
             {
-                var camera = World.Unpack<Camera>(entity);
-                var transform = World.Unpack<Transform>(entity);
-                Entity parentEntity = World.Unpack<Parent>(entity).ParentEntity;
+                var camera = _world.Unpack<Camera>(entity);
+                var transform = _world.Unpack<Transform>(entity);
+                Entity parentEntity = _world.Unpack<Parent>(entity).ParentEntity;
 
                 float transformX = transform.X;
                 float transformY = transform.Y;
-                if (World.TryUnpack(parentEntity, out Transform parentTransform))
+                if (_world.TryUnpack(parentEntity, out Transform parentTransform))
                 {
                     transformX += parentTransform.X;
                     transformY += parentTransform.Y;
@@ -77,7 +77,7 @@ namespace LuxEngine
                 //}
 
                 // Positioning
-                Matrix translation = Matrix.CreateTranslation(new Vector3(-new Vector2(transformX, transformY), 0f));
+                Matrix translation = Matrix.CreateTranslation(new Vector3(-new Vector2((float)(transformX * Time.Alpha), (float)(transformY * Time.Alpha)), 0f));
 
                 // Rotating
                 Matrix rotation = Matrix.CreateRotationZ(camera.Rotation);

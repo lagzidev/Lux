@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 namespace LuxEngine
 {
     [Serializable]
-    public class InputSingleton : BaseComponent<InputSingleton>
+    public class InputSingleton : AComponent<InputSingleton>
     {
         public bool Up;
         public bool Down;
@@ -45,7 +45,7 @@ namespace LuxEngine
     /// <summary>
     /// Populates the InputSingleton component.
     /// </summary>
-    public class InputSystem : BaseSystem<InputSystem>
+    public class InputSystem : ASystem<InputSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -54,17 +54,17 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new InputSingleton());
+            _world.AddSingletonComponent(new InputSingleton());
         }
 
-        protected override void PreUpdate()
+        protected override void LoadFrame()
         {
             KeyboardState keyboard = Keyboard.GetState();
             //MouseState mouse = Mouse.GetState();
 
             foreach (var entity in RegisteredEntities)
             {
-                var input = World.Unpack<InputSingleton>(entity);
+                var input = _world.Unpack<InputSingleton>(entity);
 
                 input.UpKeyPressed = KeyPressed(input.Up, keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up));
                 input.DownKeyPressed = KeyPressed(input.Down, keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down));

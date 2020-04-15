@@ -5,8 +5,11 @@ namespace LuxEngine
 {
 
     /// <summary>
-    /// For optimizing, see https://gamedev.stackexchange.com/questions/71767/how-can-i-efficiently-implement-a-bitmask-larger-than-64-bits-for-component-exis
+    /// A bit array representing the components an entity/system uses.
     /// </summary>
+    /// <remarks>
+    /// TODO: Optimize the bitarray. See https://gamedev.stackexchange.com/questions/71767/how-can-i-efficiently-implement-a-bitmask-larger-than-64-bits-for-component-exis
+    /// </remarks>
     public class ComponentMask
     {
         private BitArray _mask;
@@ -30,17 +33,17 @@ namespace LuxEngine
         /// Add a component to the mask
         /// </summary>
         /// <typeparam name="T">A component type (not wrapped in BaseComponent)</typeparam>
-        public void AddComponent<T>() where T : BaseComponent<T>
+        public void AddComponent<T>() where T : AComponent<T>
         {
-            _mask[BaseComponent<T>.ComponentType] = true;
+            _mask[AComponent<T>.ComponentType] = true;
         }
 
         /// <summary>
         /// </summary>
         /// <typeparam name="T">A component type (not wrapped in BaseComponent)</typeparam>
-        public void RemoveComponent<T>() where T : BaseComponent<T>
+        public void RemoveComponent<T>() where T : AComponent<T>
         {
-            _mask[BaseComponent<T>.ComponentType] = false;
+            _mask[AComponent<T>.ComponentType] = false;
         }
 
         public bool Contains(ComponentMask otherMask)

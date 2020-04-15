@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
-    public class SpriteBatchSingleton : BaseComponent<SpriteBatchSingleton>
+    public class SpriteBatchSingleton : AComponent<SpriteBatchSingleton>
     {
         public SpriteBatch SpriteBatch;
         public RenderTarget2D RenderTarget;
@@ -16,7 +16,7 @@ namespace LuxEngine
         }
     }
 
-    public class SpriteBatchSystem : BaseSystem<SpriteBatchSystem>
+    public class SpriteBatchSystem : ASystem<SpriteBatchSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -26,12 +26,12 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new SpriteBatchSingleton(LuxGame.Graphics.GraphicsDevice));
+            _world.AddSingletonComponent(new SpriteBatchSingleton(LuxGame.Graphics.GraphicsDevice));
         }
 
         protected override void LoadContent()
         {
-            var spriteBatchSingleton = World.UnpackSingleton<SpriteBatchSingleton>();
+            var spriteBatchSingleton = _world.UnpackSingleton<SpriteBatchSingleton>();
 
             spriteBatchSingleton.RenderTarget = new RenderTarget2D(
                 LuxGame.Graphics.GraphicsDevice,
@@ -39,9 +39,9 @@ namespace LuxEngine
                 LuxGame.Height);
         }
 
-        protected override void PreDraw(GameTime gameTime)
+        protected override void PreDraw()
         {
-            var spriteBatchSingleton = World.UnpackSingleton<SpriteBatchSingleton>();
+            var spriteBatchSingleton = _world.UnpackSingleton<SpriteBatchSingleton>();
 
             // Everything will be drawn to our render target
             LuxGame.Graphics.GraphicsDevice.SetRenderTarget(spriteBatchSingleton.RenderTarget);
@@ -54,11 +54,11 @@ namespace LuxEngine
                 null);
         }
 
-        protected override void PostDraw(GameTime gameTime)
+        protected override void PostDraw()
         {
             LuxCommon.Assert(RegisteredEntities.Count == 1); // No support for multiple cameras yet
 
-            var spriteBatchSingleton = World.UnpackSingleton<SpriteBatchSingleton>();
+            var spriteBatchSingleton = _world.UnpackSingleton<SpriteBatchSingleton>();
             SpriteBatch spriteBatch = spriteBatchSingleton.SpriteBatch;
 
             // End batch drawing on the render target
@@ -71,7 +71,7 @@ namespace LuxEngine
 
             foreach (var entity in RegisteredEntities)
             {
-                Camera camera = World.Unpack<Camera>(entity);
+                Camera camera = _world.Unpack<Camera>(entity);
 
                 // Draw from render target to the actual screen using the matrices for zoom, scaling, etc.
                 spriteBatch.Begin(

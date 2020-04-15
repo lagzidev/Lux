@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace LuxEngine
 {
     [Serializable]
-    public class Transform : BaseComponent<Transform>
+    public class Transform : AComponent<Transform>
     {
         public float X;
         public float Y;

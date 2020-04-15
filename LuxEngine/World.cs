@@ -9,21 +9,47 @@ namespace LuxEngine
 {
     public class World
     {
+        /// <summary>
+        /// An entity that is globally accessible from any system.
+        /// To access it a system should signature.RequireSingleton<T>
+        /// </summary>
         private Entity _singletonEntity;
 
+        /// <summary>
+        /// Manages entities' IDs
+        /// </summary>
         private EntityGenerator _entityGenerator;
+
+        /// <summary>
+        /// A component mask for every entity in the world
+        /// </summary>
         private Dictionary<Entity, ComponentMask> _entityMasks;
 
         /// <summary>
         /// A list of actions to execute after done iterating over systems;
         /// These are actions that cannot be executed while iterating systems.
         /// </summary>
+        /// <remarks>
+        /// TODO: Find a better solution, see how flecs did it
+        /// </remarks>
         private Queue<Action> _postponedSystemActions;
 
-        private LuxIterator<InternalBaseSystem> _systems;
+        /// <summary>
+        /// All systems registered to the world
+        /// </summary>
+        private LuxIterator<AInternalSystem> _systems;
+
+        /// <summary>
+        /// Component managers that contains all component data
+        /// </summary>
         private Dictionary<int, BaseComponentManager> _componentManagers;
 
-        private bool _initialized;
+        /// <summary>
+        /// Component managers that contain components in their previous state.
+        /// Only contains a manager if KeepPreviousState was called for the component type.
+        /// </summary>
+        private Dictionary<int, BaseComponentManager> _previousComponentManagers;
+
         private bool _inInitSingleton;
 
         private bool _paused;
@@ -53,10 +79,9 @@ namespace LuxEngine
 
             _postponedSystemActions = new Queue<Action>();
 
-            _systems = new LuxIterator<InternalBaseSystem>(_postponedSystemActions);
+            _systems = new LuxIterator<AInternalSystem>(_postponedSystemActions);
             _componentManagers = new Dictionary<int, BaseComponentManager>();
 
-            _initialized = false;
             _paused = false;
 
             DrawDisabled = false;
@@ -64,14 +89,7 @@ namespace LuxEngine
 
         public void InitWorld()
         {
-            if (_initialized)
-            {
-                LuxCommon.Assert(false);
-                return;
-            }
-
-            _singletonEntity = CreateEntity().Entity;
-            _initialized = true;
+            _singletonEntity = CreateEntity();
         }
 
         /// <summary>
@@ -81,12 +99,6 @@ namespace LuxEngine
         /// </summary>
         public void InitWorld(BinaryReader reader)
         {
-            if (_initialized)
-            {
-                LuxCommon.Assert(false);
-                return;
-            }
-
             // TODO: move to protobuf and Initialize everything else - entity generator, masks, etc.
             _componentManagers = DeserializeToComponentManagers(reader);
             _singletonEntity = DeserializeSingletonEntity(reader);
@@ -105,8 +117,6 @@ namespace LuxEngine
             {
                 system.RunLoadContent();
             }
-
-            _initialized = true;
         }
 
         public ComponentMask GetSingletonMask()
@@ -114,12 +124,12 @@ namespace LuxEngine
             return _entityMasks[_singletonEntity];
         }
 
-        public EntityHandle CreateEntity()
+        public Entity CreateEntity()
         {
-            EntityHandle entityHandle = new EntityHandle(_entityGenerator.CreateEntity(), this);
-            _entityMasks.Add(entityHandle.Entity, new ComponentMask());
+            Entity entity = _entityGenerator.CreateEntity();
+            _entityMasks.Add(entity, new ComponentMask());
 
-            return entityHandle;
+            return entity;
         }
 
         public void DestroyEntity(Entity entity)
@@ -141,19 +151,20 @@ namespace LuxEngine
             _entityGenerator.DestroyEntity(entity);
         }
 
-        public bool TryUnpack<T>(Entity entity, out T outComponent) where T : BaseComponent<T>
+        #region Unpacking
+
+        public bool Unpack<T>(Entity entity, out T outComponent) where T : AComponent<T>
         {
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
             if (null == foundComponentManager)
             {
-                outComponent = default;
+                outComponent = null;
                 return false;
             }
 
-            BaseComponent<T> component;
-            if (!foundComponentManager.GetComponent(entity, out component))
+            if (!foundComponentManager.GetComponent(entity, out AComponent<T> component))
             {
-                outComponent = default;
+                outComponent = null;
                 return false;
             }
 
@@ -162,28 +173,35 @@ namespace LuxEngine
             return true;
         }
 
-        public bool TryUnpackSingleton<T>(out T outComponent) where T : BaseComponent<T>
+        public bool UnpackPrevious<T>(Entity entity, out T outComponent) where T : AComponent<T>
         {
-            return TryUnpack(_singletonEntity, out outComponent);
+            if (AComponent<T>.ComponentType == -1)
+            {
+                outComponent = null;
+                return false;
+            }
+
+            var foundComponentManager = (ComponentManager<T>)_previousComponentManagers[AComponent<T>.ComponentType];
+
+            if (!foundComponentManager.GetComponent(entity, out AComponent <T> component))
+            {
+                outComponent = null;
+                return false;
+            }
+
+            // Return the component without the ugly BaseComponent<T> wrapper
+            outComponent = (T)Convert.ChangeType(component, typeof(T));
+            return true;
         }
 
-        public T Unpack<T>(Entity entity) where T: BaseComponent<T>
+        public bool UnpackSingleton<T>(out T outComponent) where T : AComponent<T>
         {
-            T component;
-            bool unpackSuccess = TryUnpack(entity, out component);
-
-            // Always expecting success
-            LuxCommon.Assert(unpackSuccess);
-
-            return component;
+            return Unpack(_singletonEntity, out outComponent);
         }
 
-        public T UnpackSingleton<T>() where T : BaseComponent<T>
-        {
-            return Unpack<T>(_singletonEntity);
-        }
+        #endregion Unpacking
 
-        public void AddSingletonComponent<T>(BaseComponent<T> component) where T : BaseComponent<T>
+        public void AddSingletonComponent<T>(AComponent<T> component) where T : AComponent<T>
         {
             // If iterating systems, add the component afterwards instead of now
             if (_systems.IsIterating)
@@ -209,7 +227,7 @@ namespace LuxEngine
         /// <typeparam name="T"></typeparam>
         /// <param name="entity"></param>
         /// <param name="component"></param>
-        public void AddComponent<T>(Entity entity, BaseComponent<T> component) where T : BaseComponent<T>
+        public void AddComponent<T>(Entity entity, AComponent<T> component) where T : AComponent<T>
         {
             // If iterating systems, add the component afterwards instead of now
             if (_systems.IsIterating)
@@ -261,7 +279,7 @@ namespace LuxEngine
         /// only be removed after all other systems called Update for this tick.
         /// PostUpdate will see this component as removed.
         /// </example>
-        public void RemoveComponent<T>(Entity entity) where T : BaseComponent<T>
+        public void RemoveComponent<T>(Entity entity) where T : AComponent<T>
         {
             // If iterating systems, remove the component afterwards instead of now
             if (_systems.IsIterating)
@@ -291,7 +309,7 @@ namespace LuxEngine
             }
         }
 
-        public void RegisterSystem<T>() where T : BaseSystem<T>, new()
+        public void RegisterSystem<T>() where T : ASystem<T>, new()
         {
             T system = new T { World = this };
             system.ApplySignature();
@@ -303,18 +321,60 @@ namespace LuxEngine
         /// </summary>
         /// <typeparam name="T">Component type to register to the world</typeparam>
         /// <returns>The component type's ID for the world</returns>
-        public void RegisterComponent<T>() where T : BaseComponent<T>
+        public void RegisterComponent<T>() where T : AComponent<T>
         {
             // Set the ComponentType for the component class
-            BaseComponent<T>.SetComponentType();
+            AComponent<T>.SetComponentType();
 
             // Add a component manager for the type if doesn't exist
-            if (!_componentManagers.ContainsKey(BaseComponent<T>.ComponentType))
+            if (!_componentManagers.ContainsKey(AComponent<T>.ComponentType))
             {
                 var componentManager = new ComponentManager<T>();
-                _componentManagers[BaseComponent<T>.ComponentType] = componentManager;
+                _componentManagers[AComponent<T>.ComponentType] = componentManager;
             }
         }
+
+        /// <summary>
+        /// Makes a component type's previous state available.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void KeepPreviousState<T>() where T : AComponent<T>
+        {
+            // Set the ComponentType in case it wasn't set already
+            AComponent<T>.SetComponentType();
+
+            // Add a component manager for the type if doesn't exist
+            if (!_previousComponentManagers.ContainsKey(AComponent<T>.ComponentType))
+            {
+                var componentManager = new ComponentManager<T>();
+                _previousComponentManagers[AComponent<T>.ComponentType] = componentManager;
+            }
+        }
+
+        /// <summary>
+        /// Saves the current state of the components into a seperate dataset.
+        /// Only copies components for which KeepPreviousState was called.
+        /// </summary>
+        private void CopyPreviousState()
+        {
+            foreach (int key in _previousComponentManagers.Keys)
+            {
+                // TODO: Make sure this is copy by value and not reference
+                _previousComponentManagers[key] = _componentManagers[key];
+            }
+        }
+
+        private ComponentManager<T> _getComponentManager<T>()
+        {
+            if (AComponent<T>.ComponentType == -1)
+            {
+                return null;
+            }
+
+            return (ComponentManager<T>)_componentManagers[AComponent<T>.ComponentType];
+        }
+
+        #region Serialization
 
         /// <summary>
         /// Serializes all of the component managers and writes them into a
@@ -391,90 +451,88 @@ namespace LuxEngine
             IFormatter formatter = new BinaryFormatter();
             return (Entity)formatter.Deserialize(reader.BaseStream);
         }
-
-        private ComponentManager<T> _getComponentManager<T>()
-        {
-            if (BaseComponent<T>.ComponentType == -1)
-            {
-                return null;
-            }
-
-            return (ComponentManager<T>)_componentManagers[BaseComponent<T>.ComponentType];
-        }
+        #endregion Serialization
 
         #region Phases
 
-        public virtual void Init()
+        internal virtual void Init()
         {
             _inInitSingleton = true;
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
                 system.RunInitSingleton();
             }
             _inInitSingleton = false;
 
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
                 system.RunInit();
             }
         }
 
-        public virtual void LoadContent()
+        internal virtual void LoadContent()
         {
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
                 system.RunLoadContent();
             }
         }
 
-        public virtual void Update()
+        internal virtual void Update()
         {
-            foreach (InternalBaseSystem system in _systems)
+            CopyPreviousState();
+
+            foreach (AInternalSystem system in _systems)
+            {
+                system.RunIntegrate();
+            }
+
+            foreach (AInternalSystem system in _systems)
             {
                 system.RunLoadFrame();
             }
 
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
                 system.RunPreUpdate();
             }
 
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
                 system.RunUpdate();
             }
 
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
                 system.RunPostUpdate();
             }
         }
 
-        public virtual void Draw(GameTime gameTime)
+        internal virtual void Draw()
         {
             if (DrawDisabled)
             {
                 return;
             }
 
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
-                system.RunLoadDraw(gameTime);
+                system.RunLoadDraw();
             }
 
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
-                system.RunPreDraw(gameTime);
+                system.RunPreDraw();
             }
 
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
-                system.RunDraw(gameTime);
+                system.RunDraw();
             }
 
-            foreach (InternalBaseSystem system in _systems)
+            foreach (AInternalSystem system in _systems)
             {
-                system.RunPostDraw(gameTime);
+                system.RunPostDraw();
             }
         }
 

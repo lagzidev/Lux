@@ -29,18 +29,18 @@ namespace LuxEngine
         public List<AnimationFrame> Frames;
     }
 
-    public class AnimationSystem : BaseSystem<AnimationSystem>
+    public class AnimationSystem : ASystem<AnimationSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
             signature.Require<Sprite>();
         }
 
-        protected override void PreDraw(GameTime gameTime)
+        protected override void PreDraw()
         {
             foreach (var entity in RegisteredEntities)
             {
-                var sprite = World.Unpack<Sprite>(entity);
+                var sprite = _world.Unpack<Sprite>(entity);
 
                 Animation currentAnimation = sprite.SpriteData.Animations[sprite.CurrentAnimationName];
                 AnimationFrame currentFrame = currentAnimation.Frames[sprite.CurrentAnimationFrame];
@@ -48,7 +48,7 @@ namespace LuxEngine
                 // If frame still has time to stay, do nothing
                 if (sprite.CurrentTimeInFrameMs < currentFrame.Duration)
                 {
-                    sprite.CurrentTimeInFrameMs += gameTime.ElapsedGameTime.Milliseconds;
+                    sprite.CurrentTimeInFrameMs += Time.DeltaTime * 1000f;
                     continue;
                 }
 

@@ -35,14 +35,14 @@ namespace LuxEngine
     }
 
     [Serializable]
-    public class Sprite : BaseComponent<Sprite>
+    public class Sprite : AComponent<Sprite>
     {
         public readonly string SpriteName;
 
         public SpriteData SpriteData;
         public string CurrentAnimationName;
         public int CurrentAnimationFrame;
-        public int CurrentTimeInFrameMs;
+        public float CurrentTimeInFrameMs;
 
         public Sprite(string spriteName)
         {
@@ -53,7 +53,7 @@ namespace LuxEngine
     /// <summary>
     /// Responsible for loading sprite data (e.g. FireSword.json)
     /// </summary>
-    public class SpriteLoaderSystem : BaseSystem<SpriteLoaderSystem>
+    public class SpriteLoaderSystem : ASystem<SpriteLoaderSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -62,7 +62,7 @@ namespace LuxEngine
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            Sprite sprite = World.Unpack<Sprite>(entity);
+            Sprite sprite = _world.Unpack<Sprite>(entity);
             string path = $"{LuxGame.ContentDirectory}/Textures/{sprite.SpriteName}.json";
 
             // Load sprite data into the sprite component
@@ -77,7 +77,7 @@ namespace LuxEngine
                 sprite.CurrentAnimationName = sprite.SpriteData.Animations.Keys.First();
             }
 
-            World.AddComponent(entity, new TextureComponent(sprite.SpriteName));
+            _world.AddComponent(entity, new TextureComponent(sprite.SpriteName));
         }
     }
 }

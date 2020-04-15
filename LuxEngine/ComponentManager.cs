@@ -26,16 +26,16 @@ namespace LuxEngine
 
     public class ComponentManager<T> : BaseComponentManager
     {
-        private SparseSet<BaseComponent<T>> _components;
+        private SparseSet<AComponent<T>> _components;
 
         public ComponentManager()
         {
-            _components = new SparseSet<BaseComponent<T>>(HardCodedConfig.MAX_COMPONENTS_PER_TYPE);
+            _components = new SparseSet<AComponent<T>>(HardCodedConfig.MAX_COMPONENTS_PER_TYPE);
         }
 
         public ComponentManager(BaseSparseSet components)
         {
-            _components = (SparseSet<BaseComponent<T>>)components;
+            _components = (SparseSet<AComponent<T>>)components;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace LuxEngine
         /// <returns>
         /// <c>true</c> if component exists for the entity; <c>false</c> otherwise.
         /// </returns>
-        public bool GetComponent(Entity entity, out BaseComponent<T> outComponent)
+        public bool GetComponent(Entity entity, out AComponent<T> outComponent)
         {
             // Get the entity's component; if it doesn't exist return false
             if (!_components.GetValue(entity.Index, out outComponent))
@@ -69,7 +69,7 @@ namespace LuxEngine
         /// </summary>
         /// <param name="entity">Entity that corresponds to the given component</param>
         /// <param name="component">Component to add</param>
-        public void AddComponent(Entity entity, BaseComponent<T> component)
+        public void AddComponent(Entity entity, AComponent<T> component)
         {
             _components.Add(entity.Index, component);
         }

@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace LuxEngine
 {
     [Serializable]
-    public class LoadedTexturesSingleton : BaseComponent<LoadedTexturesSingleton>
+    public class LoadedTexturesSingleton : AComponent<LoadedTexturesSingleton>
     {
         [NonSerialized]
         public readonly Dictionary<string, Texture2D> Textures;
@@ -16,7 +16,7 @@ namespace LuxEngine
         }
     }
 
-    public class TextureComponent : BaseComponent<TextureComponent>
+    public class TextureComponent : AComponent<TextureComponent>
     {
         public string Name;
 
@@ -29,7 +29,7 @@ namespace LuxEngine
     /// <summary>
     /// Responsible for loading textures (.png files)
     /// </summary>
-    public class TextureLoaderSystem : BaseSystem<TextureLoaderSystem>
+    public class TextureLoaderSystem : ASystem<TextureLoaderSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -39,7 +39,7 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new LoadedTexturesSingleton());
+            _world.AddSingletonComponent(new LoadedTexturesSingleton());
         }
 
         protected override void LoadContent()
@@ -62,8 +62,8 @@ namespace LuxEngine
 
         private void AddTexture(Entity entity)
         {
-            var loadedTexturesSingleton = World.UnpackSingleton<LoadedTexturesSingleton>();
-            string textureName = World.Unpack<TextureComponent>(entity).Name;
+            var loadedTexturesSingleton = _world.UnpackSingleton<LoadedTexturesSingleton>();
+            string textureName = _world.Unpack<TextureComponent>(entity).Name;
 
             // If texture is already loaded, no need to load it again
             if (loadedTexturesSingleton.Textures.ContainsKey(textureName))

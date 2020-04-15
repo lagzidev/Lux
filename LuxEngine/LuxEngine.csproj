@@ -44,12 +44,11 @@
     <Compile Include="Old\Map.cs" />
     <Compile Include="Old\Player.cs" />
     <Compile Include="Old\Scene.cs" />
-    <Compile Include="BaseSystem.cs" />
+    <Compile Include="ASystem.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="BaseComponent.cs" />
+    <Compile Include="AComponent.cs" />
     <Compile Include="World.cs" />
     <Compile Include="EntityManager.cs" />
-    <Compile Include="EntityHandle.cs" />
     <Compile Include="ComponentManager.cs" />
     <Compile Include="HardCodedConfig.cs" />
     <Compile Include="ComponentMask.cs" />
@@ -88,6 +87,8 @@
     <Compile Include="Systems\Networking\RSAKeysGeneratorSystem.cs" />
     <Compile Include="Systems\Networking\AuthClientSystem.cs" />
     <Compile Include="Misc\Time.cs" />
+    <Compile Include="Systems\Render\TransformInterpolationSystem.cs" />
+    <Compile Include="SystemSignature.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

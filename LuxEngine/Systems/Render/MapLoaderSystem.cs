@@ -7,7 +7,7 @@ using TiledSharp;
 namespace LuxEngine
 {
     [Serializable]
-    public class LoadedMapsSingleton : BaseComponent<LoadedMapsSingleton>
+    public class LoadedMapsSingleton : AComponent<LoadedMapsSingleton>
     {
         [NonSerialized]
         public Dictionary<string, TmxMap> Maps;
@@ -21,7 +21,7 @@ namespace LuxEngine
     }
 
     [Serializable]
-    public class Map : BaseComponent<Map>
+    public class Map : AComponent<Map>
     {
         public string MapName;
 
@@ -31,7 +31,7 @@ namespace LuxEngine
         }
     }
 
-    public class MapLoaderSystem : BaseSystem<MapLoaderSystem>
+    public class MapLoaderSystem : ASystem<MapLoaderSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -43,14 +43,14 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new LoadedMapsSingleton());
+            _world.AddSingletonComponent(new LoadedMapsSingleton());
         }
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            var loadedTextures = World.UnpackSingleton<LoadedTexturesSingleton>();
-            var loadedMaps = World.UnpackSingleton<LoadedMapsSingleton>();
-            string mapName = World.Unpack<Map>(entity).MapName;
+            var loadedTextures = _world.UnpackSingleton<LoadedTexturesSingleton>();
+            var loadedMaps = _world.UnpackSingleton<LoadedMapsSingleton>();
+            string mapName = _world.Unpack<Map>(entity).MapName;
 
             string mapFilePath = $"{LuxGame.ContentDirectory}/{HardCodedConfig.DEFAULT_MAPS_FOLDER_NAME}/{mapName}.tmx";
             TmxMap map = new TmxMap(mapFilePath);
@@ -61,7 +61,7 @@ namespace LuxEngine
                 if (!loadedTextures.Textures.ContainsKey(map.Tilesets[i].Name))
                 {
                     // Add texture
-                    EntityHandle tileset = World.CreateEntity();
+                    EntityHandle tileset = _world.CreateEntity();
                     tileset.AddComponent(new TextureComponent(map.Tilesets[i].Name));
                 }
             }
@@ -70,15 +70,15 @@ namespace LuxEngine
             loadedMaps.CurrentMapName = mapName;
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Draw()
         {
-            SpriteBatch spriteBatch = World.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
-            var loadedTextures = World.UnpackSingleton<LoadedTexturesSingleton>();
-            var loadedMaps = World.UnpackSingleton<LoadedMapsSingleton>();
+            SpriteBatch spriteBatch = _world.UnpackSingleton<SpriteBatchSingleton>().SpriteBatch;
+            var loadedTextures = _world.UnpackSingleton<LoadedTexturesSingleton>();
+            var loadedMaps = _world.UnpackSingleton<LoadedMapsSingleton>();
 
             foreach (Entity entity in RegisteredEntities)
             {
-                string mapName = World.Unpack<Map>(entity).MapName;
+                string mapName = _world.Unpack<Map>(entity).MapName;
                 TmxMap map = loadedMaps.Maps[mapName];
 
                 foreach (TmxLayer layer in map.Layers)

@@ -5,13 +5,13 @@ using System.Xml.Serialization;
 
 namespace LuxEngine.Systems.Networking
 {
-    public class RSAKeyPair : BaseComponent<RSAKeyPair>
+    public class RSAKeyPair : AComponent<RSAKeyPair>
     {
         public RSAParameters PrivateKey;
         public RSAParameters PublicKey;
     }
 
-    public class RSAKeysGeneratorSystem : BaseSystem<RSAKeysGeneratorSystem>
+    public class RSAKeysGeneratorSystem : ASystem<RSAKeysGeneratorSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -20,7 +20,7 @@ namespace LuxEngine.Systems.Networking
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new RSAKeyPair());
+            AddSingletonComponent(new RSAKeyPair());
         }
 
         protected override void OnRegisterEntity(Entity entity)
@@ -32,7 +32,7 @@ namespace LuxEngine.Systems.Networking
             };
 
             // Update the key pair component
-            var keyPairComponent = World.Unpack<RSAKeyPair>(entity);
+            Unpack(entity, out RSAKeyPair keyPairComponent);
             keyPairComponent.PrivateKey = csp.ExportParameters(true);
             keyPairComponent.PublicKey = csp.ExportParameters(false);
 

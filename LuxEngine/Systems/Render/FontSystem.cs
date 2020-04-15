@@ -10,7 +10,7 @@ using System.Text;
 namespace LuxEngine
 {
     [Serializable]
-    public class Text : BaseComponent<Text>
+    public class Text : AComponent<Text>
     {
         public string TextStr;
         public string FontName;
@@ -29,7 +29,7 @@ namespace LuxEngine
     }
 
     [Serializable]
-    public class FontSingleton : BaseComponent<FontSingleton>
+    public class FontSingleton : AComponent<FontSingleton>
     {
         [NonSerialized]
         public Dictionary<string, DynamicSpriteFont> Fonts;
@@ -42,7 +42,7 @@ namespace LuxEngine
         }
     }
 
-    public class FontSystem : BaseSystem<FontSystem>
+    public class FontSystem : ASystem<FontSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -54,13 +54,13 @@ namespace LuxEngine
 
         protected override void InitSingleton()
         {
-            World.AddSingletonComponent(new FontSingleton(LuxGame.Graphics.GraphicsDevice));
+            _world.AddSingletonComponent(new FontSingleton(LuxGame.Graphics.GraphicsDevice));
         }
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            var fonts = World.UnpackSingleton<FontSingleton>();
-            var text = World.Unpack<Text>(entity);
+            var fonts = _world.UnpackSingleton<FontSingleton>();
+            var text = _world.Unpack<Text>(entity);
 
             using (var stream = File.OpenRead($"{LuxGame.ContentDirectory}/Fonts/{text.FontName}"))
             {
@@ -69,9 +69,9 @@ namespace LuxEngine
             }
         }
 
-        protected override void PreDraw(GameTime gameTime)
+        protected override void PreDraw()
         {
-            var fonts = World.UnpackSingleton<FontSingleton>();
+            var fonts = _world.UnpackSingleton<FontSingleton>();
 
             fonts.SpriteBatch.Begin(
                 SpriteSortMode.BackToFront,
@@ -82,14 +82,14 @@ namespace LuxEngine
                 null);
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Draw()
         {
-            var fonts = World.UnpackSingleton<FontSingleton>();
+            var fonts = _world.UnpackSingleton<FontSingleton>();
 
             foreach (var entity in RegisteredEntities)
             {
-                var text = World.Unpack<Text>(entity);
-                var transform = World.Unpack<Transform>(entity);
+                var text = _world.Unpack<Text>(entity);
+                var transform = _world.Unpack<Transform>(entity);
 
                 int defaultFontSize = fonts.Fonts[text.FontName].Size;
                 fonts.Fonts[text.FontName].Size = text.FontSize; //* resolutionSettings.WindowScale; // todo scale
@@ -106,9 +106,9 @@ namespace LuxEngine
             }
         }
 
-        protected override void PostDraw(GameTime gameTime)
+        protected override void PostDraw()
         {
-            var fonts = World.UnpackSingleton<FontSingleton>();
+            var fonts = _world.UnpackSingleton<FontSingleton>();
             fonts.SpriteBatch.End();
         }
     }

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace LuxEngine
 {
     [Serializable]
-    public class Connection : BaseComponent<Connection>
+    public class Connection : AComponent<Connection>
     {
         public IPAddress IPAddress;
         public int Port;
@@ -95,7 +95,7 @@ namespace LuxEngine
     /// <summary>
     /// Responsible for creating and closing connections.
     /// </summary>
-    public class ConnectionSystem : BaseSystem<ConnectionSystem>
+    public class ConnectionSystem : ASystem<ConnectionSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -106,18 +106,18 @@ namespace LuxEngine
         {
             foreach (var entity in RegisteredEntities)
             {
-                Connection connection = World.Unpack<Connection>(entity);
+                Unpack(entity, out Connection connection);
                 if (connection.ConnectionState == ConnectionState.Disconnected)
                 {
                     // TODO: Make sure this is OKAY to do here
-                    World.DestroyEntity(entity);
+                    _world.DestroyEntity(entity);
                 }
             }
         }
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            Connection connection = World.Unpack<Connection>(entity);
+            Unpack(entity, out Connection connection);
 
             // Initialize connection's socket and endpoint
             connection.Socket = new Socket(connection.IPAddress.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
@@ -126,7 +126,7 @@ namespace LuxEngine
 
         protected override void OnUnregisterEntity(Entity entity)
         {
-            Connection connection = World.Unpack<Connection>(entity);
+            Unpack(entity, out Connection connection);
             connection.Socket.Close();
         }
     }

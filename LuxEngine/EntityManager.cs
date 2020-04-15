@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LuxEngine
 {
     public class EntityGenerator
     {
-        Int16 _nextIndex;
-        Stack<Entity> _destroyed_entities;
+        short _nextIndex;
+        Stack<Entity> _destroyedEntities;
 
         public EntityGenerator()
         {
             _nextIndex = 0;
-            _destroyed_entities = new Stack<Entity>();
+            _destroyedEntities = new Stack<Entity>();
         }
 
         public Entity CreateEntity()
@@ -19,10 +18,10 @@ namespace LuxEngine
             Entity entity;
 
             // If there are destroyed entites to recycle
-            if (0 != _destroyed_entities.Count)
+            if (0 != _destroyedEntities.Count)
             {
                 // Recycle entity
-                entity = _destroyed_entities.Pop();
+                entity = _destroyedEntities.Pop();
                 entity.Generation++;
             }
             else
@@ -42,7 +41,7 @@ namespace LuxEngine
 
         public void DestroyEntity(Entity entity)
         {
-            _destroyed_entities.Push(entity);
+            _destroyedEntities.Push(entity);
         }
     }
 }

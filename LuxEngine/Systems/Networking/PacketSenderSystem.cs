@@ -9,7 +9,7 @@ using System.Net;
 
 namespace LuxEngine
 {
-    public class PacketSenderSystem : BaseSystem<PacketSenderSystem>
+    public class PacketSenderSystem : ASystem<PacketSenderSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -21,7 +21,7 @@ namespace LuxEngine
             // For each connection
             foreach (var entity in RegisteredEntities)
             {
-                var connection = World.Unpack<Connection>(entity);
+                Unpack(entity, out Connection connection);
 
                 if (connection.MessagesToSend.Count == 0)
                 {

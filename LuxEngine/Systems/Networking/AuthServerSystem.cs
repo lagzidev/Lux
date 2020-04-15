@@ -12,7 +12,7 @@ namespace LuxEngine
     }
 
     [Serializable]
-    public class UsersSingleton : BaseComponent<UsersSingleton>
+    public class UsersSingleton : AComponent<UsersSingleton>
     {
         /// <summary>
         /// string = Username
@@ -22,7 +22,7 @@ namespace LuxEngine
         public Dictionary<string, User> RegisteredUsers;
     }
 
-    public class UserServerSystem : BaseSystem<UserServerSystem>
+    public class UserServerSystem : ASystem<UserServerSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -36,7 +36,7 @@ namespace LuxEngine
         {
             foreach (var entity in RegisteredEntities)
             {
-                var connection = World.Unpack<Connection>(entity);
+                Unpack(entity, out Connection connection);
 
                 Handshake(connection.MessagesReceived[NetworkMessage.MessageOneofCase.Handshake], connection);
             }
@@ -72,8 +72,7 @@ namespace LuxEngine
 
         private void LoginStart(LoginStart loginStart)
         {
-            var users = World.UnpackSingleton<UsersSingleton>();
-
+            UnpackSingleton(out UsersSingleton users);
         }
     }
 }

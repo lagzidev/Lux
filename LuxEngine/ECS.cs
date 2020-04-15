@@ -34,14 +34,19 @@ namespace LuxEngine
             _worlds.ForEach(x => x.LoadContent());
         }
 
+        public void Integrate()
+        {
+            _worlds.ForEach(x => x.Integrate());
+        }
+
         public void Update()
         {
             _worlds.ForEach(x => x.Update());
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
-            _worlds.ForEach(x => x.Draw(gameTime));
+            _worlds.ForEach(x => x.Draw());
         }
     }
 }

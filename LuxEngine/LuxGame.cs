@@ -250,21 +250,29 @@ namespace LuxEngine
             _ecs.LoadContent();
         }
 
+        // TODO: Handle buffer overflow with recycled entities' generation int
+
         /// <summary>
-        /// Called each frame to update the game. Games usually runs 60 frames per second.
-        /// Each frame the Update function will run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
+        /// Called each frame to update the game.
+        /// We implement our own 
         /// </summary>
         protected override void Update(GameTime gameTime)
         {
-            Time.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            Time.Update(gameTime.TotalGameTime.TotalSeconds);
 
-            _ecs.Update();
+            // If accumulated enough time to run a tick, start ticking
+            while (Time.Accumulator >= Time.Timestep)
+            {
+                _ecs.Integrate();
+                Time.Tick();
+                _ecs.Update();
+            }
 
 #if FNA
-			// MonoGame only updates old-school XNA Components in Update which we dont care about. FNA's core FrameworkDispatcher needs
-			// Update called though so we do so here.
-			FrameworkDispatcher.Update();
+            // We don't call base.Update so we do this.
+            // MonoGame only updates old-school XNA Components in Update which we dont care about. FNA's core FrameworkDispatcher needs
+            // Update called though so we do so here.
+            FrameworkDispatcher.Update();
 #endif
         }
 
@@ -273,8 +281,8 @@ namespace LuxEngine
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
-            _ecs.Draw(gameTime);
-            base.Draw(gameTime);
+            Time.Draw(gameTime.ElapsedGameTime.TotalSeconds);
+            _ecs.Draw();
         }
     }
 }

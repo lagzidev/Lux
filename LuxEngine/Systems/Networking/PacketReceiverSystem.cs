@@ -15,7 +15,7 @@ namespace LuxEngine
 
     //}
 
-    public class PacketReceiverSystem : BaseSystem<PacketReceiverSystem>
+    public class PacketReceiverSystem : ASystem<PacketReceiverSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -24,7 +24,7 @@ namespace LuxEngine
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            var connection = World.Unpack<Connection>(entity);
+            var connection = _world.Unpack<Connection>(entity);
 
             // Initialize connection's socket and endpoint
             //connection.Socket = new Socket(connection.IPAddress.AddressFamily, SocketType.Dgram, ProtocolType.Udp);

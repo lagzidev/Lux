@@ -2,13 +2,13 @@
 namespace LuxEngine
 {
     [Serializable]
-    public abstract class InternalBaseComponent
+    public abstract class AInternalComponent
     {
         protected static int ComponentTypesCount = 0;
     }
 
     [Serializable]
-    public abstract class BaseComponent<T> : InternalBaseComponent
+    public abstract class AComponent<T> : AInternalComponent
     {
         public Entity Entity { get; set; }
         public static int ComponentType = -1;

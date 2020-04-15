@@ -8,8 +8,8 @@ namespace LuxEngine
 
         // Ticks
         public const int TICKS_PER_SECOND = 20;
-        public const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-        public const int MAX_FRAMESKIP = 5;
+        //public const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+        //public const int MAX_FRAMESKIP = 5; // todo ?
 
         // Data
         public const int MAX_COMPONENTS_PER_TYPE = 2048;

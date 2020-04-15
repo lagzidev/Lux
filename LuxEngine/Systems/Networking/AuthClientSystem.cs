@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace LuxEngine.Systems.Networking
 {
-    public class AuthClientSystem : BaseSystem<AuthClientSystem>
+    public class AuthClientSystem : ASystem<AuthClientSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {

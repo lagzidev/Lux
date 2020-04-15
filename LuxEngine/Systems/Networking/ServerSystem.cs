@@ -6,14 +6,14 @@ using Microsoft.Xna.Framework;
 namespace LuxEngine
 {
     [Serializable]
-    public class IsServerSingleton : BaseComponent<IsServerSingleton>
+    public class IsServerSingleton : AComponent<IsServerSingleton>
     {
     }
 
     /// <summary>
     /// Temporary system TODO
     /// </summary>
-    public class ServerSystem : BaseSystem<ServerSystem>
+    public class ServerSystem : ASystem<ServerSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -24,14 +24,15 @@ namespace LuxEngine
         protected override void InitSingleton()
         {
             // Set the world to be a server
-            World.AddSingletonComponent(new IsServerSingleton());
+            _world.AddSingletonComponent(new IsServerSingleton());
         }
 
         protected override void Init()
         {
             // Set a connection to any IP addresses
-            EntityHandle connection = World.CreateEntity();
-            connection.AddComponent(new Connection(IPAddress.Any, 1337));
+            Entity connection = _world.CreateEntity();
+            
+            AddComponent(connection, new Connection(IPAddress.Any, 1337));
             // TODO: Figure out how to randomize the client port (to avoid collisions in the same network)
         }
     }

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace LuxEngine
 {
-    public class DebugInfo : BaseComponent<DebugInfo>
+    public class DebugInfo : AComponent<DebugInfo>
     {
         public string Name;
 
@@ -13,7 +13,7 @@ namespace LuxEngine
         }
     }
 
-    public class DebugSystem : BaseSystem<DebugSystem>
+    public class DebugSystem : ASystem<DebugSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -24,9 +24,9 @@ namespace LuxEngine
         {
             foreach (var entity in RegisteredEntities)
             {
-                var debugInfo = World.Unpack<DebugInfo>(entity);
+                var debugInfo = _world.Unpack<DebugInfo>(entity);
 
-                if (World.TryUnpack(entity, out Transform transform))
+                if (_world.TryUnpack(entity, out Transform transform))
                 {
                     Console.WriteLine($"X: {transform.X} Y {transform.Y} - {debugInfo.Name}");
                 }

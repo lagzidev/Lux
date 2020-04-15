@@ -6,14 +6,14 @@ using Microsoft.Xna.Framework;
 namespace LuxEngine
 {
     [Serializable()]
-    public class PlayerControlledTD : BaseComponent<PlayerControlledTD>
+    public class PlayerControlledTD : AComponent<PlayerControlledTD>
     {
         public PlayerControlledTD()
         {
         }
     }
 
-    public class Moveable : BaseComponent<Moveable>
+    public class Moveable : AComponent<Moveable>
     {
         public float MaxSpeedX;
         public float MaxSpeedY;
@@ -29,7 +29,7 @@ namespace LuxEngine
         }
     }
 
-    public class PlayerControllerTDSystem : BaseSystem<PlayerControllerTDSystem>
+    public class PlayerControllerTDSystem : ASystem<PlayerControllerTDSystem>
     {
         //TODO: Components to implement:
         // PhysicsWorld, Grounded, GameInput (DynamicPhysics?) https://youtu.be/W3aieHjyNvw?t=156
@@ -43,23 +43,23 @@ namespace LuxEngine
             signature.RequireSingleton<InputSingleton>();
         }
 
-        protected override void PostDraw(GameTime gameTime)
+        protected override void PostDraw()
         {
             foreach (var entity in RegisteredEntities)
             {
-                var transform = World.Unpack<Transform>(entity);
+                var transform = _world.Unpack<Transform>(entity);
                 Console.WriteLine($"X: {transform.X} Y {transform.Y}");
             }
         }
 
         protected override void Update()
         {
-            var input = World.UnpackSingleton<InputSingleton>();
+            var input = _world.UnpackSingleton<InputSingleton>();
 
             foreach (var entity in RegisteredEntities)
             {
-                var transform = World.Unpack<Transform>(entity);
-                var moveable = World.Unpack<Moveable>(entity);
+                var transform = _world.Unpack<Transform>(entity);
+                var moveable = _world.Unpack<Moveable>(entity);
 
                 moveable.Velocity = Vector2.Zero;
 
@@ -67,7 +67,7 @@ namespace LuxEngine
                 {
                     moveable.Velocity.Y = -1;
                     moveable.Direction = new Vector2(0, -1);
-                    transform.Y -= 1f; // (1000f / time); // MaxSpeed = pixels per second
+                    transform.Y -= moveable.MaxSpeedY * Time.DeltaTime;
                 }
                 else if (input.Down)
                 {
@@ -107,12 +107,12 @@ namespace LuxEngine
             }
         }
 
-        protected override void LoadDraw(GameTime gameTime)
+        protected override void LoadDraw()
         {
             foreach (var entity in RegisteredEntities)
             {
-                var sprite = World.Unpack<Sprite>(entity);
-                var moveable = World.Unpack<Moveable>(entity);
+                var sprite = _world.Unpack<Sprite>(entity);
+                var moveable = _world.Unpack<Moveable>(entity);
 
                 // Walking animations
 

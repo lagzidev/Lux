@@ -2,7 +2,7 @@
 namespace LuxEngine
 {
     [Serializable]
-    public class Parent : BaseComponent<Parent>
+    public class Parent : AComponent<Parent>
     {
         public Entity ParentEntity { get; set; }
 
@@ -12,7 +12,7 @@ namespace LuxEngine
         }
     }
 
-    public class ParentSystem : BaseSystem<ParentSystem>
+    public class ParentSystem : ASystem<ParentSystem>
     {
         protected override void SetSignature(SystemSignature signature)
         {
@@ -25,11 +25,11 @@ namespace LuxEngine
             foreach (var entity in RegisteredEntities)
             {
                 // If the entity's parent is the destroyed entity
-                var child = World.Unpack<Parent>(entity);
-                if (destroyedEntity == child.ParentEntity)
+                Unpack(entity, out Parent parent);
+                if (destroyedEntity == parent.ParentEntity)
                 {
                     // Remove its child component
-                    World.RemoveComponent<Parent>(entity);
+                    _world.RemoveComponent<Parent>(entity);
                 }
             }
         }
