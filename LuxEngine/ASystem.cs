@@ -140,7 +140,7 @@ namespace LuxEngine
         #region Components
 
         /// <summary>
-        /// Gets an entity's component
+        /// Gets a clone of an entity's component
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
         /// <param name="entity">Entity that owns the component</param>
@@ -334,7 +334,6 @@ namespace LuxEngine
         /// <summary>
         /// Use this to save state that will be used for interpolation later.
         /// </summary>
-        /// <param name="gameTime"></param>
         protected virtual void Integrate() { }
         public void RunIntegrate()
         {
@@ -366,7 +365,6 @@ namespace LuxEngine
         /// <summary>
         /// Called before Update
         /// </summary>
-        /// <param name="gameTime"></param>
         protected virtual void PreUpdate() { }
         public void RunPreUpdate()
         {
@@ -381,7 +379,6 @@ namespace LuxEngine
         /// <summary>
         /// Called each frame to update the game.
         /// </summary>
-        /// <param name="gameTime"></param>
         protected virtual void Update() { }
         public void RunUpdate()
         {
@@ -396,7 +393,6 @@ namespace LuxEngine
         /// <summary>
         /// Called after Update
         /// </summary>
-        /// <param name="gameTime"></param>
         protected virtual void PostUpdate() { }
         public void RunPostUpdate()
         {
@@ -406,6 +402,20 @@ namespace LuxEngine
             }
 
             PostUpdate();
+        }
+
+        /// <summary>
+        /// Called each tick in fixed time intervals.
+        /// </summary>
+        protected virtual void UpdateFixed() { }
+        public void RunUpdateFixed()
+        {
+            if (!Signature.SingletonMatches)
+            {
+                return;
+            }
+
+            UpdateFixed();
         }
 
         /// <summary>

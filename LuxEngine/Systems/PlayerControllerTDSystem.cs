@@ -43,15 +43,6 @@ namespace LuxEngine
             signature.RequireSingleton<InputSingleton>();
         }
 
-        protected override void PostDraw()
-        {
-            foreach (var entity in RegisteredEntities)
-            {
-                Unpack(entity, out Transform transform);
-                Console.WriteLine($"X: {transform.X} Y {transform.Y}");
-            }
-        }
-
         protected override void Update()
         {
             UnpackSingleton(out InputSingleton input);
@@ -67,7 +58,7 @@ namespace LuxEngine
                 {
                     moveable.Velocity.Y = -1;
                     moveable.Direction = new Vector2(0, -1);
-                    transform.Y -= moveable.MaxSpeedY * Time.DeltaTime;
+                    transform.Y -= 1.143f;//moveable.MaxSpeedY * Time.DeltaTime;
                 }
                 else if (input.Down)
                 {

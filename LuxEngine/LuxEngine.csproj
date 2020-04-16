@@ -71,7 +71,6 @@
     <Compile Include="Systems\Render\FontSystem.cs" />
     <Compile Include="Systems\Render\AnimationSystem.cs" />
     <Compile Include="Systems\Render\CameraSystem.cs" />
-    <Compile Include="Systems\DebugSystem.cs" />
     <Compile Include="Systems\Physics\MapCollisionSystem.cs" />
     <Compile Include="Systems\Render\MapLoaderSystem.cs" />
     <Compile Include="Utils\TextureLoader.cs" />
@@ -89,6 +88,7 @@
     <Compile Include="Misc\Time.cs" />
     <Compile Include="Systems\Render\TransformInterpolationSystem.cs" />
     <Compile Include="SystemSignature.cs" />
+    <Compile Include="Utils\CalcUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

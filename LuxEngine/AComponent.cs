@@ -10,13 +10,13 @@ namespace LuxEngine
     [Serializable]
     public abstract class AComponent<T> : AInternalComponent
     {
-        public Entity Entity { get; set; }
+        internal Entity _entity { get; set; }
         public static int ComponentType = -1;
 
         /// <summary>
         /// Sets the component class' type. Does nothing if already set.
         /// </summary>
-        public static void SetComponentType()
+        internal static void SetComponentType()
         {
             // If component type already set
             if (ComponentType != -1)

@@ -39,6 +39,11 @@ namespace LuxEngine
             _worlds.ForEach(x => x.Update());
         }
 
+        public void UpdateFixed()
+        {
+            _worlds.ForEach(x => x.UpdateFixed());
+        }
+
         public void Draw()
         {
             _worlds.ForEach(x => x.Draw());

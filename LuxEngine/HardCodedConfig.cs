@@ -7,7 +7,7 @@ namespace LuxEngine
         public const int PROTOCOL_VERSION = 1;
 
         // Ticks
-        public const int TICKS_PER_SECOND = 20;
+        public const int TICKS_PER_SECOND = 1;
         //public const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
         //public const int MAX_FRAMESKIP = 5; // todo ?
 

@@ -259,12 +259,13 @@ namespace LuxEngine
         protected override void Update(GameTime gameTime)
         {
             Time.Update(gameTime.TotalGameTime.TotalSeconds);
+            _ecs.Update();
 
             // If accumulated enough time to run a tick, start ticking
             while (Time.Accumulator >= Time.Timestep)
             {
                 Time.Tick();
-                _ecs.Update();
+                _ecs.UpdateFixed();
             }
 
 #if FNA

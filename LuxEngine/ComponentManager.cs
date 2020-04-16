@@ -46,7 +46,7 @@ namespace LuxEngine
             }
 
             // If the entity is not of the correct generation (meaning it's not the same entity)
-            if (outComponent.Entity.Generation != entity.Generation)
+            if (outComponent._entity.Generation != entity.Generation)
             {
                 return false;
             }

@@ -15,6 +15,8 @@ namespace LuxEngine
             signature.RequireSingleton<LoadedTexturesSingleton>();
         }
 
+        private float _transformX = 0;
+
         protected override void Draw()
         {
             // Get loaded textures
@@ -46,7 +48,7 @@ namespace LuxEngine
                 // Draw to sprite batch
                 spriteBatch.Batch.Draw(
                     loadedTextures.Textures[texture.Name],
-                    new Vector2((float)(transformX * Time.Alpha), (float)(transformY * Time.Alpha)),
+                    CalcUtils.Round(transformX, transformY),
                     new Rectangle(
                         currentAnimationFrame.TexturePositionX,
                         currentAnimationFrame.TexturePositionY,

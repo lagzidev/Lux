@@ -18,10 +18,10 @@ namespace LuxEngine
 		public static readonly float Timestep = 1f / HardCodedConfig.TICKS_PER_SECOND;
 
 		/// <summary>
-		/// Delta time from the previous frame to the current, scaled by TimeScale.
+		/// Delta time from the previous tick to the current, scaled by TimeScale.
         /// Measured in seconds.
 		/// </summary>
-		public static float DeltaTime
+		public static float TickDeltaTime
         {
             get
             {
@@ -30,26 +30,27 @@ namespace LuxEngine
         }
 
 		/// <summary>
-		/// Secondary deltaTime for use when you need to scale two different deltas simultaneously
+		/// Delta time from the previous frame to the current, not scaled by TimeScale.
 		/// Measured in seconds.
 		/// </summary>
-		public static double AltDeltaTime
-        {
-            get
-            {
-				return Timestep * AltTimeScale;
-            }
-        }
+		public static float UnscaledDeltaTime { get; private set; }
+
+		/// <summary>
+		/// Delta time from the previous frame to the current, scaled by TimeScale.
+		/// Measured in seconds.
+		/// </summary>
+		public static float DeltaTime
+		{
+			get
+			{
+				return UnscaledDeltaTime * TimeScale;
+			}
+		}
 
 		/// <summary>
 		/// Time scale of DeltaTime
 		/// </summary>
 		public static float TimeScale = 1f;
-
-		/// <summary>
-		/// Time scale of AltDeltaTime
-		/// </summary>
-		public static float AltTimeScale = 1f;
 
 		/// <summary>
 		/// Total number of ticks that have passed
@@ -67,10 +68,11 @@ namespace LuxEngine
             }
         }
 
-        /// <summary>
-        /// A number that represents a fraction of a tick.
-        /// Used for interpolation.
-        /// </summary>
+		/// <summary>
+		/// A fraction that represents how far along are we from the next tick.
+        /// (e.g. if we are a bit before a tick, Alpha = ~0.9)
+		/// Used for interpolation.
+		/// </summary>
 		public static double Alpha
 		{
             get
@@ -96,6 +98,7 @@ namespace LuxEngine
         internal static void Update(double totalSeconds)
 		{
 			// Add time since last update to accumulator
+			UnscaledDeltaTime = (float)(totalSeconds - TotalGameTime);
 			Accumulator += (float)(totalSeconds - TotalGameTime);
 
 			// Update total time

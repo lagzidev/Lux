@@ -163,14 +163,16 @@ namespace LuxEngine
                 return false;
             }
 
-            if (!foundComponentManager.GetComponent(entity, out T component))
+            if (!foundComponentManager.GetComponent(entity, out T comp))
             {
                 outComponent = null;
                 return false;
             }
 
-            // Return the component without the ugly BaseComponent<T> wrapper
-            outComponent = (T)Convert.ChangeType(component, typeof(T));
+            //if (_systems.CurrentlyIterated.ReadonlyMask....)
+            //outComponent = foundComponentManager.GetCloned;
+
+            outComponent = comp;
             return true;
         }
 
@@ -184,14 +186,13 @@ namespace LuxEngine
 
             var foundComponentManager = (ComponentManager<T>)_previousComponentManagers[AComponent<T>.ComponentType];
 
-            if (!foundComponentManager.GetComponent(entity, out T component))
+            if (!foundComponentManager.GetComponent(entity, out T comp))
             {
                 outComponent = null;
                 return false;
             }
 
-            // Return the component without the ugly BaseComponent<T> wrapper
-            outComponent = (T)Convert.ChangeType(component, typeof(T));
+            outComponent = comp;
             return true;
         }
 
@@ -201,8 +202,6 @@ namespace LuxEngine
         }
 
         #endregion Unpacking
-
-
 
         /// <summary>
         /// Adds a component to the globally accessible singleton entity.
@@ -248,7 +247,7 @@ namespace LuxEngine
             }
 
             // Set the entity for the component
-            component.Entity = entity;
+            component._entity = entity;
 
             // Update the component manager
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
@@ -345,22 +344,22 @@ namespace LuxEngine
             }
         }
 
-        /// <summary>
-        /// Makes a component type's previous state available.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void KeepPreviousState<T>() where T : AComponent<T>
-        {
-            // Set the ComponentType in case it wasn't set already
-            AComponent<T>.SetComponentType();
+        ///// <summary>
+        ///// Tells the world to keep track of the components' previous state.
+        ///// </summary>
+        ///// <typeparam name="T">The type of component of which state we keep</typeparam>
+        //public void KeepPreviousState<T>() where T : AComponent<T>
+        //{
+        //    // Set the ComponentType in case it wasn't set already
+        //    AComponent<T>.SetComponentType();
 
-            // Add a component manager for the type if doesn't exist
-            if (!_previousComponentManagers.ContainsKey(AComponent<T>.ComponentType))
-            {
-                var componentManager = new ComponentManager<T>();
-                _previousComponentManagers[AComponent<T>.ComponentType] = componentManager;
-            }
-        }
+        //    // Add a component manager for the type if doesn't exist
+        //    if (!_previousComponentManagers.ContainsKey(AComponent<T>.ComponentType))
+        //    {
+        //        var componentManager = new ComponentManager<T>();
+        //        _previousComponentManagers[AComponent<T>.ComponentType] = componentManager;
+        //    }
+        //}
 
         /// <summary>
         /// Saves the current state of the components into a seperate dataset.
@@ -513,6 +512,14 @@ namespace LuxEngine
             foreach (AInternalSystem system in _systems)
             {
                 system.RunPostUpdate();
+            }
+        }
+
+        internal virtual void UpdateFixed()
+        {
+            foreach (AInternalSystem system in _systems)
+            {
+                system.RunUpdateFixed();
             }
         }
 

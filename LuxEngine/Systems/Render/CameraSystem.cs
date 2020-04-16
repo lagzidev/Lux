@@ -50,7 +50,7 @@ namespace LuxEngine
 
                 float transformX = transform.X;
                 float transformY = transform.Y;
-                if (Unpack(parent.Entity, out Transform parentTransform))
+                if (Unpack(parent.ParentEntity, out Transform parentTransform))
                 {
                     transformX += parentTransform.X;
                     transformY += parentTransform.Y;
@@ -77,7 +77,7 @@ namespace LuxEngine
                 //}
 
                 // Positioning
-                Matrix translation = Matrix.CreateTranslation(new Vector3(-new Vector2((float)(transformX * Time.Alpha), (float)(transformY * Time.Alpha)), 0f));
+                Matrix translation = Matrix.CreateTranslation(new Vector3(-CalcUtils.Round(transformX, transformY), 0f));
 
                 // Rotating
                 Matrix rotation = Matrix.CreateRotationZ(camera.Rotation);

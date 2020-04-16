@@ -69,7 +69,7 @@
         /// <typeparam name="T"></typeparam>
         public void KeepPreviousState<T>() where T : AComponent<T>
         {
-            _world.KeepPreviousState<T>();
+            //_world.KeepPreviousState<T>();
         }
     }
 }
