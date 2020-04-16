@@ -8,6 +8,9 @@ namespace LuxEngine
 {
     public class LuxGame : Game
     {
+        // Info
+        public string Title;
+
         // ECS
         private static ECS _ecs;
 
@@ -60,7 +63,7 @@ namespace LuxEngine
         {
             Instance = this;
 
-            Window.Title = windowTitle;
+            Window.Title = Title = windowTitle;
 
             _ecs = new ECS();
 

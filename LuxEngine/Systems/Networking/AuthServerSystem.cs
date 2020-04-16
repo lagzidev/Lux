@@ -29,7 +29,7 @@ namespace LuxEngine
             signature.Require<Connection>();
             signature.RequireSingleton<IsServerSingleton>();
 
-            signature.RequireSingleton<UsersSingleton>();
+            //signature.RequireSingleton<UsersSingleton>();
         }
 
         protected override void PreUpdate()
@@ -38,6 +38,7 @@ namespace LuxEngine
             {
                 Unpack(entity, out Connection connection);
 
+                // Handle in case the message was received
                 Handshake(connection.MessagesReceived[NetworkMessage.MessageOneofCase.Handshake], connection);
             }
         }
@@ -51,12 +52,15 @@ namespace LuxEngine
                 connection.ProtocolVersion = message.Handshake.ProtocolVersion;
 
                 // TODO: Support non-matching protocol versions (client must be at least server's version)
+                // TODO: Handle loss of the Handshake or HandshakeResponse packet, and similar losses
+                // that may cause a deadlock/timeout.
+
                 // If protocol versions aren't matching, send an error message
                 if (message.Handshake.ProtocolVersion != HardCodedConfig.PROTOCOL_VERSION)
                 {
                     connection.MessagesToSend.Enqueue(new NetworkMessage()
                     {
-                        Failure = new Failure()
+                        HandshakeResponse = new HandshakeResponse()
                         {
                             Status = Status.NonMatchingProtocolVersions
                         }
@@ -70,9 +74,9 @@ namespace LuxEngine
             }
         }
 
-        private void LoginStart(LoginStart loginStart)
-        {
-            UnpackSingleton(out UsersSingleton users);
-        }
+        //private void LoginStart(LoginStart loginStart)
+        //{
+        //    UnpackSingleton(out UsersSingleton users);
+        //}
     }
 }

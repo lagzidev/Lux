@@ -15,8 +15,6 @@ namespace LuxEngine
             signature.RequireSingleton<LoadedTexturesSingleton>();
         }
 
-        private float _transformX = 0;
-
         protected override void Draw()
         {
             // Get loaded textures
@@ -46,6 +44,11 @@ namespace LuxEngine
                 LuxCommon.Assert(currentAnimationFrame.Scale != Vector2.Zero);
 
                 // Draw to sprite batch
+                // We round the transform but it's important to note it gets
+                // rounded anyways. This is because we're initially drawing it on a small RenderTarget
+                // which can't be drawn on half a pixel so it rounds the vector for us.
+                // For this reason, if we want to eliminate stutter, we have to round the
+                // coordinates we give to the camera as well.
                 spriteBatch.Batch.Draw(
                     loadedTextures.Textures[texture.Name],
                     CalcUtils.Round(transformX, transformY),

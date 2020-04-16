@@ -26,45 +26,46 @@ namespace LuxProtobuf {
           string.Concat(
             "ChBMdXhNZXNzYWdlLnByb3RvEgtMdXhQcm90b2J1ZiJQCg1OZXR3b3JrUGFj",
             "a2V0EhAKCFBhY2tldElEGAEgASgFEi0KCG1lc3NhZ2VzGAIgAygLMhsuTHV4",
-            "UHJvdG9idWYuTmV0d29ya01lc3NhZ2UirwMKDk5ldHdvcmtNZXNzYWdlEisK",
-            "CUhhbmRzaGFrZRgBIAEoCzIWLkx1eFByb3RvYnVmLkhhbmRzaGFrZUgAEicK",
-            "B0ZhaWx1cmUYAiABKAsyFC5MdXhQcm90b2J1Zi5GYWlsdXJlSAASOwoRU2Vy",
-            "dmVySW5mb1JlcXVlc3QYAyABKAsyHi5MdXhQcm90b2J1Zi5TZXJ2ZXJJbmZv",
-            "UmVxdWVzdEgAEj0KElNlcnZlckluZm9SZXNwb25zZRgEIAEoCzIfLkx1eFBy",
-            "b3RvYnVmLlNlcnZlckluZm9SZXNwb25zZUgAEi0KCkxvZ2luU3RhcnQYBSAB",
-            "KAsyFy5MdXhQcm90b2J1Zi5Mb2dpblN0YXJ0SAASMQoMTG9naW5TdWNjZXNz",
-            "GAYgASgLMhkuTHV4UHJvdG9idWYuTG9naW5TdWNjZXNzSAASOQoQS2VlcEFs",
-            "aXZlUmVxdWVzdBgHIAEoCzIdLkx1eFByb3RvYnVmLktlZXBBbGl2ZVJlcXVl",
-            "c3RIABIjCgVJbnB1dBgIIAEoCzISLkx1eFByb3RvYnVmLklucHV0SABCCQoH",
-            "TWVzc2FnZSIkCglIYW5kc2hha2USFwoPUHJvdG9jb2xWZXJzaW9uGAEgASgF",
-            "IiwKEVNlcnZlckluZm9SZXF1ZXN0EhcKD1Byb3RvY29sVmVyc2lvbhgBIAEo",
-            "BSIqChJTZXJ2ZXJJbmZvUmVzcG9uc2USFAoMSlNPTlJlc3BvbnNlGAEgASgJ",
-            "IjkKCkxvZ2luU3RhcnQSEAoIVXNlcm5hbWUYASABKAkSGQoRRW5jcnlwdGVk",
-            "UGFzc3dvcmQYAiABKAkiLAoURW5jcnlwdGlvbktleVJlcXVlc3QSFAoMUlNB",
-            "UHVibGljS2V5GAEgASgJIjoKFUVuY3J5cHRpb25LZXlSZXNwb25zZRIhChlS",
-            "U0FFbmNyeXB0ZWRFbmNyeXB0aW9uS2V5GAEgASgJIiQKDExvZ2luU3VjY2Vz",
-            "cxIUCgxTZXNzaW9uVG9rZW4YASABKAkiLgoHRmFpbHVyZRIjCgZTdGF0dXMY",
-            "ASABKA4yEy5MdXhQcm90b2J1Zi5TdGF0dXMiEgoQS2VlcEFsaXZlUmVxdWVz",
-            "dCLsAQoFSW5wdXQSCgoCVXAYASABKAgSDAoERG93bhgCIAEoCBINCgVSaWdo",
-            "dBgDIAEoCBIMCgRMZWZ0GAQgASgIEhQKDFVwS2V5UHJlc3NlZBgFIAEoCBIW",
-            "Cg5Eb3duS2V5UHJlc3NlZBgGIAEoCBIXCg9SaWdodEtleVByZXNzZWQYByAB",
-            "KAgSFgoOTGVmdEtleVByZXNzZWQYCCABKAgSEgoKRjRLZXlQcmVzcxgJIAEo",
-            "CBIKCgJGNBgKIAEoCBIVCg1GNUtleVJlbGVhc2VkGAsgASgIEgoKAkY1GAwg",
-            "ASgIEgoKAkY2GA0gASgIKiwKBlN0YXR1cxIiCh5OT05fTUFUQ0hJTkdfUFJP",
-            "VE9DT0xfVkVSU0lPTlMQAGIGcHJvdG8z"));
+            "UHJvdG9idWYuTmV0d29ya01lc3NhZ2UiwwMKDk5ldHdvcmtNZXNzYWdlEisK",
+            "CUhhbmRzaGFrZRgBIAEoCzIWLkx1eFByb3RvYnVmLkhhbmRzaGFrZUgAEjsK",
+            "EUhhbmRzaGFrZVJlc3BvbnNlGAIgASgLMh4uTHV4UHJvdG9idWYuSGFuZHNo",
+            "YWtlUmVzcG9uc2VIABI7ChFTZXJ2ZXJJbmZvUmVxdWVzdBgDIAEoCzIeLkx1",
+            "eFByb3RvYnVmLlNlcnZlckluZm9SZXF1ZXN0SAASPQoSU2VydmVySW5mb1Jl",
+            "c3BvbnNlGAQgASgLMh8uTHV4UHJvdG9idWYuU2VydmVySW5mb1Jlc3BvbnNl",
+            "SAASLQoKTG9naW5TdGFydBgFIAEoCzIXLkx1eFByb3RvYnVmLkxvZ2luU3Rh",
+            "cnRIABIxCgxMb2dpblN1Y2Nlc3MYBiABKAsyGS5MdXhQcm90b2J1Zi5Mb2dp",
+            "blN1Y2Nlc3NIABI5ChBLZWVwQWxpdmVSZXF1ZXN0GAcgASgLMh0uTHV4UHJv",
+            "dG9idWYuS2VlcEFsaXZlUmVxdWVzdEgAEiMKBUlucHV0GAggASgLMhIuTHV4",
+            "UHJvdG9idWYuSW5wdXRIAEIJCgdNZXNzYWdlIiQKCUhhbmRzaGFrZRIXCg9Q",
+            "cm90b2NvbFZlcnNpb24YASABKAUiOAoRSGFuZHNoYWtlUmVzcG9uc2USIwoG",
+            "U3RhdHVzGAEgASgOMhMuTHV4UHJvdG9idWYuU3RhdHVzIiwKEVNlcnZlcklu",
+            "Zm9SZXF1ZXN0EhcKD1Byb3RvY29sVmVyc2lvbhgBIAEoBSIqChJTZXJ2ZXJJ",
+            "bmZvUmVzcG9uc2USFAoMSlNPTlJlc3BvbnNlGAEgASgJIjkKCkxvZ2luU3Rh",
+            "cnQSEAoIVXNlcm5hbWUYASABKAkSGQoRRW5jcnlwdGVkUGFzc3dvcmQYAiAB",
+            "KAkiLAoURW5jcnlwdGlvbktleVJlcXVlc3QSFAoMUlNBUHVibGljS2V5GAEg",
+            "ASgJIjoKFUVuY3J5cHRpb25LZXlSZXNwb25zZRIhChlSU0FFbmNyeXB0ZWRF",
+            "bmNyeXB0aW9uS2V5GAEgASgJIiQKDExvZ2luU3VjY2VzcxIUCgxTZXNzaW9u",
+            "VG9rZW4YASABKAkiEgoQS2VlcEFsaXZlUmVxdWVzdCLsAQoFSW5wdXQSCgoC",
+            "VXAYASABKAgSDAoERG93bhgCIAEoCBINCgVSaWdodBgDIAEoCBIMCgRMZWZ0",
+            "GAQgASgIEhQKDFVwS2V5UHJlc3NlZBgFIAEoCBIWCg5Eb3duS2V5UHJlc3Nl",
+            "ZBgGIAEoCBIXCg9SaWdodEtleVByZXNzZWQYByABKAgSFgoOTGVmdEtleVBy",
+            "ZXNzZWQYCCABKAgSEgoKRjRLZXlQcmVzcxgJIAEoCBIKCgJGNBgKIAEoCBIV",
+            "Cg1GNUtleVJlbGVhc2VkGAsgASgIEgoKAkY1GAwgASgIEgoKAkY2GA0gASgI",
+            "KiwKBlN0YXR1cxIiCh5OT05fTUFUQ0hJTkdfUFJPVE9DT0xfVkVSU0lPTlMQ",
+            "AGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::LuxProtobuf.Status), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.NetworkPacket), global::LuxProtobuf.NetworkPacket.Parser, new[]{ "PacketID", "Messages" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.NetworkMessage), global::LuxProtobuf.NetworkMessage.Parser, new[]{ "Handshake", "Failure", "ServerInfoRequest", "ServerInfoResponse", "LoginStart", "LoginSuccess", "KeepAliveRequest", "Input" }, new[]{ "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.NetworkMessage), global::LuxProtobuf.NetworkMessage.Parser, new[]{ "Handshake", "HandshakeResponse", "ServerInfoRequest", "ServerInfoResponse", "LoginStart", "LoginSuccess", "KeepAliveRequest", "Input" }, new[]{ "Message" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.Handshake), global::LuxProtobuf.Handshake.Parser, new[]{ "ProtocolVersion" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.HandshakeResponse), global::LuxProtobuf.HandshakeResponse.Parser, new[]{ "Status" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.ServerInfoRequest), global::LuxProtobuf.ServerInfoRequest.Parser, new[]{ "ProtocolVersion" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.ServerInfoResponse), global::LuxProtobuf.ServerInfoResponse.Parser, new[]{ "JSONResponse" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.LoginStart), global::LuxProtobuf.LoginStart.Parser, new[]{ "Username", "EncryptedPassword" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.EncryptionKeyRequest), global::LuxProtobuf.EncryptionKeyRequest.Parser, new[]{ "RSAPublicKey" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.EncryptionKeyResponse), global::LuxProtobuf.EncryptionKeyResponse.Parser, new[]{ "RSAEncryptedEncryptionKey" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.LoginSuccess), global::LuxProtobuf.LoginSuccess.Parser, new[]{ "SessionToken" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.Failure), global::LuxProtobuf.Failure.Parser, new[]{ "Status" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.KeepAliveRequest), global::LuxProtobuf.KeepAliveRequest.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LuxProtobuf.Input), global::LuxProtobuf.Input.Parser, new[]{ "Up", "Down", "Right", "Left", "UpKeyPressed", "DownKeyPressed", "RightKeyPressed", "LeftKeyPressed", "F4KeyPress", "F4", "F5KeyReleased", "F5", "F6" }, null, null, null, null)
           }));
@@ -258,8 +259,8 @@ namespace LuxProtobuf {
         case MessageOneofCase.Handshake:
           Handshake = other.Handshake.Clone();
           break;
-        case MessageOneofCase.Failure:
-          Failure = other.Failure.Clone();
+        case MessageOneofCase.HandshakeResponse:
+          HandshakeResponse = other.HandshakeResponse.Clone();
           break;
         case MessageOneofCase.ServerInfoRequest:
           ServerInfoRequest = other.ServerInfoRequest.Clone();
@@ -300,14 +301,14 @@ namespace LuxProtobuf {
       }
     }
 
-    /// <summary>Field number for the "Failure" field.</summary>
-    public const int FailureFieldNumber = 2;
+    /// <summary>Field number for the "HandshakeResponse" field.</summary>
+    public const int HandshakeResponseFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LuxProtobuf.Failure Failure {
-      get { return messageCase_ == MessageOneofCase.Failure ? (global::LuxProtobuf.Failure) message_ : null; }
+    public global::LuxProtobuf.HandshakeResponse HandshakeResponse {
+      get { return messageCase_ == MessageOneofCase.HandshakeResponse ? (global::LuxProtobuf.HandshakeResponse) message_ : null; }
       set {
         message_ = value;
-        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.Failure;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.HandshakeResponse;
       }
     }
 
@@ -382,7 +383,7 @@ namespace LuxProtobuf {
     public enum MessageOneofCase {
       None = 0,
       Handshake = 1,
-      Failure = 2,
+      HandshakeResponse = 2,
       ServerInfoRequest = 3,
       ServerInfoResponse = 4,
       LoginStart = 5,
@@ -416,7 +417,7 @@ namespace LuxProtobuf {
         return true;
       }
       if (!object.Equals(Handshake, other.Handshake)) return false;
-      if (!object.Equals(Failure, other.Failure)) return false;
+      if (!object.Equals(HandshakeResponse, other.HandshakeResponse)) return false;
       if (!object.Equals(ServerInfoRequest, other.ServerInfoRequest)) return false;
       if (!object.Equals(ServerInfoResponse, other.ServerInfoResponse)) return false;
       if (!object.Equals(LoginStart, other.LoginStart)) return false;
@@ -431,7 +432,7 @@ namespace LuxProtobuf {
     public override int GetHashCode() {
       int hash = 1;
       if (messageCase_ == MessageOneofCase.Handshake) hash ^= Handshake.GetHashCode();
-      if (messageCase_ == MessageOneofCase.Failure) hash ^= Failure.GetHashCode();
+      if (messageCase_ == MessageOneofCase.HandshakeResponse) hash ^= HandshakeResponse.GetHashCode();
       if (messageCase_ == MessageOneofCase.ServerInfoRequest) hash ^= ServerInfoRequest.GetHashCode();
       if (messageCase_ == MessageOneofCase.ServerInfoResponse) hash ^= ServerInfoResponse.GetHashCode();
       if (messageCase_ == MessageOneofCase.LoginStart) hash ^= LoginStart.GetHashCode();
@@ -456,9 +457,9 @@ namespace LuxProtobuf {
         output.WriteRawTag(10);
         output.WriteMessage(Handshake);
       }
-      if (messageCase_ == MessageOneofCase.Failure) {
+      if (messageCase_ == MessageOneofCase.HandshakeResponse) {
         output.WriteRawTag(18);
-        output.WriteMessage(Failure);
+        output.WriteMessage(HandshakeResponse);
       }
       if (messageCase_ == MessageOneofCase.ServerInfoRequest) {
         output.WriteRawTag(26);
@@ -495,8 +496,8 @@ namespace LuxProtobuf {
       if (messageCase_ == MessageOneofCase.Handshake) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Handshake);
       }
-      if (messageCase_ == MessageOneofCase.Failure) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Failure);
+      if (messageCase_ == MessageOneofCase.HandshakeResponse) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(HandshakeResponse);
       }
       if (messageCase_ == MessageOneofCase.ServerInfoRequest) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerInfoRequest);
@@ -534,11 +535,11 @@ namespace LuxProtobuf {
           }
           Handshake.MergeFrom(other.Handshake);
           break;
-        case MessageOneofCase.Failure:
-          if (Failure == null) {
-            Failure = new global::LuxProtobuf.Failure();
+        case MessageOneofCase.HandshakeResponse:
+          if (HandshakeResponse == null) {
+            HandshakeResponse = new global::LuxProtobuf.HandshakeResponse();
           }
-          Failure.MergeFrom(other.Failure);
+          HandshakeResponse.MergeFrom(other.HandshakeResponse);
           break;
         case MessageOneofCase.ServerInfoRequest:
           if (ServerInfoRequest == null) {
@@ -599,12 +600,12 @@ namespace LuxProtobuf {
             break;
           }
           case 18: {
-            global::LuxProtobuf.Failure subBuilder = new global::LuxProtobuf.Failure();
-            if (messageCase_ == MessageOneofCase.Failure) {
-              subBuilder.MergeFrom(Failure);
+            global::LuxProtobuf.HandshakeResponse subBuilder = new global::LuxProtobuf.HandshakeResponse();
+            if (messageCase_ == MessageOneofCase.HandshakeResponse) {
+              subBuilder.MergeFrom(HandshakeResponse);
             }
             input.ReadMessage(subBuilder);
-            Failure = subBuilder;
+            HandshakeResponse = subBuilder;
             break;
           }
           case 26: {
@@ -800,6 +801,138 @@ namespace LuxProtobuf {
   }
 
   /// <summary>
+  /// Sent by server 
+  /// </summary>
+  public sealed partial class HandshakeResponse : pb::IMessage<HandshakeResponse> {
+    private static readonly pb::MessageParser<HandshakeResponse> _parser = new pb::MessageParser<HandshakeResponse>(() => new HandshakeResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<HandshakeResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[3]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HandshakeResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HandshakeResponse(HandshakeResponse other) : this() {
+      status_ = other.status_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HandshakeResponse Clone() {
+      return new HandshakeResponse(this);
+    }
+
+    /// <summary>Field number for the "Status" field.</summary>
+    public const int StatusFieldNumber = 1;
+    private global::LuxProtobuf.Status status_ = global::LuxProtobuf.Status.NonMatchingProtocolVersions;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LuxProtobuf.Status Status {
+      get { return status_; }
+      set {
+        status_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as HandshakeResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(HandshakeResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Status != other.Status) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) hash ^= Status.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Status);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(HandshakeResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+        Status = other.Status;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            Status = (global::LuxProtobuf.Status) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
   /// Sent by client 
   /// </summary>
   public sealed partial class ServerInfoRequest : pb::IMessage<ServerInfoRequest> {
@@ -810,7 +943,7 @@ namespace LuxProtobuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[3]; }
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -942,7 +1075,7 @@ namespace LuxProtobuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[4]; }
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1079,7 +1212,7 @@ namespace LuxProtobuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[5]; }
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1239,7 +1372,7 @@ namespace LuxProtobuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[6]; }
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1371,7 +1504,7 @@ namespace LuxProtobuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[7]; }
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1503,7 +1636,7 @@ namespace LuxProtobuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[8]; }
+      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1616,138 +1749,6 @@ namespace LuxProtobuf {
             break;
           case 10: {
             SessionToken = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-
-  }
-
-  /// <summary>
-  /// Sent on timeout, encryption failure etc.. 
-  /// </summary>
-  public sealed partial class Failure : pb::IMessage<Failure> {
-    private static readonly pb::MessageParser<Failure> _parser = new pb::MessageParser<Failure>(() => new Failure());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<Failure> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::LuxProtobuf.LuxMessageReflection.Descriptor.MessageTypes[9]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Failure() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Failure(Failure other) : this() {
-      status_ = other.status_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Failure Clone() {
-      return new Failure(this);
-    }
-
-    /// <summary>Field number for the "Status" field.</summary>
-    public const int StatusFieldNumber = 1;
-    private global::LuxProtobuf.Status status_ = global::LuxProtobuf.Status.NonMatchingProtocolVersions;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LuxProtobuf.Status Status {
-      get { return status_; }
-      set {
-        status_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
-      return Equals(other as Failure);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(Failure other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (Status != other.Status) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) hash ^= Status.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Status);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
-      int size = 0;
-      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(Failure other) {
-      if (other == null) {
-        return;
-      }
-      if (other.Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
-        Status = other.Status;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 8: {
-            Status = (global::LuxProtobuf.Status) input.ReadEnum();
             break;
           }
         }

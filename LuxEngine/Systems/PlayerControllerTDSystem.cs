@@ -58,7 +58,7 @@ namespace LuxEngine
                 {
                     moveable.Velocity.Y = -1;
                     moveable.Direction = new Vector2(0, -1);
-                    transform.Y -= 1.143f;//moveable.MaxSpeedY * Time.DeltaTime;
+                    transform.Y -= 1f;//moveable.MaxSpeedY * Time.DeltaTime;
                 }
                 else if (input.Down)
                 {

@@ -70,8 +70,6 @@ namespace LuxEngine
             }
         }
 
-        public bool DrawDisabled;
-
         public World()
         {
             _entityGenerator = new EntityGenerator();
@@ -84,8 +82,6 @@ namespace LuxEngine
             _previousComponentManagers = new Dictionary<int, BaseComponentManager>();
 
             _paused = false;
-
-            DrawDisabled = false;
         }
 
         public void InitWorld()
@@ -525,10 +521,9 @@ namespace LuxEngine
 
         internal virtual void Draw()
         {
-            if (DrawDisabled)
-            {
-                return;
-            }
+            // TODO: Disable draw if the world is just a server
+            // Important to make sure no state is being mutated in Draw
+            // so the game logic doesn't get affected
 
             foreach (AInternalSystem system in _systems)
             {

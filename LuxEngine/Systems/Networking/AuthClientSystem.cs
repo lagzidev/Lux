@@ -11,14 +11,15 @@ namespace LuxEngine.Systems.Networking
             signature.RequireSingleton<IsClientSingleton>();
         }
 
-        //protected override void PreUpdate(GameTime gameTime)
-        //{
-        //    foreach (var entity in RegisteredEntities)
-        //    {
-        //        var connection = World.Unpack<Connection>(entity);
+        protected override void PreUpdate()
+        {
+            foreach (var entity in RegisteredEntities)
+            {
+                Unpack(entity, out Connection connection);
 
-        //        Handshake(connection.MessagesReceived[NetworkMessage.MessageOneofCase.Handshake], connection);
-        //    }
-        //}
+                // Handle in case the message was received
+                Handshake(connection.MessagesReceived[NetworkMessage.MessageOneofCase.Handshake], connection);
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
@@ -10,14 +9,24 @@ namespace LuxEngine
         public float Rotation;
         public Rectangle? Limits;
 
+        /// <summary>
+        /// A fraction that represents the ease in which the camera follows
+        /// its parent.
+        /// </summary>
+        public float Ease;
+
         public Matrix Matrix;
 
-        public Camera(float zoom)
+        public float Accumulator;
+
+        public Camera(float zoom, float ease=0.05f)
         {
             Zoom = new Vector2(zoom, zoom);
             Rotation = 0.0f;
             Limits = null;
             Matrix = Matrix.Identity;
+            Ease = ease;
+            Accumulator = 0.0f;
         }
     }
 
@@ -31,7 +40,63 @@ namespace LuxEngine
 
         protected override void OnRegisterEntity(Entity entity)
         {
-            AddComponent(entity, new Transform(0, 0));
+            Unpack(entity, out Parent parent);
+
+            float x = 0;
+            float y = 0;
+
+            // If parent has a transform, sync the camera with it
+            if (Unpack(parent.ParentEntity, out Transform parentTransform))
+            {
+                x = parentTransform.X;
+                y = parentTransform.Y;
+            }
+
+            // Set the camera's transform
+            if (Unpack(entity, out Transform transform))
+            {
+                transform.X = x;
+                transform.Y = y;
+            }
+            else
+            {
+                AddComponent(entity, new Transform(x, y));
+            }
+        }
+
+        protected override void PostUpdate()
+        {
+            foreach (var entity in RegisteredEntities)
+            {
+                Unpack(entity, out Camera camera);
+                Unpack(entity, out Transform transform);
+                Unpack(entity, out Parent parent);
+
+                if (Unpack(parent.ParentEntity, out Transform parentTransform) &&
+                    Unpack(parent.ParentEntity, out Moveable parentMoveable))
+                {
+                    /* TODO: There is a problem at slower speeds that as soon as the parent is
+                     * moving at a steady speed and the camera has caught up, the character
+                     * keeps moving and the camera follows it, but not immediately
+                     * because of the ease. Meaning this is what happens:
+                     * - Character moves a pixel as shown on the screen
+                     * - The next frame the camera catches up and the character is
+                     *   recentered: moved back.
+                     * - This happens again and again because the character keeps
+                     *   moving and the camera is one frame late when catching up.
+                     *   This causes shaking. Solve it.
+                     */
+                    if (transform.X != parentTransform.X)
+                    {
+                        transform.X += (parentTransform.X - transform.X) * camera.Ease; ;
+                    }
+
+                    if (transform.Y != parentTransform.Y)
+                    {
+                        transform.Y += (parentTransform.Y - transform.Y) * camera.Ease;
+                    }
+                }
+            }
         }
 
         protected override void PreDraw()
@@ -46,15 +111,6 @@ namespace LuxEngine
             {
                 Unpack(entity, out Camera camera);
                 Unpack(entity, out Transform transform);
-                Unpack(entity, out Parent parent);
-
-                float transformX = transform.X;
-                float transformY = transform.Y;
-                if (Unpack(parent.ParentEntity, out Transform parentTransform))
-                {
-                    transformX += parentTransform.X;
-                    transformY += parentTransform.Y;
-                }
 
                 //if (camera.Limits != null)
                 //{
@@ -77,7 +133,7 @@ namespace LuxEngine
                 //}
 
                 // Positioning
-                Matrix translation = Matrix.CreateTranslation(new Vector3(-CalcUtils.Round(transformX, transformY), 0f));
+                Matrix translation = Matrix.CreateTranslation(new Vector3(-CalcUtils.Round(transform.X, transform.Y), 0f));
 
                 // Rotating
                 Matrix rotation = Matrix.CreateRotationZ(camera.Rotation);

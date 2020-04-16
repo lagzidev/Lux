@@ -17,7 +17,7 @@ message NetworkMessage
     oneof Message
     {
         Handshake Handshake = 1;
-        Failure Failure = 2;
+        HandshakeResponse HandshakeResponse = 2;
 
         ServerInfoRequest ServerInfoRequest = 3;
         ServerInfoResponse ServerInfoResponse = 4;
@@ -37,6 +37,12 @@ message NetworkMessage
 message Handshake
 {
     int32 ProtocolVersion = 1;
+}
+
+/* Sent by server */
+message HandshakeResponse
+{
+    Status Status = 1;
 }
 
 /* ==== Server Information ==== */
@@ -84,13 +90,6 @@ message EncryptionKeyResponse
 message LoginSuccess
 {
     string SessionToken = 1;
-}
-
-/* Sent by server */
-/* Sent on timeout, encryption failure etc.. */
-message Failure
-{
-    Status Status = 1;
 }
 
 /* Sent by client */
