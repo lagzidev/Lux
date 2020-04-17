@@ -26,19 +26,13 @@ namespace LuxEngine
         {
             Unpack(entity, out Connection connection);
 
-            // Initialize connection's socket and endpoint
-            //connection.Socket = new Socket(connection.IPAddress.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            //connection.Endpoint = new IPEndPoint(connection.IPAddress, connection.Port);
-            //connection.Socket.Bind(connection.Endpoint);
-
-            // Initialise the IPEndPoint for the clients
-            //IPEndPoint clients = new IPEndPoint(IPAddress.Any, 1337);
-            EndPoint epSender = connection.Endpoint;
-
             // Prepare the received data to receive the next packet's size
             connection.ReceivedData = BitConverter.GetBytes(0);
             connection.ReceivedSize = sizeof(int);
 
+            EndPoint epSender = connection.Endpoint;
+
+            Console.WriteLine("Listening for packets..");
             connection.Socket.BeginReceiveFrom(
                 connection.ReceivedData,
                 0,
@@ -56,8 +50,7 @@ namespace LuxEngine
                 Connection connection = (Connection)asyncResult.AsyncState;
 
                 // Initialise the IPEndPoint for the clients
-                IPEndPoint clients = new IPEndPoint(IPAddress.Any, 0);
-                EndPoint epSender = clients;
+                EndPoint epSender = connection.Endpoint;
 
                 // Receive all data
                 connection.Socket.EndReceiveFrom(asyncResult, ref epSender);
@@ -66,10 +59,12 @@ namespace LuxEngine
                 // as a Connection in a new entity
 
                 // If didn't receive the packet's size yet, it's received now
-                if (0 == connection.ReceivedSize)
+                if (!connection.DidReceiveSize)
                 {
                     connection.ReceivedSize = BitConverter.ToInt32(connection.ReceivedData, 0);
                     connection.ReceivedData = new byte[connection.ReceivedSize];
+                    connection.DidReceiveSize = true;
+                    Console.WriteLine($"Received size of the next packet: {connection.ReceivedSize}");
                 }
                 else
                 {
@@ -79,15 +74,18 @@ namespace LuxEngine
                     // Add messages to connection's list of received message
                     foreach (NetworkMessage message in packet.Messages)
                     {
-                        connection.MessagesReceived.Add(message);
+                        Console.WriteLine($"Received a '{message.MessageCase.ToString()}'...");
+                        connection.Received.Add(message);
                     }
 
                     // Prepare the received data to receive the next packet's size
                     connection.ReceivedData = BitConverter.GetBytes(0);
                     connection.ReceivedSize = sizeof(int);
+                    connection.DidReceiveSize = false;
                 }
 
                 // Listen for more packets again
+                Console.WriteLine("Listening for packets again..");
                 connection.Socket.BeginReceiveFrom(
                     connection.ReceivedData,
                     0,
@@ -99,6 +97,7 @@ namespace LuxEngine
             }
             catch (Exception ex)
             {
+                // TODO: Handle socket disconnect, unparsable packet, etc.
                 Console.WriteLine($"ReceiveData Error: {ex.Message}");
             }
         }

@@ -3,7 +3,8 @@ package LuxProtobuf;
 
 enum Status
 {
-    NON_MATCHING_PROTOCOL_VERSIONS = 0;
+    SUCCESS = 0;
+    NON_MATCHING_PROTOCOL_VERSIONS = 1;
 }
 
 message NetworkPacket

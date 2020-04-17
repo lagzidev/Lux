@@ -29,11 +29,8 @@ namespace LuxEngine
 
         protected override void Init()
         {
-            // Set a connection to any IP addresses
             Entity connection = CreateEntity();
-            
             AddComponent(connection, new Connection(IPAddress.Any, 1337));
-            // TODO: Figure out how to randomize the client port (to avoid collisions in the same network)
         }
     }
 }

@@ -51,8 +51,8 @@ namespace LuxProtobuf {
             "ZBgGIAEoCBIXCg9SaWdodEtleVByZXNzZWQYByABKAgSFgoOTGVmdEtleVBy",
             "ZXNzZWQYCCABKAgSEgoKRjRLZXlQcmVzcxgJIAEoCBIKCgJGNBgKIAEoCBIV",
             "Cg1GNUtleVJlbGVhc2VkGAsgASgIEgoKAkY1GAwgASgIEgoKAkY2GA0gASgI",
-            "KiwKBlN0YXR1cxIiCh5OT05fTUFUQ0hJTkdfUFJPVE9DT0xfVkVSU0lPTlMQ",
-            "AGIGcHJvdG8z"));
+            "KjkKBlN0YXR1cxILCgdTVUNDRVNTEAASIgoeTk9OX01BVENISU5HX1BST1RP",
+            "Q09MX1ZFUlNJT05TEAFiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::LuxProtobuf.Status), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -75,7 +75,8 @@ namespace LuxProtobuf {
   }
   #region Enums
   public enum Status {
-    [pbr::OriginalName("NON_MATCHING_PROTOCOL_VERSIONS")] NonMatchingProtocolVersions = 0,
+    [pbr::OriginalName("SUCCESS")] Success = 0,
+    [pbr::OriginalName("NON_MATCHING_PROTOCOL_VERSIONS")] NonMatchingProtocolVersions = 1,
   }
 
   #endregion
@@ -839,7 +840,7 @@ namespace LuxProtobuf {
 
     /// <summary>Field number for the "Status" field.</summary>
     public const int StatusFieldNumber = 1;
-    private global::LuxProtobuf.Status status_ = global::LuxProtobuf.Status.NonMatchingProtocolVersions;
+    private global::LuxProtobuf.Status status_ = global::LuxProtobuf.Status.Success;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LuxProtobuf.Status Status {
       get { return status_; }
@@ -868,7 +869,7 @@ namespace LuxProtobuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) hash ^= Status.GetHashCode();
+      if (Status != global::LuxProtobuf.Status.Success) hash ^= Status.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -882,7 +883,7 @@ namespace LuxProtobuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+      if (Status != global::LuxProtobuf.Status.Success) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Status);
       }
@@ -894,7 +895,7 @@ namespace LuxProtobuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+      if (Status != global::LuxProtobuf.Status.Success) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
       }
       if (_unknownFields != null) {
@@ -908,7 +909,7 @@ namespace LuxProtobuf {
       if (other == null) {
         return;
       }
-      if (other.Status != global::LuxProtobuf.Status.NonMatchingProtocolVersions) {
+      if (other.Status != global::LuxProtobuf.Status.Success) {
         Status = other.Status;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);

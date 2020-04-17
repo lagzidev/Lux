@@ -32,7 +32,9 @@ namespace LuxEngine
                 NetworkPacket networkPacket = new NetworkPacket();
                 while (connection.MessagesToSend.Count > 0)
                 {
-                    networkPacket.Messages.Add(connection.MessagesToSend.Dequeue());
+                    NetworkMessage message = connection.MessagesToSend.Dequeue();
+                    Console.WriteLine($"Sending a '{message.MessageCase.ToString()}'...");
+                    networkPacket.Messages.Add(message);
                 }
 
                 // Serialize packet

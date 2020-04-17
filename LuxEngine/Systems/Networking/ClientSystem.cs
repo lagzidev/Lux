@@ -11,7 +11,7 @@ namespace LuxEngine
     }
 
     /// <summary>
-    /// Temporary system TODO
+    /// Temporary system TODO: remove this temp system
     /// </summary>
     public class ClientSystem : ASystem<ClientSystem>
     {
@@ -19,7 +19,7 @@ namespace LuxEngine
         {
             signature.Require<Connection>();
             signature.RequireSingleton<IsClientSingleton>();
-            //signature.RequireSingleton<InputSingleton>();
+            signature.RequireSingleton<InputSingleton>();
         }
 
         protected override void InitSingleton()
@@ -28,11 +28,17 @@ namespace LuxEngine
             AddSingletonComponent(new IsClientSingleton());
         }
 
-        protected override void Init()
+        protected override void PreUpdate()
         {
-            // Connect to a server
-            Entity connection = CreateEntity();
-            AddComponent(connection, new Connection(IPAddress.Parse("127.0.0.1"), 1337));
+            UnpackSingleton(out InputSingleton input);
+
+            // TODO: We only support one connection now, support more?
+            if (input.F4KeyPress && RegisteredEntities.Count == 0)
+            {
+                // Connect to a server
+                Entity connection = CreateEntity();
+                AddComponent(connection, new Connection(IPAddress.Parse("127.0.0.1"), 1337));
+            }
         }
 
         //protected override void OnRegisterEntity(Entity entity)

@@ -31,13 +31,16 @@ namespace LuxEngine
         public Queue<NetworkMessage> MessagesToSend;
 
         [NonSerialized]
-        public NetworkMessages MessagesReceived;
+        public NetworkMessages  Received;
 
         [NonSerialized]
         public ConnectionState ConnectionState;
 
         [NonSerialized]
         public int ProtocolVersion;
+
+        [NonSerialized]
+        public bool DidReceiveSize;
 
         public Connection(IPAddress ipAddress, int port)
         {
@@ -48,9 +51,10 @@ namespace LuxEngine
             ReceivedSize = 0;
             ReceivedData = null;
             MessagesToSend = new Queue<NetworkMessage>();
-            MessagesReceived = new NetworkMessages();
+            Received = new NetworkMessages();
             ConnectionState = ConnectionState.Status;
             ProtocolVersion = 0;
+            DidReceiveSize = false;
         }
     }
 
@@ -122,6 +126,7 @@ namespace LuxEngine
             // Initialize connection's socket and endpoint
             connection.Socket = new Socket(connection.IPAddress.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
             connection.Endpoint = new IPEndPoint(connection.IPAddress, connection.Port);
+            connection.Socket.Bind(connection.Endpoint);
         }
 
         protected override void OnUnregisterEntity(Entity entity)

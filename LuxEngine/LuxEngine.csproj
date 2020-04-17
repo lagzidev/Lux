@@ -89,6 +89,7 @@
     <Compile Include="Systems\Render\TransformInterpolationSystem.cs" />
     <Compile Include="SystemSignature.cs" />
     <Compile Include="Utils\CalcUtils.cs" />
+    <Compile Include="Systems\UI\ErrorUISystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
@@ -102,6 +103,7 @@
     <Folder Include="Systems\Networking\" />
     <Folder Include="Protobuf\" />
     <Folder Include="Misc\" />
+    <Folder Include="Systems\UI\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />
