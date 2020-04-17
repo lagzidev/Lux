@@ -5,11 +5,11 @@ namespace LuxEngine
 {
     public class ECS
     {
-        private readonly List<World> _worlds;
+        public readonly List<World> Worlds;
 
         public ECS()
         {
-            _worlds = new List<World>();
+            Worlds = new List<World>();
         }
 
         /// <summary>
@@ -19,34 +19,34 @@ namespace LuxEngine
         public World CreateWorld()
         {
             World newWorld = new World();
-            _worlds.Add(newWorld);
+            Worlds.Add(newWorld);
 
             return newWorld;
         }
 
         public void Initialize()
         {
-            _worlds.ForEach(x => x.Init());
+            Worlds.ForEach(x => x.Init());
         }
 
         public void LoadContent()
         {
-            _worlds.ForEach(x => x.LoadContent());
+            Worlds.ForEach(x => x.LoadContent());
         }
 
         public void Update()
         {
-            _worlds.ForEach(x => x.Update());
+            Worlds.ForEach(x => x.Update());
         }
 
         public void UpdateFixed()
         {
-            _worlds.ForEach(x => x.UpdateFixed());
+            Worlds.ForEach(x => x.UpdateFixed());
         }
 
         public void Draw()
         {
-            _worlds.ForEach(x => x.Draw());
+            Worlds.ForEach(x => x.Draw());
         }
     }
 }

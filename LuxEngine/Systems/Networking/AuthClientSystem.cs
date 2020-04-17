@@ -25,7 +25,7 @@ namespace LuxEngine
             });
         }
 
-        protected override void PreUpdate()
+        public override void PreUpdate()
         {
             foreach (var entity in RegisteredEntities)
             {

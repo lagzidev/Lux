@@ -36,7 +36,7 @@ namespace LuxEngine
             signature.Require<Sprite>();
         }
 
-        protected override void PreDraw()
+        public override void PreDraw()
         {
             foreach (var entity in RegisteredEntities)
             {

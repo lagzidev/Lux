@@ -11,7 +11,7 @@ namespace LuxEngine
             signature.RequireSingleton<LoadedMapsSingleton>();
         }
 
-        //protected override void PreDraw(GameTime gameTime)
+        //public override void PreDraw(GameTime gameTime)
         //{
         //    var loadedMaps = World.UnpackSingleton<LoadedMapsSingleton>();
         //    TmxMap currentMap = loadedMaps.Maps[loadedMaps.CurrentMapName];

@@ -24,12 +24,12 @@ namespace LuxEngine
             signature.RequireSingleton<SpriteBatchSingleton>();
         }
 
-        protected override void InitSingleton()
+        public override void InitSingleton()
         {
             AddSingletonComponent(new SpriteBatchSingleton(LuxGame.Graphics.GraphicsDevice));
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             UnpackSingleton(out SpriteBatchSingleton spriteBatchSingleton);
 
@@ -39,7 +39,7 @@ namespace LuxEngine
                 LuxGame.Height);
         }
 
-        protected override void PreDraw()
+        public override void PreDraw()
         {
             UnpackSingleton(out SpriteBatchSingleton spriteBatchSingleton);
 
@@ -54,7 +54,7 @@ namespace LuxEngine
                 null);
         }
 
-        protected override void PostDraw()
+        public override void PostDraw()
         {
             LuxCommon.Assert(RegisteredEntities.Count == 1); // No support for multiple cameras yet
 

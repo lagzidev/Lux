@@ -15,7 +15,7 @@ namespace LuxEngine
             signature.RequireSingleton<LoadedTexturesSingleton>();
         }
 
-        protected override void Draw()
+        public override void Draw()
         {
             // Get loaded textures
             UnpackSingleton(out LoadedTexturesSingleton loadedTextures);

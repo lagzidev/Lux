@@ -106,7 +106,7 @@ namespace LuxEngine
             signature.Require<Connection>();
         }
 
-        protected override void LoadFrame()
+        public override void LoadFrame()
         {
             foreach (var entity in RegisteredEntities)
             {

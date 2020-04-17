@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace LuxEngine
 {
-    public class LuxCommon
+    public static class LuxCommon
     {
 #if DEBUG
         public static bool IsDebug = true;
@@ -18,12 +19,6 @@ namespace LuxEngine
             {
                 Debugger.Break();
             }
-        }
-
-        [Conditional("DEBUG")]
-        public static void Log(string log)
-        {
-            Console.WriteLine(log);
         }
     }
 

@@ -22,13 +22,13 @@ namespace LuxEngine
             signature.RequireSingleton<InputSingleton>();
         }
 
-        protected override void InitSingleton()
+        public override void InitSingleton()
         {
             // Set the world to be a client
             AddSingletonComponent(new IsClientSingleton());
         }
 
-        protected override void PreUpdate()
+        public override void PreUpdate()
         {
             UnpackSingleton(out InputSingleton input);
 
@@ -56,7 +56,7 @@ namespace LuxEngine
         //    });
         //}
 
-        //protected override void LoadFrame(GameTime gameTime)
+        //public override void LoadFrame(GameTime gameTime)
         //{
         //    var input = World.UnpackSingleton<InputSingleton>();
         //    var messagesSingleton = World.UnpackSingleton<NetworkMessagesSingleton>();

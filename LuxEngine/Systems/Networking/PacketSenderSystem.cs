@@ -16,7 +16,7 @@ namespace LuxEngine
             signature.Require<Connection>();
         }
 
-        protected override void PostUpdate()
+        public override void PostUpdate()
         {
             // For each connection
             foreach (var entity in RegisteredEntities)

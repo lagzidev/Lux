@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LuxEngine
 {
@@ -283,7 +285,7 @@ namespace LuxEngine
         /// Singleton components should be added here (and not in Init).
         /// This phase runs regardless of if the signature matches.
         /// </summary>
-        protected virtual void InitSingleton() { }
+        public virtual void InitSingleton() { }
         public void RunInitSingleton()
         {
             if (World == null)
@@ -298,7 +300,7 @@ namespace LuxEngine
         /// <summary>
         /// Automatically called when the game launches to initialize any non-graphic variables.
         /// </summary>
-        protected virtual void Init() { }
+        public virtual void Init() { }
         public void RunInit()
         {
             if (World == null)
@@ -318,7 +320,7 @@ namespace LuxEngine
         /// <summary>
         /// Automatically called when the game launches to load any game assets (graphics, audio etc.)
         /// </summary>
-        protected virtual void LoadContent() { }
+        public virtual void LoadContent() { }
         public void RunLoadContent()
         {
             IsReadyToLoadContent = true;
@@ -334,7 +336,7 @@ namespace LuxEngine
         /// <summary>
         /// Use this to save state that will be used for interpolation later.
         /// </summary>
-        protected virtual void Integrate() { }
+        public virtual void Integrate() { }
         public void RunIntegrate()
         {
             if (!Signature.SingletonMatches)
@@ -351,7 +353,7 @@ namespace LuxEngine
         /// that doesnn't 
         /// </summary>
         /// <param name="gameTime"></param>
-        protected virtual void LoadFrame() { }
+        public virtual void LoadFrame() { }
         public void RunLoadFrame()
         {
             if (!Signature.SingletonMatches)
@@ -365,7 +367,7 @@ namespace LuxEngine
         /// <summary>
         /// Called before Update
         /// </summary>
-        protected virtual void PreUpdate() { }
+        public virtual void PreUpdate() { }
         public void RunPreUpdate()
         {
             if (!Signature.SingletonMatches)
@@ -379,7 +381,7 @@ namespace LuxEngine
         /// <summary>
         /// Called each frame to update the game.
         /// </summary>
-        protected virtual void Update() { }
+        public virtual void Update() { }
         public void RunUpdate()
         {
             if (!Signature.SingletonMatches)
@@ -389,11 +391,15 @@ namespace LuxEngine
 
             Update();
         }
+        public static void Update()
+        {
+
+        }
 
         /// <summary>
         /// Called after Update
         /// </summary>
-        protected virtual void PostUpdate() { }
+        public virtual void PostUpdate() { }
         public void RunPostUpdate()
         {
             if (!Signature.SingletonMatches)
@@ -407,7 +413,7 @@ namespace LuxEngine
         /// <summary>
         /// Called each tick in fixed time intervals.
         /// </summary>
-        protected virtual void UpdateFixed() { }
+        public virtual void UpdateFixed() { }
         public void RunUpdateFixed()
         {
             if (!Signature.SingletonMatches)
@@ -422,7 +428,7 @@ namespace LuxEngine
         /// First draw phase that is called every frame.
         /// Prepare state that PreDraw needs here.
         /// </summary>
-        protected virtual void LoadDraw() { }
+        public virtual void LoadDraw() { }
         public void RunLoadDraw()
         {
             if (!Signature.SingletonMatches)
@@ -437,7 +443,7 @@ namespace LuxEngine
         /// Called every frame before the game is ready to draw to the screen.
         /// Prepare draw related state here (update animations, etc.)
         /// </summary>
-        protected virtual void PreDraw() { }
+        public virtual void PreDraw() { }
         public void RunPreDraw()
         {
             if (!Signature.SingletonMatches)
@@ -451,7 +457,7 @@ namespace LuxEngine
         /// <summary>
         /// Called every frame when the game is ready to draw to the screen.
         /// </summary>
-        protected virtual void Draw() { }
+        public virtual void Draw() { }
         public void RunDraw()
         {
             if (!Signature.SingletonMatches)
@@ -466,7 +472,7 @@ namespace LuxEngine
         /// Called every frame after Draw.
         /// Use this for cleanup (e.g. SpriteBatch.End)
         /// </summary>
-        protected virtual void PostDraw() { }
+        public virtual void PostDraw() { }
         public void RunPostDraw()
         {
             if (!Signature.SingletonMatches)

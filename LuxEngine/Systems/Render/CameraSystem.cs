@@ -64,7 +64,7 @@ namespace LuxEngine
             }
         }
 
-        protected override void PostUpdate()
+        public override void PostUpdate()
         {
             foreach (var entity in RegisteredEntities)
             {
@@ -99,7 +99,7 @@ namespace LuxEngine
             }
         }
 
-        protected override void PreDraw()
+        public override void PreDraw()
         {
             if (RegisteredEntities.Count > 1)
             {

@@ -41,7 +41,7 @@ namespace LuxEngine
             signature.RequireSingleton<LoadedMapsSingleton>();
         }
 
-        protected override void InitSingleton()
+        public override void InitSingleton()
         {
             AddSingletonComponent(new LoadedMapsSingleton());
         }
@@ -70,7 +70,7 @@ namespace LuxEngine
             loadedMaps.CurrentMapName = map.MapName;
         }
 
-        protected override void Draw()
+        public override void Draw()
         {
             UnpackSingleton(out SpriteBatchSingleton spriteBatchSingleton);
             SpriteBatch spriteBatch = spriteBatchSingleton.Batch;

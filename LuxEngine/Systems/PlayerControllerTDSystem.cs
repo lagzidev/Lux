@@ -43,7 +43,7 @@ namespace LuxEngine
             signature.RequireSingleton<InputSingleton>();
         }
 
-        protected override void Update()
+        public override void Update()
         {
             UnpackSingleton(out InputSingleton input);
 
@@ -98,7 +98,7 @@ namespace LuxEngine
             }
         }
 
-        protected override void LoadDraw()
+        public override void LoadDraw()
         {
             foreach (var entity in RegisteredEntities)
             {

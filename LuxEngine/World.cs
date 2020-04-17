@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -460,17 +461,54 @@ namespace LuxEngine
 
         #region Phases
 
+#if DEBUG
+        /// <summary>
+        /// A hashset of phases that contain logic (were overriden)
+        /// </summary>
+        public HashSet<string> Phases = new HashSet<string>();
+
+        /// <summary>
+        /// Currently executing phase
+        /// </summary>
+        public string CurrentPhase = null;
+#endif
+
+        private void AnalyzePhase(AInternalSystem system, Action phaseMethod)
+        {
+#if DEBUG
+            bool isOverriden = phaseMethod.Method.GetBaseDefinition().DeclaringType
+                != phaseMethod.Method.DeclaringType;
+
+            string executingPhase = $"{system.GetType().Name}.{phaseMethod.Method.Name}";
+
+            // If overriden, the user's phase logic is executing
+            if (isOverriden)
+            {
+                // Make sure the phase is in the phases list
+                if (!Phases.Contains(executingPhase))
+                {
+                    Phases.Add(executingPhase);
+                }
+
+                // Update the currently executing phase
+                CurrentPhase = executingPhase;
+            }
+#endif
+        }
+
         internal virtual void Init()
         {
             _inInitSingleton = true;
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.InitSingleton);
                 system.RunInitSingleton();
             }
             _inInitSingleton = false;
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.Init);
                 system.RunInit();
             }
         }
@@ -479,6 +517,7 @@ namespace LuxEngine
         {
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.LoadContent);
                 system.RunLoadContent();
             }
         }
@@ -487,26 +526,31 @@ namespace LuxEngine
         {
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.Integrate);
                 system.RunIntegrate();
             }
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.LoadFrame);
                 system.RunLoadFrame();
             }
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.PreUpdate);
                 system.RunPreUpdate();
             }
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.Update);
                 system.RunUpdate();
             }
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.PostUpdate);
                 system.RunPostUpdate();
             }
         }
@@ -515,6 +559,7 @@ namespace LuxEngine
         {
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.UpdateFixed);
                 system.RunUpdateFixed();
             }
         }
@@ -527,25 +572,29 @@ namespace LuxEngine
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.LoadDraw);
                 system.RunLoadDraw();
             }
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.PreDraw);
                 system.RunPreDraw();
             }
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.Draw);
                 system.RunDraw();
             }
 
             foreach (AInternalSystem system in _systems)
             {
+                AnalyzePhase(system, system.PostDraw);
                 system.RunPostDraw();
             }
         }
 
-        #endregion
+#endregion
     }
 }

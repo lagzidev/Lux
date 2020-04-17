@@ -37,12 +37,12 @@ namespace LuxEngine
             signature.RequireSingleton<LoadedTexturesSingleton>();
         }
 
-        protected override void InitSingleton()
+        public override void InitSingleton()
         {
             AddSingletonComponent(new LoadedTexturesSingleton());
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             foreach (var entity in RegisteredEntities)
             {

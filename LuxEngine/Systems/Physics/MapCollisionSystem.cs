@@ -17,7 +17,7 @@ namespace LuxEngine
             signature.Require<Collidable>();
         }
 
-        protected override void PostUpdate()
+        public override void PostUpdate()
         {
 
         }

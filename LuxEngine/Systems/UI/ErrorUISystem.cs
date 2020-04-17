@@ -17,7 +17,7 @@ namespace LuxEngine
             signature.Require<Text>();
         }
 
-        protected override void Init()
+        public override void Init()
         {
             Entity entity = CreateEntity();
             AddComponent(entity, new ErrorUIElement());
@@ -25,7 +25,7 @@ namespace LuxEngine
             AddComponent(entity, new Text("", "arial", 20, Color.Black, SpriteDepth.OverCharacter));
         }
 
-        protected override void PreDraw()
+        public override void PreDraw()
         {
             // For each error UI element
             foreach (var entity in RegisteredEntities)

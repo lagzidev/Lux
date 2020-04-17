@@ -21,13 +21,13 @@ namespace LuxEngine
             signature.RequireSingleton<IsServerSingleton>();
         }
 
-        protected override void InitSingleton()
+        public override void InitSingleton()
         {
             // Set the world to be a server
            AddSingletonComponent(new IsServerSingleton());
         }
 
-        protected override void Init()
+        public override void Init()
         {
             Entity connection = CreateEntity();
             AddComponent(connection, new Connection(IPAddress.Any, 1337));

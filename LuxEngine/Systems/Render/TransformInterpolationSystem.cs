@@ -11,7 +11,7 @@ namespace LuxEngine
 
         // TODO: Decouple engine from XNA
 
-        protected override void Integrate()
+        public override void Integrate()
         {
             //foreach (var entity in RegisteredEntities)
             //{

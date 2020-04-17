@@ -52,12 +52,12 @@ namespace LuxEngine
             signature.Require<InputSingleton>();
         }
 
-        protected override void InitSingleton()
+        public override void InitSingleton()
         {
             AddSingletonComponent(new InputSingleton());
         }
 
-        protected override void LoadFrame()
+        public override void LoadFrame()
         {
             KeyboardState keyboard = Keyboard.GetState();
             //MouseState mouse = Mouse.GetState();

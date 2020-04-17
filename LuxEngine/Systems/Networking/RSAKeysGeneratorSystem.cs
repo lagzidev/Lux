@@ -18,7 +18,7 @@ namespace LuxEngine.Systems.Networking
             signature.Require<RSAKeyPair>();
         }
 
-        protected override void InitSingleton()
+        public override void InitSingleton()
         {
             AddSingletonComponent(new RSAKeyPair());
         }

@@ -96,7 +96,7 @@
 //            Velocity.Y = TendToZero(Velocity.Y, decel);
 //        }
 
-//        protected override void UpdateAnimations()
+//        public override void UpdateAnimations()
 //        {
 //            if (currentAnimation == null)
 //            {

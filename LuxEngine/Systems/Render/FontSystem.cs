@@ -52,7 +52,7 @@ namespace LuxEngine
             signature.RequireSingleton<SpriteBatchSingleton>();
         }
 
-        protected override void InitSingleton()
+        public override void InitSingleton()
         {
             AddSingletonComponent(new FontSingleton(LuxGame.Graphics.GraphicsDevice));
         }
@@ -69,7 +69,7 @@ namespace LuxEngine
             }
         }
 
-        protected override void PreDraw()
+        public override void PreDraw()
         {
             UnpackSingleton(out FontSingleton fonts);
 
@@ -82,7 +82,7 @@ namespace LuxEngine
                 null);
         }
 
-        protected override void Draw()
+        public override void Draw()
         {
             UnpackSingleton(out FontSingleton fonts);
 
@@ -106,7 +106,7 @@ namespace LuxEngine
             }
         }
 
-        protected override void PostDraw()
+        public override void PostDraw()
         {
             UnpackSingleton(out FontSingleton fonts);
             fonts.SpriteBatch.End();
