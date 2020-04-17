@@ -316,6 +316,42 @@ namespace LuxEngine
             }
         }
 
+        public void Register(Delegate system)
+        {
+
+        }
+
+        public void Register(Action system)
+        {
+
+        }
+
+        public void Register<T1>(Action<T1> system)
+            where T1 : AComponent<T1>
+        {
+
+        }
+
+        public void Register<T1, T2>(Action<T1, T2> system)
+            where T1 : AComponent<T1>
+            where T2 : AComponent<T2>
+        {
+
+        }
+
+        internal void Register<T1, T2, T3>(Action<T1, T2, T3> system)
+            where T1 : AComponent<T1>
+            where T2 : AComponent<T2>
+            where T3 : AComponent<T3>
+        {
+
+        }
+
+        internal void Register(object system)
+        {
+
+        }
+
         public void RegisterSystem<T>() where T : ASystem<T>, new()
         {
             T system = new T { World = this };

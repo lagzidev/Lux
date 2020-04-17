@@ -391,10 +391,6 @@ namespace LuxEngine
 
             Update();
         }
-        public static void Update()
-        {
-
-        }
 
         /// <summary>
         /// Called after Update
