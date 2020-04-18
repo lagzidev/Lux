@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace LuxEngine
+namespace LuxEngine.ECS
 {
     internal interface ISparseSet
     {
@@ -91,12 +91,6 @@ namespace LuxEngine
             {
                 LuxCommon.Assert(false);
                 return;
-            }
-
-            if (Contains(key))
-            {
-                // Warn the dev that a component is being overriden
-                LuxCommon.Assert(false);
             }
 
             // Insert new value in the dense array

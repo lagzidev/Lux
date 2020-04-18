@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using LuxEngine;
+using LuxEngine.ECS;
 
 namespace LuxEngineUT
 {
@@ -16,8 +16,8 @@ namespace LuxEngineUT
         [Test]
         public void CreateWorldSanity()
         {
-            World world = _engine.CreateWorld();
-            Entity entity = world.CreateEntity();
+            WorldHandle world = _engine.CreateWorld();
+            //Entity entity = world.CreateEntity();
         }
 
         [Test]

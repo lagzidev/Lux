@@ -12,8 +12,9 @@ namespace LuxEngine
         //public const int MAX_FRAMESKIP = 5; // todo ?
 
         // Data
-        public const int MAX_COMPONENTS_PER_TYPE = 2048;
+        public const int MAX_ENTITIES_PER_WORLD = 2048;
         public const int MAX_GAME_COMPONENT_TYPES = 64;
+        public const int MAX_SYSTEMS = 128;
 
         // Assets
         public const string DEFAULT_TEXTURES_FOLDER_NAME = "Textures";

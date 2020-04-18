@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using LuxEngine.ECS;
 using LuxProtobuf;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -32,7 +33,7 @@ namespace LuxEngine
         public static GameError Error;
 
         // ECS
-        private static ECS _ecs;
+        private static ECS.ECS _ecs;
 
         // References
         public static LuxGame Instance { get; private set; }
@@ -86,7 +87,7 @@ namespace LuxEngine
             Window.Title = Title = windowTitle;
             Error = new GameError();
 
-            _ecs = new ECS();
+            _ecs = new ECS.ECS();
 
             Width = width;
             Height = height;
@@ -250,7 +251,7 @@ namespace LuxEngine
         /// Creates a new ECS world
         /// </summary>
         /// <returns>The newly created ECS world</returns>
-        public static World CreateWorld()
+        protected static WorldHandle CreateWorld()
         {
             return _ecs.CreateWorld();
         }
@@ -260,20 +261,11 @@ namespace LuxEngine
         /// </summary>
         protected override void Initialize()
         {
-            _ecs.Initialize();
             base.Initialize(); // calls LoadContent
+            _ecs.Initialize();
         }
 
-        /// <summary>
-        /// Automatically called after Initialize when your game launches to load any game assets (graphics, audio etc.)
-        /// In XNA (not in FNA, maybe in MonoGame) it's called on device reset.
-        /// </summary>
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-            _ecs.LoadContent();
-        }
-
+        // TODO: We got rid of loadcontent so make sure it's working on device reset in monogame.
         // TODO: Handle buffer overflow with recycled entities' generation int
 
         /// <summary>

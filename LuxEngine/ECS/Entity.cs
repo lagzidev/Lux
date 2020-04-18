@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace LuxEngine
+namespace LuxEngine.ECS
 {
     [Serializable]
     [StructLayout(LayoutKind.Explicit)]

@@ -1,52 +1,50 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-
-namespace LuxEngine
+namespace LuxEngine.ECS
 {
+    /// <summary>
+    /// A proxy to all of the ECS worlds.
+    /// </summary>
     public class ECS
     {
-        public readonly List<World> Worlds;
+        private readonly List<InternalWorld> _worlds;
 
         public ECS()
         {
-            Worlds = new List<World>();
+            _worlds = new List<InternalWorld>();
         }
 
         /// <summary>
         /// Creates a new ECS world
         /// </summary>
         /// <returns>The newly created ECS world</returns>
-        public World CreateWorld()
+        public WorldHandle CreateWorld()
         {
-            World newWorld = new World();
-            Worlds.Add(newWorld);
+            InternalWorld newWorld = new InternalWorld();
+            _worlds.Add(newWorld);
 
-            return newWorld;
+            return newWorld.WorldHandle;
         }
 
         public void Initialize()
         {
-            Worlds.ForEach(x => x.Init());
-        }
-
-        public void LoadContent()
-        {
-            Worlds.ForEach(x => x.LoadContent());
+            _worlds.ForEach(x => x.Init());
         }
 
         public void Update()
         {
-            Worlds.ForEach(x => x.Update());
+            _worlds.ForEach(x => x.Update());
         }
 
         public void UpdateFixed()
         {
-            Worlds.ForEach(x => x.UpdateFixed());
+            _worlds.ForEach(x => x.UpdateFixed());
         }
 
         public void Draw()
         {
-            Worlds.ForEach(x => x.Draw());
+            _worlds.ForEach(x => x.Draw());
         }
+
+        // TODO: Deinitialize ?
     }
 }

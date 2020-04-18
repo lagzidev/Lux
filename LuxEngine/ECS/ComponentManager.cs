@@ -5,7 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace LuxEngine
+namespace LuxEngine.ECS
 {
     // This exists so we can create an array of component managers without
     // specifying the type <T>
@@ -21,7 +21,7 @@ namespace LuxEngine
 
         public ComponentManager()
         {
-            _components = new SparseSet<T>(HardCodedConfig.MAX_COMPONENTS_PER_TYPE);
+            _components = new SparseSet<T>(HardCodedConfig.MAX_ENTITIES_PER_WORLD);
         }
 
         public ComponentManager(SparseSet<T> components)
