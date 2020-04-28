@@ -4,7 +4,7 @@
 //using System.Xml.Serialization;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    public class RSAKeyPair : AComponent<RSAKeyPair>
 //    {

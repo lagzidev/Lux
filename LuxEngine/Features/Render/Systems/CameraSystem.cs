@@ -2,7 +2,7 @@
 //using Microsoft.Xna.Framework;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    public class Camera : AComponent<Camera>
 //    {
@@ -20,7 +20,7 @@
 
 //        public float Accumulator;
 
-//        public Camera(float zoom, float ease=0.05f)
+//        public Camera(float zoom, float ease = 0.05f)
 //        {
 //            Zoom = new Vector2(zoom, zoom);
 //            Rotation = 0.0f;
@@ -31,15 +31,10 @@
 //        }
 //    }
 
-//    public class CameraSystem : ASystem<CameraSystem>
+//    public static class CameraSystem
 //    {
-//        public override void SetSignature(SystemSignature signature)
-//        {
-//            signature.Require<Parent>();
-//            signature.Require<Camera>();
-//        }
-
-//        protected override void OnRegisterEntity(Entity entity)
+//        [OnAddComponent(typeof(Camera))]
+//        public static void OnRegisterEntity(Camera camera, Parent parent)
 //        {
 //            Unpack(entity, out Parent parent);
 
@@ -51,7 +46,7 @@
 //            {
 //                x = parentTransform.X;
 //                y = parentTransform.Y;
-//            }
+//            }   
 
 //            // Set the camera's transform
 //            if (Unpack(entity, out Transform transform))

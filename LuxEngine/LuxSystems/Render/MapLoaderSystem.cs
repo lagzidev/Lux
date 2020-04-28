@@ -5,7 +5,7 @@
 //using TiledSharp;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    [Serializable]
 //    public class LoadedMapsSingleton : AComponent<LoadedMapsSingleton>

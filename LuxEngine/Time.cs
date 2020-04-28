@@ -3,6 +3,10 @@ using Microsoft.Xna.Framework;
 
 namespace LuxEngine
 {
+    // TODO: Move Time to be a component that proxies this with changes (maybe. because this
+    // would require having logic in the get {} of the component, which isn't very ECS like.
+    // Either way this is out of context for a world. Speaking of which, Context has logic
+    // and it's a component. Hm.
     public static class Time
     {
 		/// <summary>

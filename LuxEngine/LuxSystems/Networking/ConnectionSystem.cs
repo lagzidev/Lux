@@ -8,7 +8,7 @@
 //using System.Collections.Generic;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    [Serializable]
 //    public class Connection : AComponent<Connection>

@@ -9,7 +9,7 @@
 //using LuxEngine.ECS;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    [Serializable]
 //    public class Text : AComponent<Text>

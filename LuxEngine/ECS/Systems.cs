@@ -16,17 +16,15 @@ namespace LuxEngine.ECS
             Count = 0;
         }
 
-        internal void Invoke(InternalWorld world, Entity entity, IEntityFilter filter)
+        internal void Invoke(World world, Entity entity, IEntityFilter filter)
         {
             for (int i = 0; i < Count; i++)
             {
-                filter.UnderlyingFilters = _systems[i].CustomEntityFilters;
                 _systems[i].Invoke(world, entity, filter);
-                filter.UnderlyingFilters = null;
             }
         }
 
-        internal void Register(InternalWorld world)
+        internal void Register(World world)
         {
             for (int i = 0; i < Count; i++)
             {
@@ -42,6 +40,12 @@ namespace LuxEngine.ECS
 
         #region Systems Add Declerations
         /*  We must do it manually because C#  */
+
+        public Systems Add(Action system)
+        {
+            Add(new System(system));
+            return this;
+        }
 
         /// <summary>
         /// Adds a system to the list
@@ -124,11 +128,11 @@ namespace LuxEngine.ECS
 
     internal abstract class ASystem
     {
-        public IEntityFilter[] CustomEntityFilters;
+        public ASystemAttribute[] SystemAttributes;
 
         public ASystem()
         {
-            CustomEntityFilters = null;
+            SystemAttributes = null;
         }
 
         /// <summary>
@@ -136,18 +140,19 @@ namespace LuxEngine.ECS
         /// </summary>
         /// <param name="world">World the system operates in</param>
         /// <param name="entity">Entity to run the system on</param>
-        public abstract void Invoke(InternalWorld world, Entity entity, IEntityFilter filter);
+        public abstract void Invoke(World world, Entity entity, IEntityFilter filter);
 
         /// <summary>
         /// Registers all components used by the system to the world
         /// </summary>
         /// <param name="world">World to register the component to</param>
-        protected abstract void RegisterComponents(InternalWorld world);
-        public void Register(InternalWorld world)
+        protected abstract void RegisterComponents(World world);
+        public void Register(World world)
         {
-            CustomEntityFilters = (IEntityFilter[])
-                GetMethodInfo().GetCustomAttributes(typeof(IEntityFilter), false);
+            // Handle custom filters
+            SystemAttributes = (ASystemAttribute[])GetMethodInfo().GetCustomAttributes(typeof(ASystemAttribute), false);
 
+            // Register the components the system uses
             RegisterComponents(world);
         }
 
@@ -160,6 +165,33 @@ namespace LuxEngine.ECS
 
     #region System Declerations
 
+    internal class System : ASystem
+    {
+        private readonly Action system;
+
+        public System(Action system)
+        {
+            this.system = system;
+        }
+
+        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        {
+            if (filter.Filter(world, entity, SystemAttributes))
+            {
+                system();
+            }
+        }
+
+        protected override void RegisterComponents(World world)
+        {
+        }
+
+        protected override MethodInfo GetMethodInfo()
+        {
+            return system.GetMethodInfo();
+        }
+    }
+
     internal class System<T1> : ASystem
         where T1 : AComponent<T1>
     {
@@ -170,17 +202,17 @@ namespace LuxEngine.ECS
             this.system = system;
         }
 
-        public override void Invoke(InternalWorld world, Entity entity, IEntityFilter filter)
+        public override void Invoke(World world, Entity entity, IEntityFilter filter)
         {
-            world.Unpack(entity, out T1 c1);
+            world.UnpackEntityOrSingleton(entity, out T1 c1);
 
-            if (filter.Filter(c1))
+            if (filter.Filter(world, entity, SystemAttributes, c1))
             {
                 system(c1);
             }
         }
 
-        protected override void RegisterComponents(InternalWorld world)
+        protected override void RegisterComponents(World world)
         {
             world.Register<T1>();
         }
@@ -202,18 +234,18 @@ namespace LuxEngine.ECS
             this.system = system;
         }
 
-        public override void Invoke(InternalWorld world, Entity entity, IEntityFilter filter)
+        public override void Invoke(World world, Entity entity, IEntityFilter filter)
         {
-            world.Unpack(entity, out T1 c1);
-            world.Unpack(entity, out T2 c2);
+            world.UnpackEntityOrSingleton(entity, out T1 c1);
+            world.UnpackEntityOrSingleton(entity, out T2 c2);
 
-            if (filter.Filter(c1, c2))
+            if (filter.Filter(world, entity, SystemAttributes, c1, c2))
             {
                 system(c1, c2);
             }
         }
 
-        protected override void RegisterComponents(InternalWorld world)
+        protected override void RegisterComponents(World world)
         {
             world.Register<T1>();
             world.Register<T2>();
@@ -237,19 +269,19 @@ namespace LuxEngine.ECS
             this.system = system;
         }
 
-        public override void Invoke(InternalWorld world, Entity entity, IEntityFilter filter)
+        public override void Invoke(World world, Entity entity, IEntityFilter filter)
         {
-            world.Unpack(entity, out T1 c1);
-            world.Unpack(entity, out T2 c2);
-            world.Unpack(entity, out T3 c3);
+            world.UnpackEntityOrSingleton(entity, out T1 c1);
+            world.UnpackEntityOrSingleton(entity, out T2 c2);
+            world.UnpackEntityOrSingleton(entity, out T3 c3);
 
-            if (filter.Filter(c1, c2, c3))
+            if (filter.Filter(world, entity, SystemAttributes, c1, c2, c3))
             {
                 system(c1, c2, c3);
             }
         }
 
-        protected override void RegisterComponents(InternalWorld world)
+        protected override void RegisterComponents(World world)
         {
             world.Register<T1>();
             world.Register<T2>();
@@ -275,20 +307,20 @@ namespace LuxEngine.ECS
             this.system = system;
         }
 
-        public override void Invoke(InternalWorld world, Entity entity, IEntityFilter filter)
+        public override void Invoke(World world, Entity entity, IEntityFilter filter)
         {
-            world.Unpack(entity, out T1 c1);
-            world.Unpack(entity, out T2 c2);
-            world.Unpack(entity, out T3 c3);
-            world.Unpack(entity, out T4 c4);
+            world.UnpackEntityOrSingleton(entity, out T1 c1);
+            world.UnpackEntityOrSingleton(entity, out T2 c2);
+            world.UnpackEntityOrSingleton(entity, out T3 c3);
+            world.UnpackEntityOrSingleton(entity, out T4 c4);
 
-            if (filter.Filter(c1, c2, c3, c4))
+            if (filter.Filter(world, entity, SystemAttributes, c1, c2, c3, c4))
             {
                 system(c1, c2, c3, c4);
             }
         }
 
-        protected override void RegisterComponents(InternalWorld world)
+        protected override void RegisterComponents(World world)
         {
             world.Register<T1>();
             world.Register<T2>();
@@ -316,21 +348,21 @@ namespace LuxEngine.ECS
             this.system = system;
         }
 
-        public override void Invoke(InternalWorld world, Entity entity, IEntityFilter filter)
+        public override void Invoke(World world, Entity entity, IEntityFilter filter)
         {
-            world.Unpack(entity, out T1 c1);
-            world.Unpack(entity, out T2 c2);
-            world.Unpack(entity, out T3 c3);
-            world.Unpack(entity, out T4 c4);
-            world.Unpack(entity, out T5 c5);
+            world.UnpackEntityOrSingleton(entity, out T1 c1);
+            world.UnpackEntityOrSingleton(entity, out T2 c2);
+            world.UnpackEntityOrSingleton(entity, out T3 c3);
+            world.UnpackEntityOrSingleton(entity, out T4 c4);
+            world.UnpackEntityOrSingleton(entity, out T5 c5);
 
-            if (filter.Filter(c1, c2, c3, c4, c5))
+            if (filter.Filter(world, entity, SystemAttributes, c1, c2, c3, c4, c5))
             {
                 system(c1, c2, c3, c4, c5);
             }
         }
 
-        protected override void RegisterComponents(InternalWorld world)
+        protected override void RegisterComponents(World world)
         {
             world.Register<T1>();
             world.Register<T2>();
@@ -360,22 +392,22 @@ namespace LuxEngine.ECS
             this.system = system;
         }
 
-        public override void Invoke(InternalWorld world, Entity entity, IEntityFilter filter)
+        public override void Invoke(World world, Entity entity, IEntityFilter filter)
         {
-            world.Unpack(entity, out T1 c1);
-            world.Unpack(entity, out T2 c2);
-            world.Unpack(entity, out T3 c3);
-            world.Unpack(entity, out T4 c4);
-            world.Unpack(entity, out T5 c5);
-            world.Unpack(entity, out T6 c6);
+            world.UnpackEntityOrSingleton(entity, out T1 c1);
+            world.UnpackEntityOrSingleton(entity, out T2 c2);
+            world.UnpackEntityOrSingleton(entity, out T3 c3);
+            world.UnpackEntityOrSingleton(entity, out T4 c4);
+            world.UnpackEntityOrSingleton(entity, out T5 c5);
+            world.UnpackEntityOrSingleton(entity, out T6 c6);
 
-            if (filter.Filter(c1, c2, c3, c4, c5, c6))
+            if (filter.Filter(world, entity, SystemAttributes, c1, c2, c3, c4, c5, c6))
             {
                 system(c1, c2, c3, c4, c5, c6);
             }
         }
 
-        protected override void RegisterComponents(InternalWorld world)
+        protected override void RegisterComponents(World world)
         {
             world.Register<T1>();
             world.Register<T2>();
@@ -407,23 +439,23 @@ namespace LuxEngine.ECS
             this.system = system;
         }
 
-        public override void Invoke(InternalWorld world, Entity entity, IEntityFilter filter)
+        public override void Invoke(World world, Entity entity, IEntityFilter filter)
         {
-            world.Unpack(entity, out T1 c1);
-            world.Unpack(entity, out T2 c2);
-            world.Unpack(entity, out T3 c3);
-            world.Unpack(entity, out T4 c4);
-            world.Unpack(entity, out T5 c5);
-            world.Unpack(entity, out T6 c6);
-            world.Unpack(entity, out T7 c7);
+            world.UnpackEntityOrSingleton(entity, out T1 c1);
+            world.UnpackEntityOrSingleton(entity, out T2 c2);
+            world.UnpackEntityOrSingleton(entity, out T3 c3);
+            world.UnpackEntityOrSingleton(entity, out T4 c4);
+            world.UnpackEntityOrSingleton(entity, out T5 c5);
+            world.UnpackEntityOrSingleton(entity, out T6 c6);
+            world.UnpackEntityOrSingleton(entity, out T7 c7);
 
-            if (filter.Filter(c1, c2, c3, c4, c5, c6, c7))
+            if (filter.Filter(world, entity, SystemAttributes, c1, c2, c3, c4, c5, c6, c7))
             {
                 system(c1, c2, c3, c4, c5, c6, c7);
             }
         }
 
-        protected override void RegisterComponents(InternalWorld world)
+        protected override void RegisterComponents(World world)
         {
             world.Register<T1>();
             world.Register<T2>();

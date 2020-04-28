@@ -4,7 +4,7 @@
 //using Microsoft.Xna.Framework;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    [Serializable]
 //    public class IsServerSingleton : AComponent<IsServerSingleton>

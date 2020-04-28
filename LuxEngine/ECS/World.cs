@@ -2,12 +2,20 @@
 
 namespace LuxEngine.ECS
 {
-    internal class InternalWorld
+    /// <summary>
+    /// An ECS world that stores component data and manages entities.
+    /// </summary>
+    public class World
     {
         /// <summary>
-        /// A handle to the world for the user to interact with
+        /// An array of all entities in the world
         /// </summary>
-        public readonly WorldHandle WorldHandle;
+        private readonly Entity[] _entities;
+
+        /// <summary>
+        /// The handle correlated with this world.
+        /// </summary>
+        private readonly WorldHandle _worldHandle;
 
         /// <summary>
         /// Manages entities' IDs
@@ -15,14 +23,9 @@ namespace LuxEngine.ECS
         private readonly EntityGenerator _entityGenerator;
 
         /// <summary>
-        /// An array of all entities in the world
-        /// </summary>
-        private readonly Entity[] _entities;
-
-        /// <summary>
         /// Component managers that contains all component data
         /// </summary>
-        private readonly Dictionary<int, BaseComponentManager> _componentManagers;
+        private readonly Dictionary<int, IComponentManager> _componentManagers;
 
         /// <summary>
         /// An entity that is globally accessible from any system.
@@ -30,14 +33,22 @@ namespace LuxEngine.ECS
         /// </summary>
         private readonly Entity _singletonEntity;
 
+        /// <summary>
+        /// Filters entities based on if they have all the components the system
+        /// requires. This filter is used in all the interval-ed calls: Update, Draw, etc.
+        /// </summary>
+        private IEntityFilter _defaultEntityFilter;
 
-        public InternalWorld()
+
+        public World(WorldHandle worldHandle)
         {
-            WorldHandle = new WorldHandle();
-            _entityGenerator = new EntityGenerator();
             _entities = new Entity[HardCodedConfig.MAX_ENTITIES_PER_WORLD];
-            _componentManagers = new Dictionary<int, BaseComponentManager>();
+
+            _worldHandle = worldHandle;
+            _entityGenerator = new EntityGenerator();
+            _componentManagers = new Dictionary<int, IComponentManager>();
             _singletonEntity = CreateEntity();
+            _defaultEntityFilter = new DefaultEntityFilter();
         }
 
         /// <summary>
@@ -58,13 +69,10 @@ namespace LuxEngine.ECS
         /// <param name="entity">Entity to destroy</param>
         public void DestroyEntity(Entity entity)
         {
-            // Signal systems that this entity is about to be destroyed
-            WorldHandle.OnDestroyEntitySystems.Invoke(this, entity, WorldHandle.EntityFilter);
-
             // Remove entity's components
-            foreach (var componentManager in _componentManagers)
+            foreach (IComponentManager componentManager in _componentManagers.Values)
             {
-                componentManager.Value.RemoveComponent(entity);
+                RemoveComponent(entity, componentManager);
             }
 
             // Destroy entity
@@ -73,27 +81,8 @@ namespace LuxEngine.ECS
 
         #region Unpacking
 
-        /// <summary>
-        /// Gets a component that belongs to an entity
-        /// </summary>
-        /// <typeparam name="T">Component type</typeparam>
-        /// <param name="entity">Entity that owns the component</param>
-        /// <param name="outComponent">Returned component</param>
-        /// <returns><c>true</c> if the component exists, <c>false</c> otherwise</returns>
         public bool Unpack<T>(Entity entity, out T outComponent) where T : AComponent<T>
         {
-            // TODO: Support IExclude and IWrapper
-            // If component implements IExclude, make sure it doesn't exist
-            //if (typeof(T).IsAssignableFrom(typeof(IExclude)))
-            //{
-
-            //}
-
-            // If component is a wrapper, extract the real component
-            //if (typeof(T).IsAssignableFrom(typeof(IWrapper<>)))
-            //{
-            //}
-
             // Get component manager for the relevant component type
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
             if (null == foundComponentManager)
@@ -123,6 +112,16 @@ namespace LuxEngine.ECS
             return Unpack(_singletonEntity, out outComponent);
         }
 
+        public bool UnpackEntityOrSingleton<T>(Entity entity, out T outComponent) where T : AComponent<T>
+        {
+            if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
+            {
+                return UnpackSingleton(out outComponent);
+            }
+
+            return Unpack(entity, out outComponent);
+        }
+
         #endregion Unpacking
 
         /// <summary>
@@ -134,7 +133,14 @@ namespace LuxEngine.ECS
         public void AddComponent<T>(Entity entity, T component) where T : AComponent<T>
         {
             // Set the entity for the component
-            component._entity = entity;
+            component.Entity = entity;
+
+            // If trying to add a singleton component to an entity that isn't the singleton entity
+            if (component is ISingleton && entity != _singletonEntity)
+            {
+                LuxCommon.Assert(false);
+                return;
+            }
 
             // Get component manager for the relevant component type
             ComponentManager<T> foundComponentManager = _getComponentManager<T>();
@@ -151,12 +157,12 @@ namespace LuxEngine.ECS
                 RemoveComponent<T>(entity);
             }
 
-
             // Add component to system
             foundComponentManager.AddComponent(entity, component);
 
             // Call systems that subscribed to the OnAddComponent event
-            WorldHandle.OnAddComponentSystems.Invoke(this, entity, WorldHandle.EntityFilter);
+            // TODO: Maybe make EntityFilters a struct to improve performance when calling new this often
+            Run(_worldHandle.OnAddComponentSystems, new OnAddComponent(typeof(T)));
         }
 
         /// <summary>
@@ -164,7 +170,7 @@ namespace LuxEngine.ECS
         /// </summary>
         /// <typeparam name="T">The component type</typeparam>
         /// <param name="component">The component to add</param>
-        public void AddSingletonComponent<T>(T component) where T : AComponent<T>
+        public void AddSingletonComponent<T>(T component) where T : AComponent<T>, ISingleton
         {
             AddComponent(_singletonEntity, component);
         }
@@ -190,10 +196,21 @@ namespace LuxEngine.ECS
                 return;
             }
 
-            foundComponentManager.RemoveComponent(entity);
+            RemoveComponent(entity, foundComponentManager);
+
+        }
+
+        private void RemoveComponent(Entity entity, IComponentManager componentManager)
+        {
+            componentManager.RemoveComponent(entity);
 
             // Call systems that subscribed to the OnRemoveComponent event
-            WorldHandle.OnRemoveComponentSystems.Invoke(this, entity, WorldHandle.EntityFilter);
+            // TODO: Handle remove component
+
+
+
+
+            //Run(_worldHandle.OnAddComponentSystems);
         }
 
         /// <summary>
@@ -333,47 +350,17 @@ namespace LuxEngine.ECS
 
         #endregion Serialization
 
-        #region Phases
-
-        internal virtual void Init()
-        {
-            // Register all systems' components
-            WorldHandle.RegisterAllComponents(this);
-
-            for (int i = 0; i < _entities.Length; i++)
-            {
-                WorldHandle.InitSystems.Invoke(this, _entities[i], WorldHandle.EntityFilter);
-            }
-        }
-
-        internal virtual void Update()
+        public void Run(Systems systems, IEntityFilter filter)
         {
             for (int i = 0; i < _entities.Length; i++)
             {
-                WorldHandle.UpdateSystems.Invoke(this, _entities[i], WorldHandle.EntityFilter);
+                systems.Invoke(this, _entities[i], filter);
             }
         }
 
-        internal virtual void UpdateFixed()
+        public void Run(Systems systems)
         {
-            for (int i = 0; i < _entities.Length; i++)
-            {
-                WorldHandle.UpdateFixedSystems.Invoke(this, _entities[i], WorldHandle.EntityFilter);
-            }
+            Run(systems, _defaultEntityFilter);
         }
-
-        internal virtual void Draw()
-        {
-            // TODO: Disable draw if the world is just a server
-            // Important to make sure no state is being mutated in Draw
-            // so the game logic doesn't get affected
-
-            for (int i = 0; i < _entities.Length; i++)
-            {
-                WorldHandle.DrawSystems.Invoke(this, _entities[i], WorldHandle.EntityFilter);
-            }
-        }
-
-#endregion
     }
 }

@@ -6,11 +6,11 @@ namespace LuxEngine.ECS
     /// </summary>
     public class ECS
     {
-        private readonly List<InternalWorld> _worlds;
+        private readonly List<WorldHandle> _worlds;
 
         public ECS()
         {
-            _worlds = new List<InternalWorld>();
+            _worlds = new List<WorldHandle>();
         }
 
         /// <summary>
@@ -19,10 +19,10 @@ namespace LuxEngine.ECS
         /// <returns>The newly created ECS world</returns>
         public WorldHandle CreateWorld()
         {
-            InternalWorld newWorld = new InternalWorld();
+            WorldHandle newWorld = new WorldHandle();
             _worlds.Add(newWorld);
 
-            return newWorld.WorldHandle;
+            return newWorld;
         }
 
         public void Initialize()

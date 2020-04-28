@@ -8,7 +8,7 @@
 //using System.Net;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    public class PacketSenderSystem : ASystem<PacketSenderSystem>
 //    {

@@ -1,33 +1,19 @@
 ﻿using System;
 namespace LuxEngine.ECS
 {
+    public abstract class ASystemAttribute : Attribute
+    {
+    }
+
     public interface IEntityFilter
     {
-        IEntityFilter[] UnderlyingFilters { get; set; }
-
         /// <summary>
         /// Decides if a system should run on an entity based on that entity's
         /// set of components.
         /// </summary>
         /// <param name="components">The list of components</param>
         /// <returns><c>true</c> if the system should run, <c>false</c> otherwise.</returns>
-        bool Filter(params AInternalComponent[] components);
-    }
-
-    public interface IExclude
-    {
-    }
-
-    /// <summary>
-    /// Let's the API know that the real component is inside
-    /// </summary>
-    public interface IWrapper<T>
-    {
-        T Value { get; set; }
-    }
-
-    public interface ISingleton
-    {
+        bool Filter(World world, Entity entity, ASystemAttribute[] systemAttributes, params AInternalComponent[] components);
     }
 
     //public class ExcludeFilter : Attribute, IEntityFilter
@@ -42,7 +28,7 @@ namespace LuxEngine.ECS
     //    }
 
     //    /// <summary>
-    //    /// TODO: The problem here is that the componennts array is filled with
+    //    /// TODO: The problem here is that the components array is filled with
     //    /// components that are requested in the parameter list of the method.
     //    /// So say we want to exclude entities with Transform. The method
     //    /// is going to have to put it in it's components list, which will then
@@ -76,18 +62,12 @@ namespace LuxEngine.ECS
     //}
 
     /// <summary>
-    /// Doesn't run a system if one of the components is null
+    /// Filters entities based on if they have all the components the system
+    /// requested in the parameters list.
     /// </summary>
     public class DefaultEntityFilter : IEntityFilter
     {
-        public IEntityFilter[] UnderlyingFilters { get; set; }
-
-        public DefaultEntityFilter()
-        {
-            UnderlyingFilters = null;
-        }
-
-        public bool Filter(params AInternalComponent[] components)
+        public bool Filter(World world, Entity entity, ASystemAttribute[] systemAttributes, params AInternalComponent[] components)
         {
             for (int i = 0; i < components.Length; i++)
             {
@@ -98,19 +78,44 @@ namespace LuxEngine.ECS
                 }
             }
 
-            // If exist let the underlying filter decide, otherwise return true.
-            if (UnderlyingFilters != null)
+            return true;
+        }
+    }
+
+    public class OnAddComponent : ASystemAttribute, IEntityFilter
+    {
+        private static readonly DefaultEntityFilter _defaultEntity = new DefaultEntityFilter();
+        public Type AddedComponentType;
+
+        public OnAddComponent(Type addedType)
+        {
+            AddedComponentType = addedType;
+        }
+
+        public bool Filter(World world, Entity entity, ASystemAttribute[] systemAttributes, params AInternalComponent[] components)
+        {
+            // Run the default filter first
+            if (!_defaultEntity.Filter(world, entity, systemAttributes, components))
             {
-                for (int i = 0; i < UnderlyingFilters.Length; i++)
+                return false;
+            }
+
+            // Look for the OnAddComponent system attribute
+            for (int i = 0; i < systemAttributes.Length; i++)
+            {
+                if (systemAttributes[i] is OnAddComponent onAddComponent)
                 {
-                    if (!UnderlyingFilters[i].Filter(components))
+                    // If the added component type matches the one the system is
+                    // looking for, let the system run
+                    if (onAddComponent.AddedComponentType == AddedComponentType)
                     {
-                        return false;
+                        return true;
                     }
                 }
             }
 
-            return true;
+            // If system doesn't have OnAddComponent attribute, don't run it
+            return false;
         }
     }
 }

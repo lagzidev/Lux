@@ -25,18 +25,8 @@
         void Draw(Systems systems);
     }
 
-    public interface IOnDestroyEntityFeature
-    {
-        void OnDestroyEntity(Systems systems);
-    }
-
-    public interface IOnAddComponentFeature
+    public interface IOnAddComponent
     {
         void OnAddComponent(Systems systems);
-    }
-
-    public interface IOnRemoveComponentFeature
-    {
-        void OnRemoveComponent(Systems systems);
     }
 }

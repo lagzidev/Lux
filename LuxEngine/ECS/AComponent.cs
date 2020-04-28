@@ -6,10 +6,30 @@ namespace LuxEngine.ECS
     /// The system won't run if there's no previous state available
     /// (e.g. if the component was only just created.)
     /// </summary>
-    /// <typeparam name="T">The component</typeparam>
-    public class Previous<T> : AComponent<Previous<T>> where T : AComponent<T>
+    /// <typeparam name="T">The component type</typeparam>
+    //public interface IPrevious<T> : AComponent<IPrevious<T>> where T : AComponent<T>
+    //{
+    //    T Value { get; set; }
+    //}
+
+    //public interface IExclude
+    //{
+    //}
+
+    /// <summary>
+    /// Let's the API know that the real component is inside
+    /// </summary>
+    //public interface IWrapper<T>
+    //{
+    //    T Value { get; set; }
+    //}
+    //s
+
+    /// <summary>
+    /// Limits a component type to only exist on the global Singleton Entity.
+    /// </summary>
+    public interface ISingleton
     {
-        public T Value;
     }
 
     /// <summary>
@@ -19,13 +39,13 @@ namespace LuxEngine.ECS
     [Serializable]
     public abstract class AInternalComponent
     {
+        public Entity Entity { get; set; }
         protected static int ComponentTypesCount = 0;
     }
 
     [Serializable]
     public abstract class AComponent<T> : AInternalComponent
     {
-        internal Entity _entity { get; set; }
         public static int ComponentType = -1;
 
         /// <summary>

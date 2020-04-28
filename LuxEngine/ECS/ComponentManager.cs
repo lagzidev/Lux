@@ -9,13 +9,13 @@ namespace LuxEngine.ECS
 {
     // This exists so we can create an array of component managers without
     // specifying the type <T>
-    public abstract class BaseComponentManager
+    public interface IComponentManager
     {
-        public abstract void RemoveComponent(Entity entity);
-        public abstract void Serialize(BinaryWriter writer);
+        void RemoveComponent(Entity entity);
+        void Serialize(BinaryWriter writer);
     }
 
-    public class ComponentManager<T> : BaseComponentManager where T : AComponent<T>
+    public class ComponentManager<T> : IComponentManager where T : AComponent<T>
     {
         private SparseSet<T> _components;
 
@@ -46,7 +46,7 @@ namespace LuxEngine.ECS
             }
 
             // If the entity is not of the correct generation (meaning it's not the same entity)
-            if (outComponent._entity.Generation != entity.Generation)
+            if (outComponent.Entity.Generation != entity.Generation)
             {
                 return false;
             }
@@ -69,7 +69,7 @@ namespace LuxEngine.ECS
         /// Removes a component from the dataset if exists for the given entity
         /// </summary>
         /// <param name="entity">Entity that corresponds to the component</param>
-        public override void RemoveComponent(Entity entity)
+        public void RemoveComponent(Entity entity)
         {
             // If component doesn't exist for the entity, do nothing
             if (!GetComponent(entity, out _))
@@ -84,7 +84,7 @@ namespace LuxEngine.ECS
         /// Serialize the component manager and write it into the stream
         /// </summary>
         /// <param name="writer">Writer to write the data into</param>
-        public override void Serialize(BinaryWriter writer)
+        public void Serialize(BinaryWriter writer)
         {
             // Save type name for later deserialization
             string typeName = typeof(T).AssemblyQualifiedName;

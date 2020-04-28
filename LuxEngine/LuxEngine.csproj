@@ -54,13 +54,7 @@
     <Compile Include="LuxSystems\SaveSystem.cs" />
     <Compile Include="LuxSystems\PlayerControllerTDSystem.cs" />
     <Compile Include="Utils\DrawUtils.cs" />
-    <Compile Include="LuxSystems\Render\SpriteBatchSystem.cs" />
-    <Compile Include="LuxSystems\Render\SpriteDrawSystem.cs" />
-    <Compile Include="LuxSystems\Render\TextureLoaderSystem.cs" />
-    <Compile Include="LuxSystems\Render\SpriteLoaderSystem.cs" />
     <Compile Include="LuxSystems\Render\FontSystem.cs" />
-    <Compile Include="LuxSystems\Render\AnimationSystem.cs" />
-    <Compile Include="LuxSystems\Render\CameraSystem.cs" />
     <Compile Include="LuxSystems\Physics\MapCollisionSystem.cs" />
     <Compile Include="LuxSystems\Render\MapLoaderSystem.cs" />
     <Compile Include="Utils\TextureLoader.cs" />
@@ -88,10 +82,17 @@
     <Compile Include="Time.cs" />
     <Compile Include="ECS\Context.cs" />
     <Compile Include="ECS\IFeature.cs" />
-    <Compile Include="Features\RenderFeature.cs" />
     <Compile Include="ECS\Systems.cs" />
     <Compile Include="ECS\WorldHandle.cs" />
     <Compile Include="ECS\EntityFilter.cs" />
+    <Compile Include="Features\RenderFeature.cs" />
+    <Compile Include="Features\MainFeature.cs" />
+    <Compile Include="Features\Render\Systems\AnimationSystem.cs" />
+    <Compile Include="Features\Render\Systems\CameraSystem.cs" />
+    <Compile Include="Features\Render\Systems\SpriteBatchSystem.cs" />
+    <Compile Include="Features\Render\Systems\SpriteLoaderSystem.cs" />
+    <Compile Include="Features\Render\Systems\TextureLoaderSystem.cs" />
+    <Compile Include="Features\Main\Components\Transform.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
@@ -108,6 +109,11 @@
     <Folder Include="SuperSystems\" />
     <Folder Include="ECS\" />
     <Folder Include="Features\" />
+    <Folder Include="Features\Render\" />
+    <Folder Include="Features\Main\" />
+    <Folder Include="Features\Render\Systems\" />
+    <Folder Include="Features\Render\Components\" />
+    <Folder Include="Features\Main\Components\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />

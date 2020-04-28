@@ -2,7 +2,7 @@
 //using Microsoft.Xna.Framework;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    public class Collidable : AComponent<Collidable>
 //    {

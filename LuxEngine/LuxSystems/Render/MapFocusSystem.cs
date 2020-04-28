@@ -2,7 +2,7 @@
 //using TiledSharp;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    public class MapFocusSystem : ASystem<MapFocusSystem>
 //    {

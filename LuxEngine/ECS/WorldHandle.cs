@@ -2,43 +2,46 @@
 
 namespace LuxEngine.ECS
 {
+    /// <summary>
+    /// A handle to an ECS world, through which you can add features (systems)
+    /// and execute them.
+    /// </summary>
     public class WorldHandle
     {
-        internal readonly Systems InitSystems;
-        internal readonly Systems UpdateSystems;
-        internal readonly Systems UpdateFixedSystems;
-        internal readonly Systems DrawSystems;
+        public readonly  Systems OnAddComponentSystems;
 
-        internal readonly Systems OnDestroyEntitySystems;
-        internal readonly Systems OnAddComponentSystems;
-        internal readonly Systems OnRemoveComponentSystems;
+        private readonly  Systems _initSystems;
+        private readonly  Systems _updateSystems;
+        private readonly  Systems _updateFixedSystems;
+        private readonly  Systems _drawSystems;
 
-        internal DefaultEntityFilter EntityFilter { get; set; }
+        private readonly World _world;
+
 
         internal WorldHandle()
         {
-            InitSystems = new Systems();
-            UpdateSystems = new Systems();
-            UpdateFixedSystems = new Systems();
-            DrawSystems = new Systems();
+            OnAddComponentSystems = new  Systems();
+            _initSystems = new  Systems();
+            _updateSystems = new  Systems();
+            _updateFixedSystems = new  Systems();
+            _drawSystems = new  Systems();
 
-            OnDestroyEntitySystems = new Systems();
-            OnAddComponentSystems = new Systems();
-            OnRemoveComponentSystems = new Systems();
-
-            EntityFilter = new DefaultEntityFilter();
+            _world = new World(this);
         }
 
-        internal void RegisterAllComponents(InternalWorld world)
+        private void RegisterAllComponents()
         {
-            InitSystems.Register(world);
-            UpdateSystems.Register(world);
-            UpdateFixedSystems.Register(world);
-            DrawSystems.Register(world);
+            _initSystems.Register(_world);
+            _updateSystems.Register(_world);
+            _updateFixedSystems.Register(_world);
+            _drawSystems.Register(_world);
 
-            OnDestroyEntitySystems.Register(world);
-            OnAddComponentSystems.Register(world);
-            OnRemoveComponentSystems.Register(world);
+            OnAddComponentSystems.Register(_world);
+            // TODO: Require each system to have OnAddComponent Attribute
+            //for (int i = 0; i < OnAddComponentSystems.Count; i++)
+            //{
+            //    OnAddComponentSystems.
+            //}
         }
 
         /// <summary>
@@ -50,44 +53,66 @@ namespace LuxEngine.ECS
             {
                 // Add the feature's init systems to the init list
                 var castFeature = feature as IInitFeature;
-                castFeature?.Init(InitSystems);
+                castFeature?.Init(_initSystems);
             }
 
             {
                 // Add the feature's update systems to the updateSystems list
                 var castFeature = feature as IUpdateFeature;
-                castFeature?.Update(UpdateSystems);
+                castFeature?.Update(_updateSystems);
             }
 
             {
-                // Add the feature's update systems to the updateSystems list
+                // Add the feature's updatefixed systems to the updateSystems list
                 var castFeature = feature as IUpdateFixedFeature;
-                castFeature?.UpdateFixed(UpdateFixedSystems);
+                castFeature?.UpdateFixed(_updateFixedSystems);
             }
 
             {
                 // Add the feature's draw systems to the drawSystems list
                 var castFeature = feature as IDrawFeature;
-                castFeature?.Draw(DrawSystems);
+                castFeature?.Draw(_drawSystems);
             }
 
             {
-                // Add systems subscribed to OnEntityDestroy
-                var castFeature = feature as IOnDestroyEntityFeature;
-                castFeature?.OnDestroyEntity(OnDestroyEntitySystems);
-            }
-
-            {
-                // Add systems subscribed to OnAddComponent
-                var castFeature = feature as IOnAddComponentFeature;
+                // Add systems subscribed to an event
+                var castFeature = feature as IOnAddComponent;
                 castFeature?.OnAddComponent(OnAddComponentSystems);
             }
-
-            {
-                // Add systems subscribed to OnRemoveComponent
-                var castFeature = feature as IOnRemoveComponentFeature;
-                castFeature?.OnRemoveComponent(OnRemoveComponentSystems);
-            }
         }
+
+        #region Phases
+
+        public void Init()
+        {
+            // Register and add the special Context singleton comonent
+            _world.Register<Context>();
+
+            // Register all the components used by the systems
+            RegisterAllComponents();
+
+            _world.Run(_initSystems);
+        }
+
+        public void Update()
+        {
+            _world.Run(_updateSystems);
+        }
+
+        public void UpdateFixed()
+        {
+            _world.Run(_updateFixedSystems);
+        }
+
+        public void Draw()
+        {
+            // TODO: Disable draw if the world is just a server
+            // Important to make sure no state is being mutated in Draw
+            // so the game logic doesn't get affected
+
+            _world.Run(_drawSystems);
+        }
+
+        #endregion
     }
 }

@@ -5,7 +5,7 @@
 //using Microsoft.Xna.Framework;
 //using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    /// <summary>
 //    /// Indicates that the world is a server

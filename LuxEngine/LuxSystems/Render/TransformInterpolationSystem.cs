@@ -1,6 +1,6 @@
 ﻿//using LuxEngine.ECS;
 
-//namespace LuxEngine.Systems
+//namespace LuxEngine.ECS
 //{
 //    public class TransformInterpolationSystem : ASystem<TransformInterpolationSystem>
 //    {
