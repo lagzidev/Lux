@@ -2,35 +2,17 @@
 using System.IO;
 using System.Reflection;
 using LuxEngine.ECS;
-using LuxProtobuf;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace LuxEngine
 {
-    public class GameError
-    {
-        public Status Status;
-        public string Message;
 
-        public GameError()
-        {
-            Status = Status.Success;
-            Message = "";
-        }
-
-        public GameError(Status status, string message)
-        {
-            Status = status;
-            Message = message;
-        }
-    }
 
     public class LuxGame : Game
     {
         // Info
         public static string Title { get; private set; }
-        public static GameError Error;
 
         // ECS
         private static ECS.ECS _ecs;
@@ -85,7 +67,6 @@ namespace LuxEngine
             Instance = this;
 
             Window.Title = Title = windowTitle;
-            Error = new GameError();
 
             _ecs = new ECS.ECS();
 

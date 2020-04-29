@@ -1,38 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?><Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">FNA.Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">anycpu</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{21119BDA-C1A5-4374-B978-064E93CCB5CD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>LuxEngine</RootNamespace>
     <AssemblyName>LuxEngine</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'FNA.Debug|anycpu' ">
-    <DebugSymbols>true</DebugSymbols>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\FNA.Debug</OutputPath>
+    <OutputPath>.</OutputPath>
     <DefineConstants>DEBUG;FNA;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>python3 "${ProjectDir}/../Scripts/CompileProtobuf.py" "${ProjectDir}"</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
-    <IntermediateOutputPath>obj\Debug</IntermediateOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'FNA.Release|anycpu' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
-    <OutputPath>bin\FNA.Release</OutputPath>
+    <OutputPath>.</OutputPath>
     <DefineConstants>FNA;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <IntermediateOutputPath>obj\Release</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Old\Animation\AnimatedObject.cs" />
@@ -40,38 +24,13 @@
     <Compile Include="Old\Commands\Command.cs" />
     <Compile Include="Old\Commands\MoveCommand.cs" />
     <Compile Include="Old\Character.cs" />
-    <Compile Include="Old\GameObject.cs" />
-    <Compile Include="Old\Map.cs" />
     <Compile Include="Old\Player.cs" />
     <Compile Include="Old\Scene.cs" />
     <Compile Include="HardCodedConfig.cs" />
     <Compile Include="LuxCommon.cs" />
     <Compile Include="BMFont.cs" />
     <Compile Include="Benchmark.cs" />
-    <Compile Include="LuxSystems\InputSystem.cs" />
-    <Compile Include="LuxSystems\ParentSystem.cs" />
-    <Compile Include="LuxSystems\PhysicsSystem.cs" />
-    <Compile Include="LuxSystems\SaveSystem.cs" />
-    <Compile Include="LuxSystems\PlayerControllerTDSystem.cs" />
-    <Compile Include="Utils\DrawUtils.cs" />
-    <Compile Include="LuxSystems\Render\FontSystem.cs" />
-    <Compile Include="LuxSystems\Physics\MapCollisionSystem.cs" />
-    <Compile Include="LuxSystems\Render\MapLoaderSystem.cs" />
-    <Compile Include="Utils\TextureLoader.cs" />
     <Compile Include="LuxGame.cs" />
-    <Compile Include="LuxSystems\Render\MapFocusSystem.cs" />
-    <Compile Include="LuxSystems\Networking\PacketReceiverSystem.cs" />
-    <Compile Include="LuxSystems\Networking\ClientSystem.cs" />
-    <Compile Include="LuxSystems\Networking\ConnectionSystem.cs" />
-    <Compile Include="LuxSystems\Networking\PacketSenderSystem.cs" />
-    <Compile Include="Protobuf\LuxMessage.cs" />
-    <Compile Include="LuxSystems\Networking\ServerSystem.cs" />
-    <Compile Include="LuxSystems\Networking\AuthServerSystem.cs" />
-    <Compile Include="LuxSystems\Networking\RSAKeysGeneratorSystem.cs" />
-    <Compile Include="LuxSystems\Networking\AuthClientSystem.cs" />
-    <Compile Include="LuxSystems\Render\TransformInterpolationSystem.cs" />
-    <Compile Include="Utils\CalcUtils.cs" />
-    <Compile Include="LuxSystems\UI\ErrorUISystem.cs" />
     <Compile Include="ECS\AComponent.cs" />
     <Compile Include="ECS\ComponentManager.cs" />
     <Compile Include="ECS\ECS.cs" />
@@ -85,35 +44,13 @@
     <Compile Include="ECS\Systems.cs" />
     <Compile Include="ECS\WorldHandle.cs" />
     <Compile Include="ECS\EntityFilter.cs" />
-    <Compile Include="Features\RenderFeature.cs" />
-    <Compile Include="Features\MainFeature.cs" />
-    <Compile Include="Features\Render\Systems\AnimationSystem.cs" />
-    <Compile Include="Features\Render\Systems\CameraSystem.cs" />
-    <Compile Include="Features\Render\Systems\SpriteBatchSystem.cs" />
-    <Compile Include="Features\Render\Systems\SpriteLoaderSystem.cs" />
-    <Compile Include="Features\Render\Systems\TextureLoaderSystem.cs" />
-    <Compile Include="Features\Main\Components\Transform.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />
     <Folder Include="Old\Animation\" />
     <Folder Include="Old\Commands\" />
     <Folder Include="Old\Utils old\" />
-    <Folder Include="Utils\" />
-    <Folder Include="LuxSystems\" />
-    <Folder Include="LuxSystems\Render\" />
-    <Folder Include="LuxSystems\Physics\" />
-    <Folder Include="LuxSystems\Networking\" />
-    <Folder Include="Protobuf\" />
-    <Folder Include="LuxSystems\UI\" />
-    <Folder Include="SuperSystems\" />
     <Folder Include="ECS\" />
-    <Folder Include="Features\" />
-    <Folder Include="Features\Render\" />
-    <Folder Include="Features\Main\" />
-    <Folder Include="Features\Render\Systems\" />
-    <Folder Include="Features\Render\Components\" />
-    <Folder Include="Features\Main\Components\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />
@@ -121,29 +58,23 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="TiledSharp">
-      <HintPath>..\..\packages\TiledSharp.1.0.1\lib\netstandard2.0\TiledSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Buffers">
-      <HintPath>..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics.Vectors">
-      <HintPath>..\..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory">
-      <HintPath>..\..\packages\System.Memory.4.5.2\lib\netstandard2.0\System.Memory.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>..\..\packages\Google.Protobuf.3.11.4\lib\net45\Google.Protobuf.dll</HintPath>
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>..\..\..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -151,8 +82,6 @@
       <Link>README.md</Link>
     </None>
     <None Include="packages.config" />
-    <None Include="Protobuf\LuxMessage.proto" />
-    <None Include="Utils\UtilsGuidelines.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FNA\FNA.csproj">
@@ -160,7 +89,7 @@
       <Name>FNA</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SpriteFontPlus\src\SpriteFontPlus.FNA.csproj">
-      <Project>{8693C1AD-50DF-4D73-9FB5-431810F252D7}</Project>
+      <Project>{06B7271C-1768-430A-8D26-E9A5D13D5ACD}</Project>
       <Name>SpriteFontPlus.FNA</Name>
     </ProjectReference>
   </ItemGroup>
