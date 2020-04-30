@@ -1,5 +1,5 @@
 # Lux
-Lux is a cross-platform game made in C# and with the [FNA framework](https://github.com/FNA-XNA/FNA).
+Lux is a cross-platform game framework made in C# and with the [FNA framework](https://github.com/FNA-XNA/FNA).
 
 **This is a personal project, you shouldn't actually use it.** Yet you're welcome to if you find it useful for making your own game. If you do choose to use it, count yourself lucky as this project is filled with comments to help you navigate it.
 
