@@ -15,6 +15,11 @@ namespace Lux.Framework.ECS
         private readonly Entity[] _entities;
 
         /// <summary>
+        /// Component mask for every entity in the world
+        /// </summary>
+        private readonly ComponentMask[] _entityMasks;
+
+        /// <summary>
         /// The handle correlated with this world.
         /// </summary>
         private readonly WorldHandle _worldHandle;
@@ -25,9 +30,9 @@ namespace Lux.Framework.ECS
         private readonly EntityGenerator _entityGenerator;
 
         /// <summary>
-        /// Component managers that contains all component data
+        /// All of the components data
         /// </summary>
-        private readonly Dictionary<int, IComponentManager> _componentManagers;
+        private readonly Dictionary<int, IComponentsData> _componentsData;
 
         /// <summary>
         /// An entity that is globally accessible from any system.
@@ -35,25 +40,15 @@ namespace Lux.Framework.ECS
         /// </summary>
         private readonly Entity _singletonEntity;
 
-        /// <summary>
-        /// Filters entities based on if they have all the components the system
-        /// requires. This filter is used in all the interval-ed calls: Update, Draw, etc.
-        /// </summary>
-        private readonly IEntityFilter _defaultEntityFilter;
-
-
-        class Transform : AComponent<Transform>
-        { }
 
         public World(WorldHandle worldHandle)
         {
             _entities = new Entity[HardCodedConfig.MAX_ENTITIES_PER_WORLD];
-
+            _entityMasks = new ComponentMask[HardCodedConfig.MAX_ENTITIES_PER_WORLD];
             _worldHandle = worldHandle;
             _entityGenerator = new EntityGenerator();
-            _componentManagers = new Dictionary<int, IComponentManager>();
+            _componentsData = new Dictionary<int, IComponentsData>();
             _singletonEntity = CreateSingletonEntity();
-            _defaultEntityFilter = new DefaultEntityFilter();
         }
 
         /// <summary>
@@ -77,6 +72,7 @@ namespace Lux.Framework.ECS
         {
             Entity entity = _entityGenerator.CreateEntity();
             _entities[entity.Index] = entity;
+            _entityMasks[entity.Index] = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
 
             return entity;
         }
@@ -90,10 +86,12 @@ namespace Lux.Framework.ECS
             // todo: Call OnDestroyEntity systems
 
             // Remove entity's components
-            foreach (IComponentManager componentManager in _componentManagers.Values)
+            foreach (IComponentsData componentsData in _componentsData.Values)
             {
-                RemoveComponent(entity, componentManager);
+                RemoveComponent(entity, componentsData);
             }
+
+            _entityMasks[entity.Index].Reset();
 
             // Destroy entity
             _entityGenerator.DestroyEntity(entity);
@@ -101,11 +99,11 @@ namespace Lux.Framework.ECS
 
         public bool Unpack<T>(Entity entity, out T outComponent) where T : AComponent<T>
         {
-            // Get component manager for the relevant component type
-            ComponentManager<T> foundComponentManager = _getComponentManager<T>();
+            // Get components data for the relevant component type
+            ComponentsData<T> foundcomponentsData = GetComponentsData<T>();
 
             // Get component if it exists
-            if (!foundComponentManager.GetComponent(entity, out outComponent))
+            if (!foundcomponentsData.GetComponent(entity, out outComponent))
             {
                 outComponent = null;
                 return false;
@@ -147,27 +145,29 @@ namespace Lux.Framework.ECS
             component.Entity = entity;
 
             // If trying to add a singleton component to an entity that isn't the singleton entity
-            if (component is ISingleton && entity != _singletonEntity)
+            if (entity != _singletonEntity && component is ISingleton)
             {
                 LuxCommon.Assert(false);
                 return;
             }
 
-            // Get component manager for the relevant component type
-            ComponentManager<T> foundComponentManager = _getComponentManager<T>();
+            // Get components data for the relevant component type
+            ComponentsData<T> foundcomponentsData = GetComponentsData<T>();
 
             // If component already exists
-            if (foundComponentManager.GetComponent(entity, out _))
+            if (foundcomponentsData.GetComponent(entity, out _))
             {
                 LuxCommon.Assert(false); // Shouldn't happen, use RemoveComponent first
                 RemoveComponent<T>(entity);
             }
 
             // Add component to system
-            foundComponentManager.AddComponent(entity, component);
+            foundcomponentsData.AddComponent(entity, component);
+
+            _entityMasks[entity.Index].AddComponent<T>();
 
             // Call systems that subscribed to the OnAddComponent event
-            // TODO: Maybe make EntityFilters a struct to improve performance when calling new this often
+            // TODO: Maybe make OnAddComponent a struct to improve performance when calling new this often
             Run(_worldHandle.OnAddComponentSystems, new OnAddComponent(typeof(T)));
         }
 
@@ -194,22 +194,17 @@ namespace Lux.Framework.ECS
         /// <param name="entity">The entity that owns the component</param>
         public void RemoveComponent<T>(Entity entity) where T : AComponent<T>
         {
-            // Update the component manager
-            ComponentManager<T> foundComponentManager = _getComponentManager<T>();
-            RemoveComponent(entity, foundComponentManager);
+            ComponentsData<T> foundcomponentsData = GetComponentsData<T>();
+            _entityMasks[entity.Index].RemoveComponent<T>();
+            RemoveComponent(entity, foundcomponentsData);
         }
 
-        private void RemoveComponent(Entity entity, IComponentManager componentManager)
+        private void RemoveComponent(Entity entity, IComponentsData componentsData)
         {
-            componentManager.RemoveComponent(entity);
+            componentsData.RemoveComponent(entity);
 
             // Call systems that subscribed to the OnRemoveComponent event
-            // TODO: Handle remove component
-
-
-
-
-            //Run(_worldHandle.OnAddComponentSystems);
+            //Run(_worldHandle.OnRemoveComponentSystems);
         }
 
         /// <summary>
@@ -218,29 +213,22 @@ namespace Lux.Framework.ECS
         /// <typeparam name="T">Component type to register to the world</typeparam>
         /// <param name="system">The system that is registering this component</param>
         /// <returns>The component type's ID for the world</returns>
-        public void Register<T>(ASystem system) where T : AComponent<T>
+        public void Register<T>() where T : AComponent<T>
         {
             // Set the ComponentType for the component class
             AComponent<T>.SetComponentType();
 
-            // If component is NOT a singleton
-            if (system != null && !typeof(ISingleton).IsAssignableFrom(typeof(T)))
+            // Add a components data for the type if doesn't exist
+            if (!_componentsData.ContainsKey(AComponent<T>.ComponentType))
             {
-                // System can't be a singleton system
-                system.IsSingletonSystem = false;
-            }
-
-            // Add a component manager for the type if doesn't exist
-            if (!_componentManagers.ContainsKey(AComponent<T>.ComponentType))
-            {
-                int maxComponents = HardCodedConfig.MAX_ENTITIES_PER_WORLD;
+                int maxComponentsPerType = HardCodedConfig.MAX_ENTITIES_PER_WORLD;
                 if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
                 {
-                    maxComponents = 1;
+                    maxComponentsPerType = 1;
                 }
 
-                var componentManager = new ComponentManager<T>(maxComponents);
-                _componentManagers[AComponent<T>.ComponentType] = componentManager;
+                var componentsData = new ComponentsData<T>(maxComponentsPerType);
+                _componentsData[AComponent<T>.ComponentType] = componentsData;
             }
         }
 
@@ -253,11 +241,11 @@ namespace Lux.Framework.ECS
         //    // Set the ComponentType in case it wasn't set already
         //    AComponent<T>.SetComponentType();
 
-        //    // Add a component manager for the type if doesn't exist
-        //    if (!_previousComponentManagers.ContainsKey(AComponent<T>.ComponentType))
+        //    // Add a components data for the type if doesn't exist
+        //    if (!_previouscomponentsDatas.ContainsKey(AComponent<T>.ComponentType))
         //    {
-        //        var componentManager = new ComponentManager<T>();
-        //        _previousComponentManagers[AComponent<T>.ComponentType] = componentManager;
+        //        var componentsData = new componentsData<T>();
+        //        _previouscomponentsDatas[AComponent<T>.ComponentType] = componentsData;
         //    }
         //}
 
@@ -267,26 +255,26 @@ namespace Lux.Framework.ECS
         /// </summary>
         //private void SavePreviousState<T>(T component) where T : AComponent<T>
         //{
-        //    // TODO: Save the component into _previousComponentManager or alternatively,
+        //    // TODO: Save the component into _previouscomponentsData or alternatively,
         //    // find a more lightweight data storage solution. Something dynamic like
         //    // a Dictionary<Entity, Dictionary<ComponentType, Component> might be lighter
-        //    // then a ComponentManager, but might be more demanding performance wise.
+        //    // then a componentsData, but might be more demanding performance wise.
         //}
 
-        private ComponentManager<T> _getComponentManager<T>() where T : AComponent<T>
+        private ComponentsData<T> GetComponentsData<T>() where T : AComponent<T>
         {
             if (AComponent<T>.ComponentType == -1)
             {
-                Register<T>(null);
+                Register<T>();
             }
 
-            return (ComponentManager<T>)_componentManagers[AComponent<T>.ComponentType];
+            return (ComponentsData<T>)_componentsData[AComponent<T>.ComponentType];
         }
 
         #region Serialization
 
         /// <summary>
-        /// Serializes all of the component managers and writes them into a
+        /// Serializes all of the components datas and writes them into a
         /// TextWriter instance
         /// <para>All components (and their members' types) must be decorated with the [Serializable] attribute.</para>
         /// <para>To prevent a member from being serialized, decorate it with the [NonSerialized] attribute; cannot be applied to properties.</para>
@@ -294,13 +282,13 @@ namespace Lux.Framework.ECS
         /// <param name="writer">Writer to write the serialized data into</param>
         //public void Serialize(BinaryWriter writer)
         //{
-        //    // Serialize component managers
-        //    writer.Write(_componentManagers.Count);
+        //    // Serialize components datas
+        //    writer.Write(_componentsDatas.Count);
 
-        //    foreach (var componentManager in _componentManagers)
+        //    foreach (var componentsData in _componentsDatas)
         //    {
-        //        writer.Write(componentManager.Key);
-        //        componentManager.Value.Serialize(writer);
+        //        writer.Write(componentsData.Key);
+        //        componentsData.Value.Serialize(writer);
         //    }
 
         //    // TODO: DITCH BinaryFormatter for Protobuf or XML serializer.
@@ -315,43 +303,43 @@ namespace Lux.Framework.ECS
         /// Deserializes a world from a reader and loads it
         /// </summary>
         /// <param name="reader">Reader to read the world data from</param>
-        /// <returns>An array of component managers with entity data</returns>
-        //private Dictionary<int, BaseComponentManager> DeserializeToComponentManagers(BinaryReader reader)
+        /// <returns>An array of components datas with entity data</returns>
+        //private Dictionary<int, BasecomponentsData> DeserializeTocomponentsDatas(BinaryReader reader)
         //{
-        //    // Get amount of component managers
-        //    int componentManagersCount = reader.ReadInt32();
-        //    var componentManagers = new Dictionary<int, BaseComponentManager>(componentManagersCount);
+        //    // Get amount of components datas
+        //    int componentsDatasCount = reader.ReadInt32();
+        //    var componentsDatas = new Dictionary<int, BasecomponentsData>(componentsDatasCount);
 
-        //    // Populate component manager array
-        //    for (int i = 0; i < componentManagers.Count; i++)
+        //    // Populate components data array
+        //    for (int i = 0; i < componentsDatas.Count; i++)
         //    {
         //        // Get component type ID
         //        int componentTypeID = reader.ReadInt32();
 
-        //        // Find the component manager type
+        //        // Find the components data type
         //        string typeName = reader.ReadString();
 
         //        Type componentType = Type.GetType(typeName);
-        //        Type componentManagerType = typeof(ComponentManager<>).MakeGenericType(componentType);
+        //        Type componentsDataType = typeof(componentsData<>).MakeGenericType(componentType);
 
         //        // Deserialize the component data
         //        IFormatter formatter = new BinaryFormatter();
         //        ISparseSet components = (ISparseSet)formatter.Deserialize(reader.BaseStream);
 
-        //        // Create a component manager
-        //        componentManagers[componentTypeID] =
-        //            (BaseComponentManager)Activator.CreateInstance(
-        //                componentManagerType,
+        //        // Create a components data
+        //        componentsDatas[componentTypeID] =
+        //            (BasecomponentsData)Activator.CreateInstance(
+        //                componentsDataType,
         //                components,
         //                componentTypeID);
         //    }
 
-        //    return componentManagers;
+        //    return componentsDatas;
         //}
 
         /// <summary>
         /// Deserializes a singleton entity from a world reader.
-        /// Must be called after DeserializeToComponentManagers(reader)
+        /// Must be called after DeserializeTocomponentsDatas(reader)
         /// </summary>
         /// <param name="reader">Reader to read the world data from</param>
         /// <returns></returns>
@@ -368,24 +356,30 @@ namespace Lux.Framework.ECS
             // For every system
             for (int i = 0; i < systems.Count; i++)
             {
-                // If the system is a singleton system, only run it once for the singleton entity
+                // Should run the system
+                if (filter != null && !filter.Filter(systems[i]))
+                {
+                    continue;
+                }
+
+                // If it's a singleton system, run it once for the singleton entity
                 if (systems[i].IsSingletonSystem)
                 {
-                    systems[i].Invoke(this, _singletonEntity, filter);
+                    systems[i].InvokeSingleton(this, _singletonEntity, _entityMasks[_singletonEntity.Index]);
                     continue;
                 }
 
                 // Run the system for every entity
                 for (int s = 0; s < _entities.Length; s++)
                 {
-                    systems[i].Invoke(this, _entities[s], filter);
+                    systems[i].Invoke(this, _entities[s], _entityMasks[s], _entityMasks[_singletonEntity.Index]);
                 }
             }
         }
 
         public void Run(Systems systems)
         {
-            Run(systems, _defaultEntityFilter);
+            Run(systems, null);
         }
     }
 }

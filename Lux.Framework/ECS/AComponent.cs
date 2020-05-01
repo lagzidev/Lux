@@ -28,7 +28,14 @@ namespace Lux.Framework.ECS
     /// <summary>
     /// Limits a component type to only exist on the global Singleton Entity.
     /// </summary>
-    public interface ISingleton
+    public interface ISingleton : IUnique
+    {
+    }
+
+    /// <summary>
+    /// Limits a component type to only exist on one entity at a time.
+    /// </summary>
+    public interface IUnique
     {
     }
 

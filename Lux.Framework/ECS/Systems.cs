@@ -4,15 +4,19 @@ using System.Reflection;
 namespace Lux.Framework.ECS
 {
     // TODO: Make sure all the component arrays are next to each other in memory
+    // TODO: Reduce the seperation of Systems, if possible to only one Systems object that is filtered some other way during registration
 
     public class Systems
     {
         private readonly ASystem[] _systems;
+        private bool _registrationDone;
+
         public int Count { get; private set; }
 
         internal Systems()
         {
-            _systems = new ASystem[HardCodedConfig.MAX_SYSTEMS]; // TODO: Have an option for the user to change this at compile time
+            _registrationDone = false;
+            _systems = new ASystem[HardCodedConfig.MAX_SYSTEMS]; // TODO: Have the user provide this
             Count = 0;
         }
 
@@ -27,6 +31,8 @@ namespace Lux.Framework.ECS
             {
                 _systems[i].Register(world);
             }
+
+            _registrationDone = true;
         }
 
         private void Add(ASystem system)
@@ -36,10 +42,15 @@ namespace Lux.Framework.ECS
         }
 
         #region Systems Add Declerations
-        /*  We must do it manually because C#  */
 
         public Systems Add(Action system)
         {
+            if (_registrationDone)
+            {
+                LuxCommon.Assert(false); // Can't register more systems at this point
+                return this;
+            }
+
             Add(new System(system));
             return this;
         }
@@ -123,23 +134,25 @@ namespace Lux.Framework.ECS
         #endregion
     }
 
+    /// <summary>
+    /// The abstract system from which all systems inherit
+    /// </summary>
     public abstract class ASystem
     {
-        public ASystemAttribute[] SystemAttributes;
-        public Guid[] ComponentTypes;
+        private readonly ComponentMask _componentsMask;
+        private readonly ComponentMask _singletonMask;
 
-        /// <summary>
-        /// A system that requires any components that are not singleton components
-        /// is not a singleton system. Otherwise it is.
-        /// A singleton system should only be called once for the singleton entity.
-        /// </summary>
-        public bool IsSingletonSystem { get; set; }
+        public ASystemAttribute[] SystemAttributes;
+        public Type[] ComponentTypes;
+        public bool IsSingletonSystem;
 
         public ASystem()
         {
+            _componentsMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
+            _singletonMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
             SystemAttributes = null;
-            IsSingletonSystem = true;
             ComponentTypes = null;
+            IsSingletonSystem = true;
         }
 
         /// <summary>
@@ -147,7 +160,23 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <param name="world">World the system operates in</param>
         /// <param name="entity">Entity to run the system on</param>
-        public abstract void Invoke(World world, Entity entity, IEntityFilter filter);
+        protected abstract void InvokeSystem(World world, Entity entity);
+        public void Invoke(World world, Entity entity, ComponentMask entityMask, ComponentMask singletonEntityMask)
+        {
+            if (_componentsMask.Matches(entityMask) &&
+                _singletonMask.Matches(singletonEntityMask))
+            {
+                InvokeSystem(world, entity);
+            }
+        }
+
+        public void InvokeSingleton(World world, Entity entity, ComponentMask singletonEntityMask)
+        {
+            if (_singletonMask.Matches(singletonEntityMask))
+            {
+                InvokeSystem(world, entity);
+            }
+        }
 
         /// <summary>
         /// Registers all components used by the system to the world
@@ -156,11 +185,57 @@ namespace Lux.Framework.ECS
         protected abstract void RegisterComponents(World world);
         public void Register(World world)
         {
-            // Handle custom filters
+            // Get custom attributes
             SystemAttributes = (ASystemAttribute[])GetMethodInfo().GetCustomAttributes(typeof(ASystemAttribute), false);
 
             // Register the components the system uses
             RegisterComponents(world);
+        }
+
+        /// <summary>
+        /// Registers a single component to the world
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <param name="world">System's world</param>
+        protected void RegisterComponent<T>(World world) where T : AComponent<T>
+        {
+            world.Register<T>();
+
+            // Check if component is optional
+            bool addRequiredComponent = true;
+            for (int i = 0; i < SystemAttributes.Length; i++)
+            {
+                if (SystemAttributes[i] is Optional optional)
+                {
+                    if (optional.ComponentType == typeof(T))
+                    {
+                        addRequiredComponent = false;
+                    }
+                }
+                //else if (SystemAttributes[i] is Exclude excluded)
+                //{
+                //    if (excluded.ComponentType == typeof(T))
+                //    {
+                //        addRequiredComponent = false;
+
+                //    }
+                //}
+            }
+
+            // If component is optional, don't add it to mask
+            if (addRequiredComponent)
+            {
+                // If component is a singleton type
+                if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
+                {
+                    _singletonMask.AddComponent<T>();
+                }
+                else
+                {
+                    IsSingletonSystem = false;
+                    _componentsMask.AddComponent<T>();
+                }
+            }
         }
 
         /// <summary>
@@ -174,64 +249,58 @@ namespace Lux.Framework.ECS
 
     public class System : ASystem
     {
-        private readonly Action system;
+        private readonly Action _system;
 
         public System(Action system)
         {
-            this.system = system;
+            _system = system;
         }
 
-        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        protected override void InvokeSystem(World world, Entity entity)
         {
-            if (filter.Filter(world, entity, SystemAttributes, ComponentTypes))
-            {
-                system();
-            }
+            _system();
         }
 
         protected override void RegisterComponents(World world)
         {
-            ComponentTypes = new Guid[0];
+            ComponentTypes = new Type[0];
         }
 
         protected override MethodInfo GetMethodInfo()
         {
-            return system.GetMethodInfo();
+            return _system.GetMethodInfo();
         }
     }
 
     public class System<T1> : ASystem
         where T1 : AComponent<T1>
     {
-        private Action<T1> system;
+        private readonly Action<T1> _system;
 
         public System(Action<T1> system)
         {
-            this.system = system;
+            _system = system;
         }
 
-        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        protected override void InvokeSystem(World world, Entity entity)
         {
             world.UnpackEntityOrSingleton(entity, out T1 c1);
-
-            if (filter.Filter(world, entity, SystemAttributes, ComponentTypes, c1))
-            {
-                system(c1);
-            }
+            _system(c1);
         }
 
         protected override void RegisterComponents(World world)
         {
-            world.Register<T1>(this);
-            ComponentTypes = new Guid[]
+            RegisterComponent<T1>(world);
+
+            ComponentTypes = new Type[]
             {
-                typeof(T1).GUID
+                typeof(T1)
             };
         }
 
         protected override MethodInfo GetMethodInfo()
         {
-            return system.GetMethodInfo();
+            return _system.GetMethodInfo();
         }
     }
 
@@ -239,38 +308,35 @@ namespace Lux.Framework.ECS
         where T1 : AComponent<T1>
         where T2 : AComponent<T2>
     {
-        private Action<T1, T2> system;
+        private readonly Action<T1, T2> _system;
 
         public System(Action<T1, T2> system)
         {
-            this.system = system;
+            _system = system;
         }
 
-        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        protected override void InvokeSystem(World world, Entity entity)
         {
             world.UnpackEntityOrSingleton(entity, out T1 c1);
             world.UnpackEntityOrSingleton(entity, out T2 c2);
 
-            if (filter.Filter(world, entity, SystemAttributes, ComponentTypes, c1, c2))
-            {
-                system(c1, c2);
-            }
+            _system(c1, c2);
         }
 
         protected override void RegisterComponents(World world)
         {
-            world.Register<T1>(this);
-            world.Register<T2>(this);
-            ComponentTypes = new Guid[]
+            RegisterComponent<T1>(world);
+            RegisterComponent<T2>(world);
+            ComponentTypes = new Type[]
             {
-                typeof(T1).GUID,
-                typeof(T2).GUID
+                typeof(T1),
+                typeof(T2)
             };
         }
 
         protected override MethodInfo GetMethodInfo()
         {
-            return system.GetMethodInfo();
+            return _system.GetMethodInfo();
         }
     }
 
@@ -279,41 +345,38 @@ namespace Lux.Framework.ECS
         where T2 : AComponent<T2>
         where T3 : AComponent<T3>
     {
-        private Action<T1, T2, T3> system;
+        private readonly Action<T1, T2, T3> _system;
 
         public System(Action<T1, T2, T3> system)
         {
-            this.system = system;
+            _system = system;
         }
 
-        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        protected override void InvokeSystem(World world, Entity entity)
         {
             world.UnpackEntityOrSingleton(entity, out T1 c1);
             world.UnpackEntityOrSingleton(entity, out T2 c2);
             world.UnpackEntityOrSingleton(entity, out T3 c3);
 
-            if (filter.Filter(world, entity, SystemAttributes, ComponentTypes, c1, c2, c3))
-            {
-                system(c1, c2, c3);
-            }
+            _system(c1, c2, c3);
         }
 
         protected override void RegisterComponents(World world)
         {
-            world.Register<T1>(this);
-            world.Register<T2>(this);
-            world.Register<T3>(this);
-            ComponentTypes = new Guid[]
+            RegisterComponent<T1>(world);
+            RegisterComponent<T2>(world);
+            RegisterComponent<T3>(world);
+            ComponentTypes = new Type[]
             {
-                typeof(T1).GUID,
-                typeof(T2).GUID,
-                typeof(T3).GUID
+                typeof(T1),
+                typeof(T2),
+                typeof(T3)
             };
         }
 
         protected override MethodInfo GetMethodInfo()
         {
-            return system.GetMethodInfo();
+            return _system.GetMethodInfo();
         }
     }
 
@@ -323,44 +386,41 @@ namespace Lux.Framework.ECS
         where T3 : AComponent<T3>
         where T4 : AComponent<T4>
     {
-        private Action<T1, T2, T3, T4> system;
+        private readonly Action<T1, T2, T3, T4> _system;
 
         public System(Action<T1, T2, T3, T4> system)
         {
-            this.system = system;
+            _system = system;
         }
 
-        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        protected override void InvokeSystem(World world, Entity entity)
         {
             world.UnpackEntityOrSingleton(entity, out T1 c1);
             world.UnpackEntityOrSingleton(entity, out T2 c2);
             world.UnpackEntityOrSingleton(entity, out T3 c3);
             world.UnpackEntityOrSingleton(entity, out T4 c4);
 
-            if (filter.Filter(world, entity, SystemAttributes, ComponentTypes, c1, c2, c3, c4))
-            {
-                system(c1, c2, c3, c4);
-            }
+            _system(c1, c2, c3, c4);
         }
 
         protected override void RegisterComponents(World world)
         {
-            world.Register<T1>(this);
-            world.Register<T2>(this);
-            world.Register<T3>(this);
-            world.Register<T4>(this);
-            ComponentTypes = new Guid[]
+            RegisterComponent<T1>(world);
+            RegisterComponent<T2>(world);
+            RegisterComponent<T3>(world);
+            RegisterComponent<T4>(world);
+            ComponentTypes = new Type[]
             {
-                typeof(T1).GUID,
-                typeof(T2).GUID,
-                typeof(T3).GUID,
-                typeof(T4).GUID
+                typeof(T1),
+                typeof(T2),
+                typeof(T3),
+                typeof(T4)
             };
         }
 
         protected override MethodInfo GetMethodInfo()
         {
-            return system.GetMethodInfo();
+            return _system.GetMethodInfo();
         }
     }
 
@@ -371,14 +431,14 @@ namespace Lux.Framework.ECS
         where T4 : AComponent<T4>
         where T5 : AComponent<T5>
     {
-        private Action<T1, T2, T3, T4, T5> system;
+        private readonly Action<T1, T2, T3, T4, T5> _system;
 
         public System(Action<T1, T2, T3, T4, T5> system)
         {
-            this.system = system;
+            _system = system;
         }
 
-        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        protected override void InvokeSystem(World world, Entity entity)
         {
             world.UnpackEntityOrSingleton(entity, out T1 c1);
             world.UnpackEntityOrSingleton(entity, out T2 c2);
@@ -386,32 +446,29 @@ namespace Lux.Framework.ECS
             world.UnpackEntityOrSingleton(entity, out T4 c4);
             world.UnpackEntityOrSingleton(entity, out T5 c5);
 
-            if (filter.Filter(world, entity, SystemAttributes, ComponentTypes, c1, c2, c3, c4, c5))
-            {
-                system(c1, c2, c3, c4, c5);
-            }
+            _system(c1, c2, c3, c4, c5);
         }
 
         protected override void RegisterComponents(World world)
         {
-            world.Register<T1>(this);
-            world.Register<T2>(this);
-            world.Register<T3>(this);
-            world.Register<T4>(this);
-            world.Register<T5>(this);
-            ComponentTypes = new Guid[]
+            RegisterComponent<T1>(world);
+            RegisterComponent<T2>(world);
+            RegisterComponent<T3>(world);
+            RegisterComponent<T4>(world);
+            RegisterComponent<T5>(world);
+            ComponentTypes = new Type[]
             {
-                typeof(T1).GUID,
-                typeof(T2).GUID,
-                typeof(T3).GUID,
-                typeof(T4).GUID,
-                typeof(T5).GUID
+                typeof(T1),
+                typeof(T2),
+                typeof(T3),
+                typeof(T4),
+                typeof(T5)
             };
         }
 
         protected override MethodInfo GetMethodInfo()
         {
-            return system.GetMethodInfo();
+            return _system.GetMethodInfo();
         }
     }
 
@@ -423,14 +480,14 @@ namespace Lux.Framework.ECS
         where T5 : AComponent<T5>
         where T6 : AComponent<T6>
     {
-        private Action<T1, T2, T3, T4, T5, T6> system;
+        private readonly Action<T1, T2, T3, T4, T5, T6> _system;
 
         public System(Action<T1, T2, T3, T4, T5, T6> system)
         {
-            this.system = system;
+            _system = system;
         }
 
-        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        protected override void InvokeSystem(World world, Entity entity)
         {
             world.UnpackEntityOrSingleton(entity, out T1 c1);
             world.UnpackEntityOrSingleton(entity, out T2 c2);
@@ -439,34 +496,31 @@ namespace Lux.Framework.ECS
             world.UnpackEntityOrSingleton(entity, out T5 c5);
             world.UnpackEntityOrSingleton(entity, out T6 c6);
 
-            if (filter.Filter(world, entity, SystemAttributes, ComponentTypes, c1, c2, c3, c4, c5, c6))
-            {
-                system(c1, c2, c3, c4, c5, c6);
-            }
+            _system(c1, c2, c3, c4, c5, c6);
         }
 
         protected override void RegisterComponents(World world)
         {
-            world.Register<T1>(this);
-            world.Register<T2>(this);
-            world.Register<T3>(this);
-            world.Register<T4>(this);
-            world.Register<T5>(this);
-            world.Register<T6>(this);
-            ComponentTypes = new Guid[]
+            RegisterComponent<T1>(world);
+            RegisterComponent<T2>(world);
+            RegisterComponent<T3>(world);
+            RegisterComponent<T4>(world);
+            RegisterComponent<T5>(world);
+            RegisterComponent<T6>(world);
+            ComponentTypes = new Type[]
             {
-                typeof(T1).GUID,
-                typeof(T2).GUID,
-                typeof(T3).GUID,
-                typeof(T4).GUID,
-                typeof(T5).GUID,
-                typeof(T6).GUID
+                typeof(T1),
+                typeof(T2),
+                typeof(T3),
+                typeof(T4),
+                typeof(T5),
+                typeof(T6)
             };
         }
 
         protected override MethodInfo GetMethodInfo()
         {
-            return system.GetMethodInfo();
+            return _system.GetMethodInfo();
         }
     }
 
@@ -479,14 +533,14 @@ namespace Lux.Framework.ECS
         where T6 : AComponent<T6>
         where T7 : AComponent<T7>
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7> system;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7> _system;
 
         public System(Action<T1, T2, T3, T4, T5, T6, T7> system)
         {
-            this.system = system;
+            _system = system;
         }
 
-        public override void Invoke(World world, Entity entity, IEntityFilter filter)
+        protected override void InvokeSystem(World world, Entity entity)
         {
             world.UnpackEntityOrSingleton(entity, out T1 c1);
             world.UnpackEntityOrSingleton(entity, out T2 c2);
@@ -496,36 +550,33 @@ namespace Lux.Framework.ECS
             world.UnpackEntityOrSingleton(entity, out T6 c6);
             world.UnpackEntityOrSingleton(entity, out T7 c7);
 
-            if (filter.Filter(world, entity, SystemAttributes, ComponentTypes, c1, c2, c3, c4, c5, c6, c7))
-            {
-                system(c1, c2, c3, c4, c5, c6, c7);
-            }
+            _system(c1, c2, c3, c4, c5, c6, c7);
         }
 
         protected override void RegisterComponents(World world)
         {
-            world.Register<T1>(this);
-            world.Register<T2>(this);
-            world.Register<T3>(this);
-            world.Register<T4>(this);
-            world.Register<T5>(this);
-            world.Register<T6>(this);
-            world.Register<T7>(this);
-            ComponentTypes = new Guid[]
+            RegisterComponent<T1>(world);
+            RegisterComponent<T2>(world);
+            RegisterComponent<T3>(world);
+            RegisterComponent<T4>(world);
+            RegisterComponent<T5>(world);
+            RegisterComponent<T6>(world);
+            RegisterComponent<T7>(world);
+            ComponentTypes = new Type[]
             {
-                typeof(T1).GUID,
-                typeof(T2).GUID,
-                typeof(T3).GUID,
-                typeof(T4).GUID,
-                typeof(T5).GUID,
-                typeof(T6).GUID,
-                typeof(T7).GUID
+                typeof(T1),
+                typeof(T2),
+                typeof(T3),
+                typeof(T4),
+                typeof(T5),
+                typeof(T6),
+                typeof(T7)
             };
         }
 
         protected override MethodInfo GetMethodInfo()
         {
-            return system.GetMethodInfo();
+            return _system.GetMethodInfo();
         }
     }
 

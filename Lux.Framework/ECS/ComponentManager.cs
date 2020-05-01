@@ -5,24 +5,24 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Lux.Framework.ECS
 {
-    // This exists so we can create an array of component managers without
+    // This exists so we can create an array of components datas without
     // specifying the type <T>
-    public interface IComponentManager
+    public interface IComponentsData
     {
         void RemoveComponent(Entity entity);
         void Serialize(BinaryWriter writer);
     }
 
-    public class ComponentManager<T> : IComponentManager where T : AComponent<T>
+    public class ComponentsData<T> : IComponentsData where T : AComponent<T>
     {
         private readonly SparseSet<T> _components;
 
-        public ComponentManager(int maxComponents)
+        public ComponentsData(int maxComponents)
         {
             _components = new SparseSet<T>(maxComponents);
         }
 
-        public ComponentManager(SparseSet<T> components)
+        public ComponentsData(SparseSet<T> components)
         {
             _components = components;
         }
@@ -79,7 +79,7 @@ namespace Lux.Framework.ECS
         }
 
         /// <summary>
-        /// Serialize the component manager and write it into the stream
+        /// Serialize the components data and write it into the stream
         /// </summary>
         /// <param name="writer">Writer to write the data into</param>
         public void Serialize(BinaryWriter writer)

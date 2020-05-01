@@ -79,6 +79,8 @@ namespace Lux.Framework.ECS
                 var castFeature = feature as IOnAddComponent;
                 castFeature?.OnAddComponent(OnAddComponentSystems);
             }
+
+            
         }
 
         #region Phases

@@ -6,20 +6,31 @@ namespace Lux.Framework.ECS
     {
     }
 
+    /// <summary>
+    /// Tells the system not to run if this component exists for the entity
+    /// </summary>
+    public class Exclude : ASystemAttribute
+    {
+        public Type ComponentType;
+
+        public Exclude(Type excludedComponentType)
+        {
+            ComponentType = excludedComponentType;
+        }
+    }
+
     public class Optional : ASystemAttribute
     {
-        public Guid ComponentTypeGuid;
-        public int ComponentTypeId;
+        public Type ComponentType;
 
         public Optional(Type optionalComponentType)
         {
-            ComponentTypeGuid = optionalComponentType.GUID;
+            ComponentType = optionalComponentType;
         }
     }
 
     public class OnAddComponent : ASystemAttribute, IEntityFilter
     {
-        private static readonly DefaultEntityFilter _defaultEntity = new DefaultEntityFilter();
         public Type AddedComponentType;
 
         public OnAddComponent(Type addedType)
@@ -27,21 +38,12 @@ namespace Lux.Framework.ECS
             AddedComponentType = addedType;
         }
 
-        public bool Filter(World world, Entity entity, ASystemAttribute[] systemAttributes, Guid[] componentTypes, params AInternalComponent[] components)
+        public bool Filter(ASystem system)
         {
-            // Run the default filter first
-            if (!_defaultEntity.Filter(world, entity, systemAttributes, componentTypes, components))
+            for (int i = 0; i < system.SystemAttributes.Length; i++)
             {
-                return false;
-            }
-
-            // Look for the OnAddComponent system attribute
-            for (int i = 0; i < systemAttributes.Length; i++)
-            {
-                if (systemAttributes[i] is OnAddComponent onAddComponent)
+                if (system.SystemAttributes[i] is OnAddComponent onAddComponent)
                 {
-                    // If the added component type matches the one the system is
-                    // looking for, let the system run
                     if (onAddComponent.AddedComponentType == AddedComponentType)
                     {
                         return true;
@@ -49,7 +51,6 @@ namespace Lux.Framework.ECS
                 }
             }
 
-            // If system doesn't have OnAddComponent attribute, don't run it
             return false;
         }
     }
