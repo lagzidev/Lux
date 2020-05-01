@@ -3,6 +3,10 @@ using System.Runtime.InteropServices;
 
 namespace Lux.Framework.ECS
 {
+    public class EntityInfo : AComponent<EntityInfo>
+    {
+    }
+
     [Serializable]
     [StructLayout(LayoutKind.Explicit)]
     public struct Entity : IComparable
@@ -34,7 +38,7 @@ namespace Lux.Framework.ECS
                 return true;
             }
 
-            return a.Equals(a);
+            return a.Equals(b);
         }
 
         public static bool operator !=(Entity a, Entity b)

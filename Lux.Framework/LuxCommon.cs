@@ -20,6 +20,20 @@ namespace Lux.Framework
                 Debugger.Break();
             }
         }
+
+        public static int Min(int number, params int[] otherNumbers)
+        {
+            int min = number;
+            for (int i = 0; i < otherNumbers.Length; i++)
+            {
+                if (otherNumbers[i] < min)
+                {
+                    min = otherNumbers[i];
+                }
+            }
+
+            return min;
+        }
     }
 
     //public enum LuxStatusCode

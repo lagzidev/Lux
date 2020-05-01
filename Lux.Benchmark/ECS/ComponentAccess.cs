@@ -1,19 +1,25 @@
 ﻿using System;
 using BenchmarkDotNet.Attributes;
-using Lux.ECS;
+using Lux.Framework.ECS;
 
 namespace Lux.Benchmark
 {
     [MemoryDiagnoser]
     public class ComponentAccess
     {
-        private ECS.ECS _ecs;
+        private ECS _ecs;
         private WorldHandle _noComponents;
         private WorldHandle _singleComponent;
+        private WorldHandle _singleComponentSpan;
         private WorldHandle _twoComponents;
+        private WorldHandle _twoComponentsSpan;
 
-        [Params(100, 1000, 10000, 100000)]
+#if DEBUG
+        public static int EntityCount = 1;
+#else
+        [Params(10, 100, 1000)]
         public static int EntityCount { get; set; }
+#endif
 
         public class Position : AComponent<Position> // TODO: CHANGE TO STRUCT
         {
@@ -49,6 +55,21 @@ namespace Lux.Benchmark
             }
         }
 
+        public class EmptyFeature : IFeature, IUpdateFeature, IInitFeature
+        {
+            public void Init(Systems systems)
+            {
+                systems.Add<Context>(ComponentAccess.Init);
+            }
+
+            public void Update(Systems systems)
+            {
+                systems.Add(() =>
+                {
+                });
+            }
+        }
+
         public class SingleFeature : IFeature, IUpdateFeature, IInitFeature
         {
             public void Init(Systems systems)
@@ -66,7 +87,7 @@ namespace Lux.Benchmark
             }
         }
 
-        public class EmptyFeature : IFeature, IUpdateFeature, IInitFeature
+        public class SingleFeatureSpan : IFeature, IUpdateFeature, IInitFeature
         {
             public void Init(Systems systems)
             {
@@ -75,11 +96,22 @@ namespace Lux.Benchmark
 
             public void Update(Systems systems)
             {
-                systems.Add(() =>
+                systems.Add((Context context) =>
                 {
+                    var positions = context.GetAllReadonly<Position>();
+
+                    for (int i = 0; i < positions.Length; i++)
+                    {  
+                        if (positions[i] != null)
+                        {
+                            positions[i].X += 1;
+                            positions[i].Y += 1;
+                        }
+                    }
                 });
             }
         }
+
 
         public class TwoFeature : IFeature, IUpdateFeature, IInitFeature
         {
@@ -98,10 +130,36 @@ namespace Lux.Benchmark
             }
         }
 
+        public class TwoFeatureSpan : IFeature, IUpdateFeature, IInitFeature
+        {
+            public void Init(Systems systems)
+            {
+                systems.Add<Context>(ComponentAccess.Init);
+            }
+
+            public void Update(Systems systems)
+            {
+                systems.Add((Context context) =>
+                {
+                    var positions = context.GetAllReadonly<Position>();
+                    var speeds = context.GetAllReadonly<Speed>();
+
+                    for (int i = 0; i < positions.Length; i++)
+                    {
+                        if (positions[i] != null && speeds[i] != null)
+                        {
+                            positions[i].X += speeds[i].X;
+                            positions[i].Y += speeds[i].Y;
+                        }
+                    }
+                });
+            }
+        }
+
         [IterationSetup]
         public void Setup()
         {
-            _ecs = new ECS.ECS();
+            _ecs = new ECS();
 
             _noComponents = _ecs.CreateWorld();
             _noComponents.AddFeature(new EmptyFeature());
@@ -111,9 +169,17 @@ namespace Lux.Benchmark
             _singleComponent.AddFeature(new SingleFeature());
             _singleComponent.Init();
 
+            _singleComponentSpan = _ecs.CreateWorld();
+            _singleComponentSpan.AddFeature(new SingleFeatureSpan());
+            _singleComponentSpan.Init();
+
             _twoComponents = _ecs.CreateWorld();
             _twoComponents.AddFeature(new TwoFeature());
             _twoComponents.Init();
+
+            _twoComponentsSpan = _ecs.CreateWorld();
+            _twoComponentsSpan.AddFeature(new TwoFeatureSpan());
+            _twoComponentsSpan.Init();
         }
 
         [Benchmark]
@@ -135,11 +201,29 @@ namespace Lux.Benchmark
         }
 
         [Benchmark]
+        public void UpdateSingleComponentSpan()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                _singleComponentSpan.Update();
+            }
+        }
+
+        [Benchmark]
         public void UpdateTwoComponents()
         {
             for (int i = 0; i < 1000; i++)
             {
                 _twoComponents.Update();
+            }
+        }
+
+        [Benchmark]
+        public void UpdateTwoComponentsSpan()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                _twoComponentsSpan.Update();
             }
         }
     }

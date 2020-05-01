@@ -29,4 +29,9 @@
     {
         void OnAddComponent(Systems systems);
     }
+
+    public interface IOnDestroyEntity
+    {
+        void OnDestroyEntity(Systems systems);
+    }
 }

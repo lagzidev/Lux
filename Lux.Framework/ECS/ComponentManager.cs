@@ -53,6 +53,15 @@ namespace Lux.Framework.ECS
         }
 
         /// <summary>
+        /// Get all components
+        /// </summary>
+        /// <returns></returns>
+        public ReadOnlySpan<T> GetAllReadonly()
+        {
+            return _components.GetAllReadonly();
+        }
+
+        /// <summary>
         /// Adds a component to the dataset.
         /// The component can later be queried with the entity as the key.
         /// </summary>

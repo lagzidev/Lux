@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 // todo : test [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
@@ -59,6 +60,7 @@ namespace Lux.Framework.ECS
         {
             Entity entity = CreateEntity();
 
+            RegisterSingleton<Context>();
             AddComponent(entity, new Context(this));
 
             return entity;
@@ -74,6 +76,10 @@ namespace Lux.Framework.ECS
             _entities[entity.Index] = entity;
             _entityMasks[entity.Index] = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
 
+            // Add default components
+            Register<EntityInfo>(); // TODO: Try removing registration (because of auto registration on get component) See if there are side effects
+            AddComponent(entity, new EntityInfo());
+
             return entity;
         }
 
@@ -83,7 +89,7 @@ namespace Lux.Framework.ECS
         /// <param name="entity">Entity to destroy</param>
         public void DestroyEntity(Entity entity)
         {
-            // todo: Call OnDestroyEntity systems
+            Run(_worldHandle.OnDestroyEntitySystems, entity, new OnDestroyEntity());
 
             // Remove entity's components
             foreach (IComponentsData componentsData in _componentsData.Values)
@@ -134,6 +140,17 @@ namespace Lux.Framework.ECS
         }
 
         /// <summary>
+        /// Get all components of a type, as readonly
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>A span of all components</returns>
+        public ReadOnlySpan<T> GetAllReadonly<T>() where T : AComponent<T>
+        {
+            ComponentsData<T> componentsData = GetComponentsData<T>();
+            return componentsData.GetAllReadonly();
+        }
+
+        /// <summary>
         /// Adds a component to an entity
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
@@ -168,7 +185,7 @@ namespace Lux.Framework.ECS
 
             // Call systems that subscribed to the OnAddComponent event
             // TODO: Maybe make OnAddComponent a struct to improve performance when calling new this often
-            Run(_worldHandle.OnAddComponentSystems, new OnAddComponent(typeof(T)));
+            Run(_worldHandle.OnAddComponentSystems, entity, new OnAddComponent(typeof(T)));
         }
 
         /// <summary>
@@ -213,7 +230,7 @@ namespace Lux.Framework.ECS
         /// <typeparam name="T">Component type to register to the world</typeparam>
         /// <param name="system">The system that is registering this component</param>
         /// <returns>The component type's ID for the world</returns>
-        public void Register<T>() where T : AComponent<T>
+        public void Register<T>(int maxComponentsPerType = HardCodedConfig.MAX_ENTITIES_PER_WORLD) where T : AComponent<T>
         {
             // Set the ComponentType for the component class
             AComponent<T>.SetComponentType();
@@ -221,15 +238,13 @@ namespace Lux.Framework.ECS
             // Add a components data for the type if doesn't exist
             if (!_componentsData.ContainsKey(AComponent<T>.ComponentType))
             {
-                int maxComponentsPerType = HardCodedConfig.MAX_ENTITIES_PER_WORLD;
-                if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
-                {
-                    maxComponentsPerType = 1;
-                }
-
-                var componentsData = new ComponentsData<T>(maxComponentsPerType);
-                _componentsData[AComponent<T>.ComponentType] = componentsData;
+                _componentsData[AComponent<T>.ComponentType] = new ComponentsData<T>(maxComponentsPerType);
             }
+        }
+
+        public void RegisterSingleton<T>() where T : AComponent<T>
+        {
+            Register<T>(1);
         }
 
         ///// <summary>
@@ -241,34 +256,36 @@ namespace Lux.Framework.ECS
         //    // Set the ComponentType in case it wasn't set already
         //    AComponent<T>.SetComponentType();
 
-        //    // Add a components data for the type if doesn't exist
-        //    if (!_previouscomponentsDatas.ContainsKey(AComponent<T>.ComponentType))
-        //    {
-        //        var componentsData = new componentsData<T>();
-        //        _previouscomponentsDatas[AComponent<T>.ComponentType] = componentsData;
-        //    }
-        //}
+            //    // Add a components data for the type if doesn't exist
+            //    if (!_previouscomponentsDatas.ContainsKey(AComponent<T>.ComponentType))
+            //    {
+            //        var componentsData = new componentsData<T>();
+            //        _previouscomponentsDatas[AComponent<T>.ComponentType] = componentsData;
+            //    }
+            //}
 
-        /// <summary>
-        /// Saves the current state of the components into a seperate dataset.
-        /// Only copies components for which KeepPreviousState was called.
-        /// </summary>
-        //private void SavePreviousState<T>(T component) where T : AComponent<T>
-        //{
-        //    // TODO: Save the component into _previouscomponentsData or alternatively,
-        //    // find a more lightweight data storage solution. Something dynamic like
-        //    // a Dictionary<Entity, Dictionary<ComponentType, Component> might be lighter
-        //    // then a componentsData, but might be more demanding performance wise.
-        //}
+            /// <summary>
+            /// Saves the current state of the components into a seperate dataset.
+            /// Only copies components for which KeepPreviousState was called.
+            /// </summary>
+            //private void SavePreviousState<T>(T component) where T : AComponent<T>
+            //{
+            //    // TODO: Save the component into _previouscomponentsData or alternatively,
+            //    // find a more lightweight data storage solution. Something dynamic like
+            //    // a Dictionary<Entity, Dictionary<ComponentType, Component> might be lighter
+            //    // then a componentsData, but might be more demanding performance wise.
+            //}
 
         private ComponentsData<T> GetComponentsData<T>() where T : AComponent<T>
         {
-            if (AComponent<T>.ComponentType == -1)
+            // Try getting the components data
+            if (!_componentsData.TryGetValue(AComponent<T>.ComponentType, out IComponentsData componentsData))
             {
                 Register<T>();
+                componentsData = _componentsData[AComponent<T>.ComponentType];
             }
 
-            return (ComponentsData<T>)_componentsData[AComponent<T>.ComponentType];
+            return (ComponentsData<T>)componentsData;
         }
 
         #region Serialization
@@ -351,7 +368,7 @@ namespace Lux.Framework.ECS
 
         #endregion Serialization
 
-        public void Run(Systems systems, IEntityFilter filter)
+        public void Run(Systems systems, Entity? entity, IEntityFilter filter)
         {
             // For every system
             for (int i = 0; i < systems.Count; i++)
@@ -362,24 +379,41 @@ namespace Lux.Framework.ECS
                     continue;
                 }
 
+                ref ComponentMask singletonMask = ref _entityMasks[_singletonEntity.Index];
+
                 // If it's a singleton system, run it once for the singleton entity
                 if (systems[i].IsSingletonSystem)
                 {
-                    systems[i].InvokeSingleton(this, _singletonEntity, _entityMasks[_singletonEntity.Index]);
+                    systems[i].Invoke(this, new Entity[] { _singletonEntity });
                     continue;
                 }
 
-                // Run the system for every entity
-                for (int s = 0; s < _entities.Length; s++)
+                // If entity was provided, run only on that entity
+                if (entity != null)
                 {
-                    systems[i].Invoke(this, _entities[s], _entityMasks[s], _entityMasks[_singletonEntity.Index]);
+                    // TODO: Get rid of the "new" allocation
+                    systems[i].Invoke(this, new Entity[] { entity.Value });
+                    continue;
                 }
+
+                // Run the system for all entities
+                systems[i].Invoke(this, _entities); // _entityMasks[s], singletonMask
             }
         }
 
         public void Run(Systems systems)
         {
-            Run(systems, null);
+            Run(systems, null, null);
+        }
+
+        public ComponentMask GetEntityMask(Entity entity)
+        {
+            return _entityMasks[entity.Index];
+        }
+
+        public ComponentMask GetSingletonEntityMask()
+        {
+            return GetEntityMask(_singletonEntity);
         }
     }
 }

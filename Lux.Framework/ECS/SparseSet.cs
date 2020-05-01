@@ -169,6 +169,17 @@ namespace Lux.Framework.ECS
         }
 
         /// <summary>
+        /// Gets all of the values.
+        /// </summary>
+        /// <param name="key">Key that corresponds to the value</param>
+        /// <param name="outValue">Value to return</param>
+        /// <returns><c>true</c> if successfully returned value; <c>false</c> otherwise.</returns>
+        public ReadOnlySpan<T> GetAllReadonly()
+        {
+            return _valueArr.AsSpan(0, Count);
+        }
+
+        /// <summary>
         /// Removes all elements from the set.
         /// </summary>
         public void Clear()

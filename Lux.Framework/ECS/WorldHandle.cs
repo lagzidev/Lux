@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Lux.Framework.ECS
 {
@@ -9,6 +10,7 @@ namespace Lux.Framework.ECS
     public class WorldHandle
     {
         public readonly  Systems OnAddComponentSystems;
+        public readonly  Systems OnDestroyEntitySystems;
 
         private readonly  Systems _initSystems;
         private readonly  Systems _updateSystems;
@@ -20,13 +22,32 @@ namespace Lux.Framework.ECS
 
         internal WorldHandle()
         {
-            OnAddComponentSystems = new  Systems();
+            OnAddComponentSystems = new Systems();
+            OnDestroyEntitySystems = new Systems();
             _initSystems = new  Systems();
             _updateSystems = new  Systems();
             _updateFixedSystems = new  Systems();
             _drawSystems = new  Systems();
 
             _world = new World(this);
+        }
+
+        /// <summary>
+        /// Asserts that the systems have the required attribute
+        /// </summary>
+        /// <typeparam name="T">The required system attribute</typeparam>
+        /// <param name="systems">Systems that must have the attribute</param>
+        [Conditional("DEBUG")]
+        private static void AssertAttribute<T>(Systems systems) where T : ASystemAttribute
+        {
+            for (int i = 0; i < systems.Count; i++)
+            {
+                if (!systems[i].HasAttribute<OnAddComponent>())
+                {
+                    LuxCommon.Assert(false); // The system doesn't have the required attribute
+                    break;
+                }
+            }
         }
 
         private void RegisterAllComponents()
@@ -37,11 +58,10 @@ namespace Lux.Framework.ECS
             _drawSystems.Register(_world);
 
             OnAddComponentSystems.Register(_world);
-            // TODO: Require each system to have OnAddComponent Attribute
-            //for (int i = 0; i < OnAddComponentSystems.Count; i++)
-            //{
-            //    OnAddComponentSystems.
-            //}
+            AssertAttribute<OnAddComponent>(OnAddComponentSystems);
+
+            OnDestroyEntitySystems.Register(_world);
+            AssertAttribute<OnDestroyEntity>(OnDestroyEntitySystems);
         }
 
         /// <summary>

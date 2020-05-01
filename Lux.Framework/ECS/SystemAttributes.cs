@@ -54,4 +54,20 @@ namespace Lux.Framework.ECS
             return false;
         }
     }
+
+    public class OnDestroyEntity : ASystemAttribute, IEntityFilter
+    {
+        public bool Filter(ASystem system)
+        {
+            for (int i = 0; i < system.SystemAttributes.Length; i++)
+            {
+                if (system.SystemAttributes[i] is OnDestroyEntity)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 }

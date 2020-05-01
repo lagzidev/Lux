@@ -155,28 +155,45 @@ namespace Lux.Framework.ECS
             IsSingletonSystem = true;
         }
 
+        public bool HasAttribute<T>() where T : ASystemAttribute
+        {
+            for (int i = 0; i < SystemAttributes.Length; i++)
+            {
+                if (SystemAttributes[i] is T)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Invokes the system method
         /// </summary>
         /// <param name="world">World the system operates in</param>
-        /// <param name="entity">Entity to run the system on</param>
-        protected abstract void InvokeSystem(World world, Entity entity);
-        public void Invoke(World world, Entity entity, ComponentMask entityMask, ComponentMask singletonEntityMask)
+        /// <param name="entities">All entities in the world</param>
+        /// <param name="entityMask"></param>
+        public abstract void Invoke(World world, Entity[] entities);
+
+        protected bool CanRun(World world, Entity entity)
         {
-            if (_componentsMask.Matches(entityMask) &&
-                _singletonMask.Matches(singletonEntityMask))
+            bool singletonMatches = _singletonMask.Matches(world.GetSingletonEntityMask());
+            if (IsSingletonSystem)
             {
-                InvokeSystem(world, entity);
+                return singletonMatches;
             }
+
+            return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
         }
 
-        public void InvokeSingleton(World world, Entity entity, ComponentMask singletonEntityMask)
-        {
-            if (_singletonMask.Matches(singletonEntityMask))
-            {
-                InvokeSystem(world, entity);
-            }
-        }
+        //public void InvokeSingleton(World world, Entity[] entities, ComponentMask singletonEntityMask)
+        //{
+        //    if (_singletonMask.Matches(singletonEntityMask))
+        //    {
+        //        Invoke(world, entities);
+        //    }
+        //}
 
         /// <summary>
         /// Registers all components used by the system to the world
@@ -199,9 +216,18 @@ namespace Lux.Framework.ECS
         /// <param name="world">System's world</param>
         protected void RegisterComponent<T>(World world) where T : AComponent<T>
         {
-            world.Register<T>();
+            // If component is singleton
+            if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
+            {
+                world.RegisterSingleton<T>();
+            }
+            else
+            {
+                world.Register<T>();
+                IsSingletonSystem = false;
+            }
 
-            // Check if component is optional
+            // Check if should add the component as required
             bool addRequiredComponent = true;
             for (int i = 0; i < SystemAttributes.Length; i++)
             {
@@ -222,7 +248,7 @@ namespace Lux.Framework.ECS
                 //}
             }
 
-            // If component is optional, don't add it to mask
+            // If component is not optional, add it to mask
             if (addRequiredComponent)
             {
                 // If component is a singleton type
@@ -256,7 +282,7 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        protected override void InvokeSystem(World world, Entity entity)
+        public override void Invoke(World world, Entity[] entities)
         {
             _system();
         }
@@ -282,10 +308,24 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        protected override void InvokeSystem(World world, Entity entity)
+        public override void Invoke(World world, Entity[] entities)
         {
-            world.UnpackEntityOrSingleton(entity, out T1 c1);
-            _system(c1);
+            var c1 = world.GetAllReadonly<T1>();
+
+            for (int i = 0; i < c1.Length; i++)
+            {
+                /*
+                    FIGURE OUT WHY THE HELL THE PERFORMANCE IS BETTER
+                    WITH UpdateSingleComponentSpan when it's practically the same
+
+                    UpdateTwoComponentsSpan makes sense because it doesn't think
+                    about the order, and is not functionally working.
+                 */
+                if (CanRun(world, c1[i].Entity))
+                {
+                    _system(c1[i]);
+                }
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -315,12 +355,20 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        protected override void InvokeSystem(World world, Entity entity)
+        public override void Invoke(World world, Entity[] entities)
         {
-            world.UnpackEntityOrSingleton(entity, out T1 c1);
-            world.UnpackEntityOrSingleton(entity, out T2 c2);
+            // TODO: Test this new way against the old entities registration way?
 
-            _system(c1, c2);
+            var c1 = world.GetAllReadonly<T1>();
+
+            for (int i = 0; i < c1.Length; i++)
+            {
+                if (CanRun(world, c1[i].Entity))
+                {
+                    world.Unpack(c1[i].Entity, out T2 c2);
+                    _system(c1[i], c2);
+                }
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -352,13 +400,19 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        protected override void InvokeSystem(World world, Entity entity)
+        public override void Invoke(World world, Entity[] entities)
         {
-            world.UnpackEntityOrSingleton(entity, out T1 c1);
-            world.UnpackEntityOrSingleton(entity, out T2 c2);
-            world.UnpackEntityOrSingleton(entity, out T3 c3);
+            var c1 = world.GetAllReadonly<T1>();
 
-            _system(c1, c2, c3);
+            for (int i = 0; i < c1.Length; i++)
+            {
+                if (CanRun(world, c1[i].Entity))
+                {
+                    world.Unpack(c1[i].Entity, out T2 c2);
+                    world.Unpack(c1[i].Entity, out T3 c3);
+                    _system(c1[i], c2, c3);
+                }
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -393,14 +447,20 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        protected override void InvokeSystem(World world, Entity entity)
+        public override void Invoke(World world, Entity[] entities)
         {
-            world.UnpackEntityOrSingleton(entity, out T1 c1);
-            world.UnpackEntityOrSingleton(entity, out T2 c2);
-            world.UnpackEntityOrSingleton(entity, out T3 c3);
-            world.UnpackEntityOrSingleton(entity, out T4 c4);
+            var c1 = world.GetAllReadonly<T1>();
 
-            _system(c1, c2, c3, c4);
+            for (int i = 0; i < c1.Length; i++)
+            {
+                if (CanRun(world, c1[i].Entity))
+                {
+                    world.Unpack(c1[i].Entity, out T2 c2);
+                    world.Unpack(c1[i].Entity, out T3 c3);
+                    world.Unpack(c1[i].Entity, out T4 c4);
+                    _system(c1[i], c2, c3, c4);
+                }
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -438,15 +498,21 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        protected override void InvokeSystem(World world, Entity entity)
+        public override void Invoke(World world, Entity[] entities)
         {
-            world.UnpackEntityOrSingleton(entity, out T1 c1);
-            world.UnpackEntityOrSingleton(entity, out T2 c2);
-            world.UnpackEntityOrSingleton(entity, out T3 c3);
-            world.UnpackEntityOrSingleton(entity, out T4 c4);
-            world.UnpackEntityOrSingleton(entity, out T5 c5);
+            var c1 = world.GetAllReadonly<T1>();
 
-            _system(c1, c2, c3, c4, c5);
+            for (int i = 0; i < c1.Length; i++)
+            {
+                if (CanRun(world, c1[i].Entity))
+                {
+                    world.Unpack(c1[i].Entity, out T2 c2);
+                    world.Unpack(c1[i].Entity, out T3 c3);
+                    world.Unpack(c1[i].Entity, out T4 c4);
+                    world.Unpack(c1[i].Entity, out T5 c5);
+                    _system(c1[i], c2, c3, c4, c5);
+                }
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -487,16 +553,22 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        protected override void InvokeSystem(World world, Entity entity)
+        public override void Invoke(World world, Entity[] entities)
         {
-            world.UnpackEntityOrSingleton(entity, out T1 c1);
-            world.UnpackEntityOrSingleton(entity, out T2 c2);
-            world.UnpackEntityOrSingleton(entity, out T3 c3);
-            world.UnpackEntityOrSingleton(entity, out T4 c4);
-            world.UnpackEntityOrSingleton(entity, out T5 c5);
-            world.UnpackEntityOrSingleton(entity, out T6 c6);
+            var c1 = world.GetAllReadonly<T1>();
 
-            _system(c1, c2, c3, c4, c5, c6);
+            for (int i = 0; i < c1.Length; i++)
+            {
+                if (CanRun(world, c1[i].Entity))
+                {
+                    world.Unpack(c1[i].Entity, out T2 c2);
+                    world.Unpack(c1[i].Entity, out T3 c3);
+                    world.Unpack(c1[i].Entity, out T4 c4);
+                    world.Unpack(c1[i].Entity, out T5 c5);
+                    world.Unpack(c1[i].Entity, out T6 c6);
+                    _system(c1[i], c2, c3, c4, c5, c6);
+                }
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -540,17 +612,23 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        protected override void InvokeSystem(World world, Entity entity)
+        public override void Invoke(World world, Entity[] entities)
         {
-            world.UnpackEntityOrSingleton(entity, out T1 c1);
-            world.UnpackEntityOrSingleton(entity, out T2 c2);
-            world.UnpackEntityOrSingleton(entity, out T3 c3);
-            world.UnpackEntityOrSingleton(entity, out T4 c4);
-            world.UnpackEntityOrSingleton(entity, out T5 c5);
-            world.UnpackEntityOrSingleton(entity, out T6 c6);
-            world.UnpackEntityOrSingleton(entity, out T7 c7);
+            var c1 = world.GetAllReadonly<T1>();
 
-            _system(c1, c2, c3, c4, c5, c6, c7);
+            for (int i = 0; i < c1.Length; i++)
+            {
+                if (CanRun(world, c1[i].Entity))
+                {
+                    world.Unpack(c1[i].Entity, out T2 c2);
+                    world.Unpack(c1[i].Entity, out T3 c3);
+                    world.Unpack(c1[i].Entity, out T4 c4);
+                    world.Unpack(c1[i].Entity, out T5 c5);
+                    world.Unpack(c1[i].Entity, out T6 c6);
+                    world.Unpack(c1[i].Entity, out T7 c7);
+                    _system(c1[i], c2, c3, c4, c5, c6, c7);
+                }
+            }
         }
 
         protected override void RegisterComponents(World world)
