@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Lux.Framework.ECS
 {
@@ -141,6 +142,7 @@ namespace Lux.Framework.ECS
     {
         private readonly ComponentMask _componentsMask;
         private readonly ComponentMask _singletonMask;
+        private readonly ComponentMask _optionalMask;
 
         public ASystemAttribute[] SystemAttributes;
         public Type[] ComponentTypes;
@@ -150,6 +152,7 @@ namespace Lux.Framework.ECS
         {
             _componentsMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
             _singletonMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
+            _optionalMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
             SystemAttributes = null;
             ComponentTypes = null;
             IsSingletonSystem = true;
@@ -176,6 +179,7 @@ namespace Lux.Framework.ECS
         /// <param name="entityMask"></param>
         public abstract void Invoke(World world, Entity[] entities);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool CanRun(World world, Entity entity)
         {
             bool singletonMatches = _singletonMask.Matches(world.GetSingletonEntityMask());
@@ -185,6 +189,30 @@ namespace Lux.Framework.ECS
             }
 
             return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool IsComponentValid<T>(T component) where T : AComponent<T>
+        {
+            if (component == null)
+            {
+                if (_optionalMask.Has<T>())
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return true;
+
+            //bool singletonMatches = _singletonMask.Matches(world.GetSingletonEntityMask());
+            //if (IsSingletonSystem)
+            //{
+            //    return singletonMatches;
+            //}
+
+            //return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
         }
 
         //public void InvokeSingleton(World world, Entity[] entities, ComponentMask singletonEntityMask)
@@ -228,40 +256,33 @@ namespace Lux.Framework.ECS
             }
 
             // Check if should add the component as required
-            bool addRequiredComponent = true;
+            //bool addRequiredComponent = true;
             for (int i = 0; i < SystemAttributes.Length; i++)
             {
                 if (SystemAttributes[i] is Optional optional)
                 {
                     if (optional.ComponentType == typeof(T))
                     {
-                        addRequiredComponent = false;
+                        //addRequiredComponent = false;
+                        _optionalMask.AddComponent<T>();
                     }
                 }
-                //else if (SystemAttributes[i] is Exclude excluded)
-                //{
-                //    if (excluded.ComponentType == typeof(T))
-                //    {
-                //        addRequiredComponent = false;
-
-                //    }
-                //}
             }
 
             // If component is not optional, add it to mask
-            if (addRequiredComponent)
-            {
-                // If component is a singleton type
-                if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
-                {
-                    _singletonMask.AddComponent<T>();
-                }
-                else
-                {
-                    IsSingletonSystem = false;
-                    _componentsMask.AddComponent<T>();
-                }
-            }
+            //if (addRequiredComponent)
+            //{
+            //    // If component is a singleton type
+            //    if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
+            //    {
+            //        _singletonMask.AddComponent<T>();
+            //    }
+            //    else
+            //    {
+            //        IsSingletonSystem = false;
+            //        _componentsMask.AddComponent<T>();
+            //    }
+            //}
         }
 
         /// <summary>
@@ -314,14 +335,7 @@ namespace Lux.Framework.ECS
 
             for (int i = 0; i < c1.Length; i++)
             {
-                /*
-                    FIGURE OUT WHY THE HELL THE PERFORMANCE IS BETTER
-                    WITH UpdateSingleComponentSpan when it's practically the same
-
-                    UpdateTwoComponentsSpan makes sense because it doesn't think
-                    about the order, and is not functionally working.
-                 */
-                if (CanRun(world, c1[i].Entity))
+                if (IsComponentValid(c1[i]))
                 {
                     _system(c1[i]);
                 }
@@ -363,11 +377,18 @@ namespace Lux.Framework.ECS
 
             for (int i = 0; i < c1.Length; i++)
             {
-                if (CanRun(world, c1[i].Entity))
+                if (!IsComponentValid(c1[i]))
                 {
-                    world.Unpack(c1[i].Entity, out T2 c2);
-                    _system(c1[i], c2);
+                    continue;
                 }
+
+                world.Unpack(c1[i].Entity, out T2 c2);
+                if (!IsComponentValid(c2))
+                {
+                    continue;
+                }
+
+                _system(c1[i], c2);
             }
         }
 

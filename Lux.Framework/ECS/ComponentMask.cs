@@ -35,15 +35,15 @@ namespace Lux.Framework.ECS
             _mask[arrIndex] &= ~(1 << intIndex);
         }
 
-        //public bool Exists<T>() where T : AComponent<T>
-        //{
-        //    int index = AComponent<T>.ComponentType;
-        //    int arrIndex = index / INT_SIZE;
-        //    int intIndex = index % INT_SIZE;
+        public bool Has<T>() where T : AComponent<T>
+        {
+            int index = AComponent<T>.ComponentType;
+            int arrIndex = index / INT_SIZE;
+            int intIndex = index % INT_SIZE;
 
-        //    // Is bit on
-        //    return 1 == ((_mask[arrIndex] >> intIndex) & 1);
-        //}
+            // Is bit on
+            return 1 == ((_mask[arrIndex] >> intIndex) & 1);
+        }
 
         /// <summary>
         /// Checks if the given mask has at least all the components
