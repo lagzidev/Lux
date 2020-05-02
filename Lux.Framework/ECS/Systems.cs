@@ -63,70 +63,70 @@ namespace Lux.Framework.ECS
         /// <param name="system">The system method that will be invoked</param>
         /// <returns>This instance. Enables chaining Add calls.</returns>
         public Systems Add<T1>(Action<T1> system)
-            where T1 : AComponent<T1>
+            where T1 : IComponent
         {
             Add(new System<T1>(system));
             return this;
         }
 
         public Systems Add<T1, T2>(Action<T1, T2> system)
-            where T1 : AComponent<T1>
-            where T2 : AComponent<T2>
+            where T1 : IComponent
+            where T2 : IComponent
         {
             Add(new System<T1, T2>(system));
             return this;
         }
 
         public Systems Add<T1, T2, T3>(Action<T1, T2, T3> system)
-            where T1 : AComponent<T1>
-            where T2 : AComponent<T2>
-            where T3 : AComponent<T3>
+            where T1 : IComponent
+            where T2 : IComponent
+            where T3 : IComponent
         {
             Add(new System<T1, T2, T3>(system));
             return this;
         }
 
         public Systems Add<T1, T2, T3, T4>(Action<T1, T2, T3, T4> system)
-            where T1 : AComponent<T1>
-            where T2 : AComponent<T2>
-            where T3 : AComponent<T3>
-            where T4 : AComponent<T4>
+            where T1 : IComponent
+            where T2 : IComponent
+            where T3 : IComponent
+            where T4 : IComponent
         {
             Add(new System<T1, T2, T3, T4>(system));
             return this;
         }
 
         public Systems Add<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> system)
-            where T1 : AComponent<T1>
-            where T2 : AComponent<T2>
-            where T3 : AComponent<T3>
-            where T4 : AComponent<T4>
-            where T5 : AComponent<T5>
+            where T1 : IComponent
+            where T2 : IComponent
+            where T3 : IComponent
+            where T4 : IComponent
+            where T5 : IComponent
         {
             Add(new System<T1, T2, T3, T4, T5>(system));
             return this;
         }
 
         public Systems Add<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> system)
-            where T1 : AComponent<T1>
-            where T2 : AComponent<T2>
-            where T3 : AComponent<T3>
-            where T4 : AComponent<T4>
-            where T5 : AComponent<T5>
-            where T6 : AComponent<T6>
+            where T1 : IComponent
+            where T2 : IComponent
+            where T3 : IComponent
+            where T4 : IComponent
+            where T5 : IComponent
+            where T6 : IComponent
         {
             Add(new System<T1, T2, T3, T4, T5, T6>(system));
             return this;
         }
 
         public Systems Add<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7> system)
-            where T1 : AComponent<T1>
-            where T2 : AComponent<T2>
-            where T3 : AComponent<T3>
-            where T4 : AComponent<T4>
-            where T5 : AComponent<T5>
-            where T6 : AComponent<T6>
-            where T7 : AComponent<T7>
+            where T1 : IComponent
+            where T2 : IComponent
+            where T3 : IComponent
+            where T4 : IComponent
+            where T5 : IComponent
+            where T6 : IComponent
+            where T7 : IComponent
         {
             Add(new System<T1, T2, T3, T4, T5, T6, T7>(system));
             return this;
@@ -190,7 +190,7 @@ namespace Lux.Framework.ECS
         //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsComponentValid<T>(T component) where T : AComponent<T>
+        protected bool IsComponentValid<T>(T component) where T : IComponent
         {
             if (component == null)
             {
@@ -211,8 +211,9 @@ namespace Lux.Framework.ECS
             //return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
         }
 
+        // TODO: SUPPORT READONLY SPAN
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected int GetMinSize<T>(ReadOnlySpan<T> components, int currentMinSize, out bool isSingleton) where T : AComponent<T>
+        protected int GetMinSize<T>(Span<T> components, int currentMinSize, out bool isSingleton) where T : IComponent
         {
             isSingleton = _singletonMask.Has<T>();
             if (components.Length < currentMinSize && !isSingleton)
@@ -250,7 +251,7 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
         /// <param name="world">System's world</param>
-        protected void RegisterComponent<T>(World world) where T : AComponent<T>
+        protected void RegisterComponent<T>(World world) where T : IComponent
         {
             // If component is singleton
             if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
@@ -328,7 +329,7 @@ namespace Lux.Framework.ECS
     }
 
     public class System<T1> : ASystem
-        where T1 : AComponent<T1>
+        where T1 : IComponent
     {
         private readonly Action<T1> _system;
 
@@ -367,8 +368,8 @@ namespace Lux.Framework.ECS
     }
 
     internal class System<T1, T2> : ASystem
-        where T1 : AComponent<T1>
-        where T2 : AComponent<T2>
+        where T1 : IComponent
+        where T2 : IComponent
     {
         private readonly Action<T1, T2> _system;
 
@@ -423,9 +424,9 @@ namespace Lux.Framework.ECS
     }
 
     internal class System<T1, T2, T3> : ASystem
-        where T1 : AComponent<T1>
-        where T2 : AComponent<T2>
-        where T3 : AComponent<T3>
+        where T1 : IComponent
+        where T2 : IComponent
+        where T3 : IComponent
     {
         private readonly Action<T1, T2, T3> _system;
 
@@ -490,10 +491,10 @@ namespace Lux.Framework.ECS
     }
 
     internal class System<T1, T2, T3, T4> : ASystem
-        where T1 : AComponent<T1>
-        where T2 : AComponent<T2>
-        where T3 : AComponent<T3>
-        where T4 : AComponent<T4>
+        where T1 : IComponent
+        where T2 : IComponent
+        where T3 : IComponent
+        where T4 : IComponent
     {
         private readonly Action<T1, T2, T3, T4> _system;
 
@@ -568,11 +569,11 @@ namespace Lux.Framework.ECS
     }
 
     internal class System<T1, T2, T3, T4, T5> : ASystem
-        where T1 : AComponent<T1>
-        where T2 : AComponent<T2>
-        where T3 : AComponent<T3>
-        where T4 : AComponent<T4>
-        where T5 : AComponent<T5>
+        where T1 : IComponent
+        where T2 : IComponent
+        where T3 : IComponent
+        where T4 : IComponent
+        where T5 : IComponent
     {
         private readonly Action<T1, T2, T3, T4, T5> _system;
 
@@ -657,12 +658,12 @@ namespace Lux.Framework.ECS
     }
 
     internal class System<T1, T2, T3, T4, T5, T6> : ASystem
-        where T1 : AComponent<T1>
-        where T2 : AComponent<T2>
-        where T3 : AComponent<T3>
-        where T4 : AComponent<T4>
-        where T5 : AComponent<T5>
-        where T6 : AComponent<T6>
+        where T1 : IComponent
+        where T2 : IComponent
+        where T3 : IComponent
+        where T4 : IComponent
+        where T5 : IComponent
+        where T6 : IComponent
     {
         private readonly Action<T1, T2, T3, T4, T5, T6> _system;
 
@@ -757,13 +758,13 @@ namespace Lux.Framework.ECS
     }
 
     internal class System<T1, T2, T3, T4, T5, T6, T7> : ASystem
-        where T1 : AComponent<T1>
-        where T2 : AComponent<T2>
-        where T3 : AComponent<T3>
-        where T4 : AComponent<T4>
-        where T5 : AComponent<T5>
-        where T6 : AComponent<T6>
-        where T7 : AComponent<T7>
+        where T1 : IComponent
+        where T2 : IComponent
+        where T3 : IComponent
+        where T4 : IComponent
+        where T5 : IComponent
+        where T6 : IComponent
+        where T7 : IComponent
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7> _system;
 

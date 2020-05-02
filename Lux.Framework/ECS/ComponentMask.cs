@@ -17,7 +17,7 @@ namespace Lux.Framework.ECS
             _mask = new int[size];
         }
 
-        public void AddComponent<T>() where T : AComponent<T>
+        public void AddComponent<T>() where T : IComponent
         {
             int index = AComponent<T>.ComponentType;
             int arrIndex = index / INT_SIZE;
@@ -26,7 +26,7 @@ namespace Lux.Framework.ECS
             _mask[arrIndex] |= 1 << intIndex;
         }
 
-        public void RemoveComponent<T>() where T : AComponent<T>
+        public void RemoveComponent<T>() where T : IComponent
         {
             int index = AComponent<T>.ComponentType;
             int arrIndex = index / INT_SIZE;
@@ -35,7 +35,7 @@ namespace Lux.Framework.ECS
             _mask[arrIndex] &= ~(1 << intIndex);
         }
 
-        public bool Has<T>() where T : AComponent<T>
+        public bool Has<T>() where T : IComponent
         {
             int index = AComponent<T>.ComponentType;
             int arrIndex = index / INT_SIZE;

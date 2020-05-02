@@ -24,7 +24,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="ECS\ComponentAccess.cs" />
-    <Compile Include="ECS\Playground.cs" />
+    <Compile Include="ECS\ComponentCreation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lux.Framework\Lux.Framework.csproj">

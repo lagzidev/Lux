@@ -77,8 +77,9 @@ namespace Lux.Framework.ECS
             _entityMasks[entity.Index] = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
 
             // Add default components
+            // TODO: Maybe get rid of this, just extra memory, there must be a better way
             Register<EntityInfo>(); // TODO: Try removing registration (because of auto registration on get component) See if there are side effects
-            AddComponent(entity, new EntityInfo());
+            AddComponent(entity, new EntityInfo(entity));
 
             return entity;
         }
@@ -103,7 +104,7 @@ namespace Lux.Framework.ECS
             _entityGenerator.DestroyEntity(entity);
         }
 
-        public bool Unpack<T>(Entity entity, out T outComponent) where T : AComponent<T>
+        public bool Unpack<T>(Entity entity, out T outComponent) where T : IComponent
         {
             // Get components data for the relevant component type
             ComponentsData<T> foundcomponentsData = GetComponentsData<T>();
@@ -111,7 +112,6 @@ namespace Lux.Framework.ECS
             // Get component if it exists
             if (!foundcomponentsData.GetComponent(entity, out outComponent))
             {
-                outComponent = null;
                 return false;
             }
 
@@ -124,12 +124,12 @@ namespace Lux.Framework.ECS
         /// <typeparam name="T">Component type</typeparam>
         /// <param name="outComponent">Returned component</param>
         /// <returns><c>true</c> if the component exists, <c>false</c> otherwise</returns>
-        public bool UnpackSingleton<T>(out T outComponent) where T : AComponent<T>
+        public bool UnpackSingleton<T>(out T outComponent) where T : IComponent
         {
             return Unpack(_singletonEntity, out outComponent);
         }
 
-        public bool UnpackEntityOrSingleton<T>(Entity entity, out T outComponent) where T : AComponent<T>
+        public bool UnpackEntityOrSingleton<T>(Entity entity, out T outComponent) where T : IComponent
         {
             if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
             {
@@ -144,7 +144,13 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
         /// <returns>A view of all components</returns>
-        public ReadOnlySpan<T> GetAll<T>() where T : AComponent<T>
+        public Span<T> GetAll<T>() where T : IComponent
+        {
+            ComponentsData<T> componentsData = GetComponentsData<T>();
+            return componentsData.GetAll();
+        }
+
+        public ReadOnlySpan<T> GetAllReadonly<T>() where T : IComponent
         {
             ComponentsData<T> componentsData = GetComponentsData<T>();
             return componentsData.GetAllReadonly();
@@ -156,11 +162,8 @@ namespace Lux.Framework.ECS
         /// <typeparam name="T">Component type</typeparam>
         /// <param name="entity">Entity that owns the component</param>
         /// <param name="component">Component to return</param>
-        public void AddComponent<T>(Entity entity, T component) where T : AComponent<T>
+        public void AddComponent<T>(Entity entity, T component) where T : IComponent
         {
-            // Set the entity for the component
-            component.Entity = entity;
-
             // If trying to add a singleton component to an entity that isn't the singleton entity
             if (entity != _singletonEntity && component is ISingleton)
             {
@@ -193,7 +196,7 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <typeparam name="T">The component type</typeparam>
         /// <param name="component">The component to add</param>
-        public void AddSingletonComponent<T>(T component) where T : AComponent<T>, ISingleton
+        public void AddSingletonComponent<T>(T component) where T : IComponent, ISingleton
         {
             AddComponent(_singletonEntity, component);
         }
@@ -209,7 +212,7 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <typeparam name="T">The component type</typeparam>
         /// <param name="entity">The entity that owns the component</param>
-        public void RemoveComponent<T>(Entity entity) where T : AComponent<T>
+        public void RemoveComponent<T>(Entity entity) where T : IComponent
         {
             ComponentsData<T> foundcomponentsData = GetComponentsData<T>();
             _entityMasks[entity.Index].RemoveComponent<T>();
@@ -230,7 +233,7 @@ namespace Lux.Framework.ECS
         /// <typeparam name="T">Component type to register to the world</typeparam>
         /// <param name="system">The system that is registering this component</param>
         /// <returns>The component type's ID for the world</returns>
-        public void Register<T>(int maxComponentsPerType = HardCodedConfig.MAX_ENTITIES_PER_WORLD) where T : AComponent<T>
+        public void Register<T>(int maxComponentsPerType = HardCodedConfig.MAX_ENTITIES_PER_WORLD) where T : IComponent
         {
             // Set the ComponentType for the component class
             AComponent<T>.SetComponentType();
@@ -242,7 +245,7 @@ namespace Lux.Framework.ECS
             }
         }
 
-        public void RegisterSingleton<T>() where T : AComponent<T>
+        public void RegisterSingleton<T>() where T : IComponent
         {
             Register<T>(1);
         }
@@ -276,7 +279,7 @@ namespace Lux.Framework.ECS
             //    // then a componentsData, but might be more demanding performance wise.
             //}
 
-        private ComponentsData<T> GetComponentsData<T>() where T : AComponent<T>
+        private ComponentsData<T> GetComponentsData<T>() where T : IComponent
         {
             // Try getting the components data
             if (!_componentsData.TryGetValue(AComponent<T>.ComponentType, out IComponentsData componentsData))

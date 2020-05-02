@@ -23,7 +23,7 @@ namespace Lux.Benchmark
             BenchmarkSwitcher.FromTypes(new[]
             {
                 typeof(ComponentAccess),
-                //typeof(Playground),
+                //typeof(ComponentCreation),
 #if DEBUG
             }).RunAll(new DebugInProcessConfig());
 #else

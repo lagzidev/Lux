@@ -179,6 +179,11 @@ namespace Lux.Framework.ECS
         /// <param name="key">Key that corresponds to the value</param>
         /// <param name="outValue">Value to return</param>
         /// <returns><c>true</c> if successfully returned value; <c>false</c> otherwise.</returns>
+        public Span<T> GetAll()
+        {
+            return _valueArr.AsSpan(0, Count);
+        }
+
         public ReadOnlySpan<T> GetAllReadonly()
         {
             return _valueArr.AsSpan(0, Count);

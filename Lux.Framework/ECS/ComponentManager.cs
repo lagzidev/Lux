@@ -13,7 +13,7 @@ namespace Lux.Framework.ECS
         void Serialize(BinaryWriter writer);
     }
 
-    public class ComponentsData<T> : IComponentsData where T : AComponent<T>
+    public class ComponentsData<T> : IComponentsData where T : IComponent
     {
         private readonly SparseSet<T, Entity> _components;
 
@@ -50,6 +50,11 @@ namespace Lux.Framework.ECS
         /// Get all components
         /// </summary>
         /// <returns></returns>
+        public Span<T> GetAll()
+        {
+            return _components.GetAll();
+        }
+
         public ReadOnlySpan<T> GetAllReadonly()
         {
             return _components.GetAllReadonly();

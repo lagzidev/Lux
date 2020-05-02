@@ -3,8 +3,14 @@ using System.Runtime.InteropServices;
 
 namespace Lux.Framework.ECS
 {
-    public class EntityInfo : AComponent<EntityInfo>
+    public class EntityInfo : IComponent
     {
+        public Entity Entity;
+
+        public EntityInfo(Entity entity)
+        {
+            Entity = entity;
+        }
     }
 
     [Serializable]

@@ -25,33 +25,28 @@ namespace Lux.Framework.ECS
     //}
     //s
 
+    public interface IComponent
+    {
+    }
+
     /// <summary>
     /// Limits a component type to only exist on the global Singleton Entity.
     /// </summary>
-    public interface ISingleton : IUnique
+    public interface ISingleton
     {
     }
 
     /// <summary>
-    /// Limits a component type to only exist on one entity at a time.
-    /// </summary>
-    public interface IUnique
-    {
-    }
-
-    /// <summary>
-    /// You shouldn't inherit from this. Instead use AComponent<T> where T is
-    /// your component class. (e.g. class Transform : AComponent<Transform>)    
+    /// You shouldn't inherit from this.   
     /// </summary>
     [Serializable]
     public abstract class AInternalComponent
     {
-        public Entity Entity { get; set; }
         protected static int ComponentTypesCount = 0;
     }
 
     [Serializable]
-    public abstract class AComponent<T> : AInternalComponent
+    public sealed class AComponent<T> : AInternalComponent where T : IComponent
     {
         public static int ComponentType = -1;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using Lux.Framework.ECS;
 
@@ -21,19 +22,21 @@ namespace Lux.Benchmark
         public static int EntityCount { get; set; }
 #endif
 
-        public class Position : AComponent<Position> // TODO: CHANGE TO STRUCT
+        public struct Position : IComponent // TODO: CHANGE TO STRUCT
         {
             public float X;
             public float Y;
+            public List<int> SomeList;
 
             public Position(int x, int y)
             {
                 X = x;
                 Y = y;
+                SomeList = new List<int>();
             }
         }
 
-        public class Speed : AComponent<Speed>
+        public struct Speed : IComponent
         {
             public float X;
             public float Y;
@@ -98,15 +101,15 @@ namespace Lux.Benchmark
             {
                 systems.Add((Context context) =>
                 {
-                    var positions = context.GetAllReadonly<Position>();
+                    var positions = context.GetAll<Position>();
 
                     for (int i = 0; i < positions.Length; i++)
                     {  
-                        if (positions[i] != null)
-                        {
-                            positions[i].X += 1;
-                            positions[i].Y += 1;
-                        }
+                        //if (positions[i] != null)
+                        //{
+                        positions[i].X += 1;
+                        positions[i].Y += 1;
+                        //}
                     }
                 });
             }
@@ -140,16 +143,13 @@ namespace Lux.Benchmark
             {
                 systems.Add((Context context) =>
                 {
-                    var positions = context.GetAllReadonly<Position>();
+                    var positions = context.GetAll<Position>();
                     var speeds = context.GetAllReadonly<Speed>();
 
                     for (int i = 0; i < positions.Length; i++)
                     {
-                        if (positions[i] != null && speeds[i] != null)
-                        {
-                            positions[i].X += speeds[i].X;
-                            positions[i].Y += speeds[i].Y;
-                        }
+                        positions[i].X += speeds[i].X;
+                        positions[i].Y += speeds[i].Y;
                     }
                 });
             }
