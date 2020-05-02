@@ -39,7 +39,7 @@ namespace Lux.Framework.ECS
         // TODO: Delete this. it's flawed. The returned components are not ordered by entity
         public ReadOnlySpan<T> GetAllReadonly<T>() where T : AComponent<T>
         {
-            return _world.GetAllReadonly<T>();
+            return _world.GetAll<T>();
         }
     }
 }

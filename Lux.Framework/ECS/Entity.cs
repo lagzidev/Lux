@@ -9,11 +9,23 @@ namespace Lux.Framework.ECS
 
     [Serializable]
     [StructLayout(LayoutKind.Explicit)]
-    public struct Entity : IComparable
+    public struct Entity : IComparable, ISparseSetKey, IEquatable<Entity>
     {
         [FieldOffset(0)] public Int32 Id;
 
-        [NonSerialized] [FieldOffset(0)] public Int16 Index;
+        [NonSerialized] [FieldOffset(0)] private Int16 _index;
+        public Int16 Index
+        {
+            get
+            {
+                return _index;
+            }
+            set
+            {
+                _index = value;
+            }
+        }
+
         [NonSerialized] [FieldOffset(2)] public Int16 Generation;
 
         public override bool Equals(object obj)
@@ -70,6 +82,11 @@ namespace Lux.Framework.ECS
 
             // If the generations are the same, compare indexes
             return Index.CompareTo(otherEntity.Index);
+        }
+
+        bool IEquatable<Entity>.Equals(Entity other)
+        {
+            return Equals(other);
         }
     }
 }

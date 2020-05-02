@@ -140,11 +140,11 @@ namespace Lux.Framework.ECS
         }
 
         /// <summary>
-        /// Get all components of a type, as readonly
+        /// Get all components of a certain type
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
-        /// <returns>A span of all components</returns>
-        public ReadOnlySpan<T> GetAllReadonly<T>() where T : AComponent<T>
+        /// <returns>A view of all components</returns>
+        public ReadOnlySpan<T> GetAll<T>() where T : AComponent<T>
         {
             ComponentsData<T> componentsData = GetComponentsData<T>();
             return componentsData.GetAllReadonly();
@@ -379,25 +379,12 @@ namespace Lux.Framework.ECS
                     continue;
                 }
 
-                ref ComponentMask singletonMask = ref _entityMasks[_singletonEntity.Index];
-
-                // If it's a singleton system, run it once for the singleton entity
-                if (systems[i].IsSingletonSystem)
-                {
-                    systems[i].Invoke(this, new Entity[] { _singletonEntity });
-                    continue;
-                }
-
-                // If entity was provided, run only on that entity
                 if (entity != null)
                 {
-                    // TODO: Get rid of the "new" allocation
-                    systems[i].Invoke(this, new Entity[] { entity.Value });
-                    continue;
+                    // TODO
                 }
 
-                // Run the system for all entities
-                systems[i].Invoke(this, _entities); // _entityMasks[s], singletonMask
+                systems[i].Invoke(this);
             }
         }
 

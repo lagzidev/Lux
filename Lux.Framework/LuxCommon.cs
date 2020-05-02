@@ -34,6 +34,20 @@ namespace Lux.Framework
 
             return min;
         }
+
+        public static int Max(int number, params int[] otherNumbers)
+        {
+            int max = number;
+            for (int i = 0; i < otherNumbers.Length; i++)
+            {
+                if (otherNumbers[i] > max)
+                {
+                    max = otherNumbers[i];
+                }
+            }
+
+            return max;
+        }
     }
 
     //public enum LuxStatusCode

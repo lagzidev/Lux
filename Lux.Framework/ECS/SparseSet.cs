@@ -9,11 +9,16 @@ namespace Lux.Framework.ECS
     {
     }
 
+    public interface ISparseSetKey
+    {
+        Int16 Index { get; set; }
+    }
+
     /// <summary>
     /// Represents an unordered sparse set of natural numbers, and provides constant-time operations on it.
     /// </summary>
     [Serializable]
-    public sealed class SparseSet<T> : ISparseSet, IEnumerable<T>, ISerializable
+    public sealed class SparseSet<T, K> : ISparseSet, IEnumerable<T>, ISerializable where K : ISparseSetKey, IEquatable<K>
     {
         /// <summary>
         /// Contains the actual data packed tightly in memory.
@@ -25,7 +30,7 @@ namespace Lux.Framework.ECS
         /// Contains keys, packed tightly in memory.
         /// Mirrors the value array.
         /// </summary>
-        private readonly int[] _keyArr;
+        private readonly K[] _keyArr;
 
         /// <summary>
         /// Contains a list of indexes to valid values in the dense array.
@@ -52,7 +57,7 @@ namespace Lux.Framework.ECS
             MaxSize = maxSize;
             Count = 0;
             _valueArr = new T[MaxSize];
-            _keyArr = new int[MaxSize];
+            _keyArr = new K[MaxSize];
             _sparseArr = new int[MaxSize];
         }
 
@@ -62,7 +67,7 @@ namespace Lux.Framework.ECS
             Count = (int)info.GetValue("Count", Count.GetType());
 
             _valueArr = (T[])info.GetValue("_valueArr", typeof(T[]));
-            _keyArr = (int[])info.GetValue("_keyArr", typeof(int[]));
+            _keyArr = (K[])info.GetValue("_keyArr", typeof(K[]));
             _sparseArr = (int[])info.GetValue("_sparseArr", typeof(int[]));
         }
 
@@ -85,9 +90,9 @@ namespace Lux.Framework.ECS
         /// <param name="outStatus">
         /// <see cref="SparseSet.Contains"/>
         /// </param>
-        public void Add(int key, T value)
+        public void Add(K key, T value)
         {
-            if (key < 0 || key >= MaxSize)
+            if (key.Index < 0 || key.Index >= MaxSize)
             {
                 LuxCommon.Assert(false);
                 return;
@@ -98,7 +103,7 @@ namespace Lux.Framework.ECS
             _valueArr[Count] = value;
 
             // Link it to the sparse array
-            _sparseArr[key] = Count;
+            _sparseArr[key.Index] = Count;
             Count++;
         }
 
@@ -107,7 +112,7 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <param name="key">The key that corresponds with the value to remove</param>
         /// </param>
-        public void Remove(int key)
+        public void Remove(K key)
         {
             if (!Contains(key))
             {
@@ -116,11 +121,11 @@ namespace Lux.Framework.ECS
 
             // put the key and value from the end of their respective arrays
             // into the slot of the removed key
-            _keyArr[_sparseArr[key]] = _keyArr[Count - 1];
-            _valueArr[_sparseArr[key]] = _valueArr[Count - 1];
+            _keyArr[_sparseArr[key.Index]] = _keyArr[Count - 1];
+            _valueArr[_sparseArr[key.Index]] = _valueArr[Count - 1];
 
             // put the link to the removed key in the slot of the replaced value
-            _sparseArr[_keyArr[Count - 1]] = _sparseArr[key];
+            _sparseArr[_keyArr[Count - 1].Index] = _sparseArr[key.Index];
 
             Count--;
         }
@@ -133,19 +138,19 @@ namespace Lux.Framework.ECS
         /// <c>true</c> if the set has a value that corresponds to the given key; 
         /// <c>false</c> otherwise.
         /// </returns>
-        public bool Contains(int key)
+        public bool Contains(K key)
         {
-            if (key >= MaxSize || key < 0)
+            if (key.Index >= MaxSize || key.Index < 0)
             {
                 LuxCommon.Assert(false);
                 return false;
             }
 
             // Linked key from the sparse array must point to a key within the currently used range of the keys array
-            bool sparseValueInDenseArrayRange = _sparseArr[key] < Count;
+            bool sparseValueInDenseArrayRange = _sparseArr[key.Index] < Count;
 
             // There's a valid two-way link between the sparse array and the keys array.
-            bool validTwoWayLink = _keyArr[_sparseArr[key]] == key;
+            bool validTwoWayLink = _keyArr[_sparseArr[key.Index]].Equals(key);
 
             return sparseValueInDenseArrayRange && validTwoWayLink;
         }
@@ -156,7 +161,7 @@ namespace Lux.Framework.ECS
         /// <param name="key">Key that corresponds to the value</param>
         /// <param name="outValue">Value to return</param>
         /// <returns><c>true</c> if successfully returned value; <c>false</c> otherwise.</returns>
-        public bool GetValue(int key, out T outValue)
+        public bool GetValue(K key, out T outValue)
         {
             if (!Contains(key))
             {
@@ -164,7 +169,7 @@ namespace Lux.Framework.ECS
                 return false;
             }
 
-            outValue = _valueArr[_sparseArr[key]];
+            outValue = _valueArr[_sparseArr[key.Index]];
             return true;
         }
 

@@ -112,7 +112,6 @@ namespace Lux.Benchmark
             }
         }
 
-
         public class TwoFeature : IFeature, IUpdateFeature, IInitFeature
         {
             public void Init(Systems systems)

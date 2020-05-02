@@ -141,7 +141,7 @@ namespace Lux.Framework.ECS
     public abstract class ASystem
     {
         private readonly ComponentMask _componentsMask;
-        private readonly ComponentMask _singletonMask;
+        protected readonly ComponentMask _singletonMask;
         private readonly ComponentMask _optionalMask;
 
         public ASystemAttribute[] SystemAttributes;
@@ -175,33 +175,29 @@ namespace Lux.Framework.ECS
         /// Invokes the system method
         /// </summary>
         /// <param name="world">World the system operates in</param>
-        /// <param name="entities">All entities in the world</param>
-        /// <param name="entityMask"></param>
-        public abstract void Invoke(World world, Entity[] entities);
+        public abstract void Invoke(World world);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool CanRun(World world, Entity entity)
-        {
-            bool singletonMatches = _singletonMask.Matches(world.GetSingletonEntityMask());
-            if (IsSingletonSystem)
-            {
-                return singletonMatches;
-            }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //protected bool CanRun(World world, Entity entity)
+        //{
+        //    bool singletonMatches = _singletonMask.Matches(world.GetSingletonEntityMask());
+        //    if (IsSingletonSystem)
+        //    {
+        //        return singletonMatches;
+        //    }
 
-            return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
-        }
+        //    return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool IsComponentValid<T>(T component) where T : AComponent<T>
         {
             if (component == null)
             {
-                if (_optionalMask.Has<T>())
+                if (!_optionalMask.Has<T>())
                 {
-                    return true;
+                    return false;
                 }
-
-                return false;
             }
 
             return true;
@@ -215,7 +211,19 @@ namespace Lux.Framework.ECS
             //return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
         }
 
-        //public void InvokeSingleton(World world, Entity[] entities, ComponentMask singletonEntityMask)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected int GetMinSize<T>(ReadOnlySpan<T> components, int currentMinSize, out bool isSingleton) where T : AComponent<T>
+        {
+            isSingleton = _singletonMask.Has<T>();
+            if (components.Length < currentMinSize && !isSingleton)
+            {
+                return components.Length;
+            }
+
+            return currentMinSize;
+        }
+
+        //public void InvokeSingleton(World world, ComponentMask singletonEntityMask)
         //{
         //    if (_singletonMask.Matches(singletonEntityMask))
         //    {
@@ -303,7 +311,7 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world, Entity[] entities)
+        public override void Invoke(World world)
         {
             _system();
         }
@@ -329,9 +337,9 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world, Entity[] entities)
+        public override void Invoke(World world)
         {
-            var c1 = world.GetAllReadonly<T1>();
+            var c1 = world.GetAll<T1>();
 
             for (int i = 0; i < c1.Length; i++)
             {
@@ -369,26 +377,31 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world, Entity[] entities)
+        public override void Invoke(World world)
         {
-            // TODO: Test this new way against the old entities registration way?
+            var c1 = world.GetAll<T1>();
+            var c2 = world.GetAll<T2>();
 
-            var c1 = world.GetAllReadonly<T1>();
+            int minSize = LuxCommon.Max(c1.Length, c2.Length);
+            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
+            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
 
-            for (int i = 0; i < c1.Length; i++)
+            for (int i = 0; i < minSize; i++)
             {
                 if (!IsComponentValid(c1[i]))
                 {
                     continue;
                 }
 
-                world.Unpack(c1[i].Entity, out T2 c2);
-                if (!IsComponentValid(c2))
+                if (!IsComponentValid(c2[i]))
                 {
                     continue;
                 }
 
-                _system(c1[i], c2);
+                _system(
+                    c1[c1Singleton ? 0 : i],
+                    c2[c2Singleton ? 0 : i]
+                );
             }
         }
 
@@ -421,18 +434,39 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world, Entity[] entities)
+        public override void Invoke(World world)
         {
-            var c1 = world.GetAllReadonly<T1>();
+            var c1 = world.GetAll<T1>();
+            var c2 = world.GetAll<T2>();
+            var c3 = world.GetAll<T3>();
 
-            for (int i = 0; i < c1.Length; i++)
+            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length);
+            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
+            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
+            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
+
+            for (int i = 0; i < minSize; i++)
             {
-                if (CanRun(world, c1[i].Entity))
+                if (!IsComponentValid(c1[i]))
                 {
-                    world.Unpack(c1[i].Entity, out T2 c2);
-                    world.Unpack(c1[i].Entity, out T3 c3);
-                    _system(c1[i], c2, c3);
+                    continue;
                 }
+
+                if (!IsComponentValid(c2[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c3[i]))
+                {
+                    continue;
+                }
+
+                _system(
+                    c1[c1Singleton ? 0 : i],
+                    c2[c2Singleton ? 0 : i],
+                    c3[c3Singleton ? 0 : i]
+                );
             }
         }
 
@@ -468,19 +502,47 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world, Entity[] entities)
+        public override void Invoke(World world)
         {
-            var c1 = world.GetAllReadonly<T1>();
+            var c1 = world.GetAll<T1>();
+            var c2 = world.GetAll<T2>();
+            var c3 = world.GetAll<T3>();
+            var c4 = world.GetAll<T4>();
 
-            for (int i = 0; i < c1.Length; i++)
+            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length, c4.Length);
+            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
+            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
+            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
+            minSize = GetMinSize(c4, minSize, out bool c4Singleton);
+
+            for (int i = 0; i < minSize; i++)
             {
-                if (CanRun(world, c1[i].Entity))
+                if (!IsComponentValid(c1[i]))
                 {
-                    world.Unpack(c1[i].Entity, out T2 c2);
-                    world.Unpack(c1[i].Entity, out T3 c3);
-                    world.Unpack(c1[i].Entity, out T4 c4);
-                    _system(c1[i], c2, c3, c4);
+                    continue;
                 }
+
+                if (!IsComponentValid(c2[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c3[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c4[i]))
+                {
+                    continue;
+                }
+
+                _system(
+                    c1[c1Singleton ? 0 : i],
+                    c2[c2Singleton ? 0 : i],
+                    c3[c3Singleton ? 0 : i],
+                    c4[c4Singleton ? 0 : i]
+                );
             }
         }
 
@@ -519,20 +581,55 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world, Entity[] entities)
+        public override void Invoke(World world)
         {
-            var c1 = world.GetAllReadonly<T1>();
+            var c1 = world.GetAll<T1>();
+            var c2 = world.GetAll<T2>();
+            var c3 = world.GetAll<T3>();
+            var c4 = world.GetAll<T4>();
+            var c5 = world.GetAll<T5>();
 
-            for (int i = 0; i < c1.Length; i++)
+            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length, c4.Length, c5.Length);
+            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
+            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
+            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
+            minSize = GetMinSize(c4, minSize, out bool c4Singleton);
+            minSize = GetMinSize(c5, minSize, out bool c5Singleton);
+
+            for (int i = 0; i < minSize; i++)
             {
-                if (CanRun(world, c1[i].Entity))
+                if (!IsComponentValid(c1[i]))
                 {
-                    world.Unpack(c1[i].Entity, out T2 c2);
-                    world.Unpack(c1[i].Entity, out T3 c3);
-                    world.Unpack(c1[i].Entity, out T4 c4);
-                    world.Unpack(c1[i].Entity, out T5 c5);
-                    _system(c1[i], c2, c3, c4, c5);
+                    continue;
                 }
+
+                if (!IsComponentValid(c2[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c3[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c4[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c5[i]))
+                {
+                    continue;
+                }
+
+                _system(
+                    c1[c1Singleton ? 0 : i],
+                    c2[c2Singleton ? 0 : i],
+                    c3[c3Singleton ? 0 : i],
+                    c4[c4Singleton ? 0 : i],
+                    c5[c5Singleton ? 0 : i]
+                );
             }
         }
 
@@ -574,21 +671,63 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world, Entity[] entities)
+        public override void Invoke(World world)
         {
-            var c1 = world.GetAllReadonly<T1>();
+            var c1 = world.GetAll<T1>();
+            var c2 = world.GetAll<T2>();
+            var c3 = world.GetAll<T3>();
+            var c4 = world.GetAll<T4>();
+            var c5 = world.GetAll<T5>();
+            var c6 = world.GetAll<T6>();
 
-            for (int i = 0; i < c1.Length; i++)
+            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length, c4.Length, c5.Length, c6.Length);
+            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
+            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
+            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
+            minSize = GetMinSize(c4, minSize, out bool c4Singleton);
+            minSize = GetMinSize(c5, minSize, out bool c5Singleton);
+            minSize = GetMinSize(c6, minSize, out bool c6Singleton);
+
+            for (int i = 0; i < minSize; i++)
             {
-                if (CanRun(world, c1[i].Entity))
+                if (!IsComponentValid(c1[i]))
                 {
-                    world.Unpack(c1[i].Entity, out T2 c2);
-                    world.Unpack(c1[i].Entity, out T3 c3);
-                    world.Unpack(c1[i].Entity, out T4 c4);
-                    world.Unpack(c1[i].Entity, out T5 c5);
-                    world.Unpack(c1[i].Entity, out T6 c6);
-                    _system(c1[i], c2, c3, c4, c5, c6);
+                    continue;
                 }
+
+                if (!IsComponentValid(c2[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c3[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c4[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c5[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c6[i]))
+                {
+                    continue;
+                }
+
+                _system(
+                    c1[c1Singleton ? 0 : i],
+                    c2[c2Singleton ? 0 : i],
+                    c3[c3Singleton ? 0 : i],
+                    c4[c4Singleton ? 0 : i],
+                    c5[c5Singleton ? 0 : i],
+                    c6[c6Singleton ? 0 : i]
+                );
             }
         }
 
@@ -633,22 +772,71 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world, Entity[] entities)
+        public override void Invoke(World world)
         {
-            var c1 = world.GetAllReadonly<T1>();
+            var c1 = world.GetAll<T1>();
+            var c2 = world.GetAll<T2>();
+            var c3 = world.GetAll<T3>();
+            var c4 = world.GetAll<T4>();
+            var c5 = world.GetAll<T5>();
+            var c6 = world.GetAll<T6>();
+            var c7 = world.GetAll<T7>();
 
-            for (int i = 0; i < c1.Length; i++)
+            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length, c4.Length, c5.Length, c6.Length, c7.Length);
+            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
+            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
+            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
+            minSize = GetMinSize(c4, minSize, out bool c4Singleton);
+            minSize = GetMinSize(c5, minSize, out bool c5Singleton);
+            minSize = GetMinSize(c6, minSize, out bool c6Singleton);
+            minSize = GetMinSize(c7, minSize, out bool c7Singleton);
+
+            for (int i = 0; i < minSize; i++)
             {
-                if (CanRun(world, c1[i].Entity))
+                if (!IsComponentValid(c1[i]))
                 {
-                    world.Unpack(c1[i].Entity, out T2 c2);
-                    world.Unpack(c1[i].Entity, out T3 c3);
-                    world.Unpack(c1[i].Entity, out T4 c4);
-                    world.Unpack(c1[i].Entity, out T5 c5);
-                    world.Unpack(c1[i].Entity, out T6 c6);
-                    world.Unpack(c1[i].Entity, out T7 c7);
-                    _system(c1[i], c2, c3, c4, c5, c6, c7);
+                    continue;
                 }
+
+                if (!IsComponentValid(c2[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c3[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c4[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c5[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c6[i]))
+                {
+                    continue;
+                }
+
+                if (!IsComponentValid(c7[i]))
+                {
+                    continue;
+                }
+
+                _system(
+                    c1[c1Singleton ? 0 : i],
+                    c2[c2Singleton ? 0 : i],
+                    c3[c3Singleton ? 0 : i],
+                    c4[c4Singleton ? 0 : i],
+                    c5[c5Singleton ? 0 : i],
+                    c6[c6Singleton ? 0 : i],
+                    c7[c7Singleton ? 0 : i]
+                );
             }
         }
 
