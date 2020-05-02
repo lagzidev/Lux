@@ -18,7 +18,7 @@ namespace Lux.Framework.ECS
     /// Represents an unordered sparse set of natural numbers, and provides constant-time operations on it.
     /// </summary>
     [Serializable]
-    public sealed class SparseSet<T, K> : ISparseSet, IEnumerable<T>, ISerializable where K : ISparseSetKey, IEquatable<K>
+    public sealed class SparseSet<T, K> : ISparseSet, IEnumerable<T> where K : ISparseSetKey, IEquatable<K>
     {
         /// <summary>
         /// Contains the actual data packed tightly in memory.
@@ -33,8 +33,8 @@ namespace Lux.Framework.ECS
         private readonly K[] _keyArr;
 
         /// <summary>
-        /// Contains a list of indexes to valid values in the dense array.
-        /// The expression _denseArr[_sparseArr[x]] == x is true for every x in the current range.
+        /// Contains a list of indexes to valid values in the keys array.
+        /// The expression _keyArr[_sparseArr[x]] == x is true for every x in the current range.
         /// </summary>
         private readonly int[] _sparseArr;
 
@@ -59,26 +59,6 @@ namespace Lux.Framework.ECS
             _valueArr = new T[MaxSize];
             _keyArr = new K[MaxSize];
             _sparseArr = new int[MaxSize];
-        }
-
-        private SparseSet(SerializationInfo info, StreamingContext context)
-        {
-            MaxSize = (int)info.GetValue("MaxSize", MaxSize.GetType());
-            Count = (int)info.GetValue("Count", Count.GetType());
-
-            _valueArr = (T[])info.GetValue("_valueArr", typeof(T[]));
-            _keyArr = (K[])info.GetValue("_keyArr", typeof(K[]));
-            _sparseArr = (int[])info.GetValue("_sparseArr", typeof(int[]));
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("MaxSize", MaxSize, MaxSize.GetType());
-            info.AddValue("Count", Count, Count.GetType());
-
-            info.AddValue("_valueArr", _valueArr, _valueArr.GetType());
-            info.AddValue("_keyArr", _keyArr, _keyArr.GetType());
-            info.AddValue("_sparseArr", _sparseArr, _sparseArr.GetType());
         }
 
         /// <summary>

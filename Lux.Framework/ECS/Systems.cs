@@ -140,21 +140,17 @@ namespace Lux.Framework.ECS
     /// </summary>
     public abstract class ASystem
     {
-        private readonly ComponentMask _componentsMask;
         protected readonly ComponentMask _singletonMask;
-        private readonly ComponentMask _optionalMask;
+        //private readonly ComponentMask _optionalMask;
 
         public ASystemAttribute[] SystemAttributes;
-        public Type[] ComponentTypes;
         public bool IsSingletonSystem;
 
         public ASystem()
         {
-            _componentsMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
             _singletonMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
-            _optionalMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
+            //_optionalMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
             SystemAttributes = null;
-            ComponentTypes = null;
             IsSingletonSystem = true;
         }
 
@@ -176,61 +172,6 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <param name="world">World the system operates in</param>
         public abstract void Invoke(World world);
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //protected bool CanRun(World world, Entity entity)
-        //{
-        //    bool singletonMatches = _singletonMask.Matches(world.GetSingletonEntityMask());
-        //    if (IsSingletonSystem)
-        //    {
-        //        return singletonMatches;
-        //    }
-
-        //    return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
-        //}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool IsComponentValid<T>(T component) where T : IComponent
-        {
-            if (component == null)
-            {
-                if (!_optionalMask.Has<T>())
-                {
-                    return false;
-                }
-            }
-
-            return true;
-
-            //bool singletonMatches = _singletonMask.Matches(world.GetSingletonEntityMask());
-            //if (IsSingletonSystem)
-            //{
-            //    return singletonMatches;
-            //}
-
-            //return _componentsMask.Matches(world.GetEntityMask(entity)) && singletonMatches;
-        }
-
-        // TODO: SUPPORT READONLY SPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected int GetMinSize<T>(Span<T> components, int currentMinSize, out bool isSingleton) where T : IComponent
-        {
-            isSingleton = _singletonMask.Has<T>();
-            if (components.Length < currentMinSize && !isSingleton)
-            {
-                return components.Length;
-            }
-
-            return currentMinSize;
-        }
-
-        //public void InvokeSingleton(World world, ComponentMask singletonEntityMask)
-        //{
-        //    if (_singletonMask.Matches(singletonEntityMask))
-        //    {
-        //        Invoke(world, entities);
-        //    }
-        //}
 
         /// <summary>
         /// Registers all components used by the system to the world
@@ -266,17 +207,17 @@ namespace Lux.Framework.ECS
 
             // Check if should add the component as required
             //bool addRequiredComponent = true;
-            for (int i = 0; i < SystemAttributes.Length; i++)
-            {
-                if (SystemAttributes[i] is Optional optional)
-                {
-                    if (optional.ComponentType == typeof(T))
-                    {
-                        //addRequiredComponent = false;
-                        _optionalMask.AddComponent<T>();
-                    }
-                }
-            }
+            //for (int i = 0; i < SystemAttributes.Length; i++)
+            //{
+            //    if (SystemAttributes[i] is Optional optional)
+            //    {
+            //        if (optional.ComponentType == typeof(T))
+            //        {
+            //            //addRequiredComponent = false;
+            //            _optionalMask.AddComponent<T>();
+            //        }
+            //    }
+            //}
 
             // If component is not optional, add it to mask
             //if (addRequiredComponent)
@@ -319,7 +260,6 @@ namespace Lux.Framework.ECS
 
         protected override void RegisterComponents(World world)
         {
-            ComponentTypes = new Type[0];
         }
 
         protected override MethodInfo GetMethodInfo()
@@ -344,21 +284,13 @@ namespace Lux.Framework.ECS
 
             for (int i = 0; i < c1.Length; i++)
             {
-                if (IsComponentValid(c1[i]))
-                {
-                    _system(c1[i]);
-                }
+                _system(c1[i]);
             }
         }
 
         protected override void RegisterComponents(World world)
         {
             RegisterComponent<T1>(world);
-
-            ComponentTypes = new Type[]
-            {
-                typeof(T1)
-            };
         }
 
         protected override MethodInfo GetMethodInfo()
@@ -380,41 +312,24 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world)
         {
-            var c1 = world.GetAll<T1>();
-            var c2 = world.GetAll<T2>();
+            //Span<Entity> entities = world.GetEntities<T1, T2>();
 
-            int minSize = LuxCommon.Max(c1.Length, c2.Length);
-            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
-            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
-
-            for (int i = 0; i < minSize; i++)
-            {
-                if (!IsComponentValid(c1[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c2[i]))
-                {
-                    continue;
-                }
-
-                _system(
-                    c1[c1Singleton ? 0 : i],
-                    c2[c2Singleton ? 0 : i]
-                );
-            }
+            //for (int i = 0; i < entities.Length; i++)
+            //{
+            //    if (minSize == c1.Length)
+            //    {
+            //        _system(
+            //            c1[i],
+            //            world.Unpack<T2>(
+            //        );
+            //    }
+            //}
         }
 
         protected override void RegisterComponents(World world)
         {
             RegisterComponent<T1>(world);
             RegisterComponent<T2>(world);
-            ComponentTypes = new Type[]
-            {
-                typeof(T1),
-                typeof(T2)
-            };
         }
 
         protected override MethodInfo GetMethodInfo()
@@ -437,38 +352,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world)
         {
-            var c1 = world.GetAll<T1>();
-            var c2 = world.GetAll<T2>();
-            var c3 = world.GetAll<T3>();
 
-            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length);
-            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
-            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
-            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
-
-            for (int i = 0; i < minSize; i++)
-            {
-                if (!IsComponentValid(c1[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c2[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c3[i]))
-                {
-                    continue;
-                }
-
-                _system(
-                    c1[c1Singleton ? 0 : i],
-                    c2[c2Singleton ? 0 : i],
-                    c3[c3Singleton ? 0 : i]
-                );
-            }
         }
 
         protected override void RegisterComponents(World world)
@@ -476,12 +360,6 @@ namespace Lux.Framework.ECS
             RegisterComponent<T1>(world);
             RegisterComponent<T2>(world);
             RegisterComponent<T3>(world);
-            ComponentTypes = new Type[]
-            {
-                typeof(T1),
-                typeof(T2),
-                typeof(T3)
-            };
         }
 
         protected override MethodInfo GetMethodInfo()
@@ -505,46 +383,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world)
         {
-            var c1 = world.GetAll<T1>();
-            var c2 = world.GetAll<T2>();
-            var c3 = world.GetAll<T3>();
-            var c4 = world.GetAll<T4>();
 
-            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length, c4.Length);
-            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
-            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
-            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
-            minSize = GetMinSize(c4, minSize, out bool c4Singleton);
-
-            for (int i = 0; i < minSize; i++)
-            {
-                if (!IsComponentValid(c1[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c2[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c3[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c4[i]))
-                {
-                    continue;
-                }
-
-                _system(
-                    c1[c1Singleton ? 0 : i],
-                    c2[c2Singleton ? 0 : i],
-                    c3[c3Singleton ? 0 : i],
-                    c4[c4Singleton ? 0 : i]
-                );
-            }
         }
 
         protected override void RegisterComponents(World world)
@@ -553,13 +392,6 @@ namespace Lux.Framework.ECS
             RegisterComponent<T2>(world);
             RegisterComponent<T3>(world);
             RegisterComponent<T4>(world);
-            ComponentTypes = new Type[]
-            {
-                typeof(T1),
-                typeof(T2),
-                typeof(T3),
-                typeof(T4)
-            };
         }
 
         protected override MethodInfo GetMethodInfo()
@@ -584,54 +416,6 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world)
         {
-            var c1 = world.GetAll<T1>();
-            var c2 = world.GetAll<T2>();
-            var c3 = world.GetAll<T3>();
-            var c4 = world.GetAll<T4>();
-            var c5 = world.GetAll<T5>();
-
-            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length, c4.Length, c5.Length);
-            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
-            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
-            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
-            minSize = GetMinSize(c4, minSize, out bool c4Singleton);
-            minSize = GetMinSize(c5, minSize, out bool c5Singleton);
-
-            for (int i = 0; i < minSize; i++)
-            {
-                if (!IsComponentValid(c1[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c2[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c3[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c4[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c5[i]))
-                {
-                    continue;
-                }
-
-                _system(
-                    c1[c1Singleton ? 0 : i],
-                    c2[c2Singleton ? 0 : i],
-                    c3[c3Singleton ? 0 : i],
-                    c4[c4Singleton ? 0 : i],
-                    c5[c5Singleton ? 0 : i]
-                );
-            }
         }
 
         protected override void RegisterComponents(World world)
@@ -641,14 +425,6 @@ namespace Lux.Framework.ECS
             RegisterComponent<T3>(world);
             RegisterComponent<T4>(world);
             RegisterComponent<T5>(world);
-            ComponentTypes = new Type[]
-            {
-                typeof(T1),
-                typeof(T2),
-                typeof(T3),
-                typeof(T4),
-                typeof(T5)
-            };
         }
 
         protected override MethodInfo GetMethodInfo()
@@ -674,62 +450,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world)
         {
-            var c1 = world.GetAll<T1>();
-            var c2 = world.GetAll<T2>();
-            var c3 = world.GetAll<T3>();
-            var c4 = world.GetAll<T4>();
-            var c5 = world.GetAll<T5>();
-            var c6 = world.GetAll<T6>();
 
-            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length, c4.Length, c5.Length, c6.Length);
-            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
-            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
-            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
-            minSize = GetMinSize(c4, minSize, out bool c4Singleton);
-            minSize = GetMinSize(c5, minSize, out bool c5Singleton);
-            minSize = GetMinSize(c6, minSize, out bool c6Singleton);
-
-            for (int i = 0; i < minSize; i++)
-            {
-                if (!IsComponentValid(c1[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c2[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c3[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c4[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c5[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c6[i]))
-                {
-                    continue;
-                }
-
-                _system(
-                    c1[c1Singleton ? 0 : i],
-                    c2[c2Singleton ? 0 : i],
-                    c3[c3Singleton ? 0 : i],
-                    c4[c4Singleton ? 0 : i],
-                    c5[c5Singleton ? 0 : i],
-                    c6[c6Singleton ? 0 : i]
-                );
-            }
         }
 
         protected override void RegisterComponents(World world)
@@ -740,15 +461,6 @@ namespace Lux.Framework.ECS
             RegisterComponent<T4>(world);
             RegisterComponent<T5>(world);
             RegisterComponent<T6>(world);
-            ComponentTypes = new Type[]
-            {
-                typeof(T1),
-                typeof(T2),
-                typeof(T3),
-                typeof(T4),
-                typeof(T5),
-                typeof(T6)
-            };
         }
 
         protected override MethodInfo GetMethodInfo()
@@ -775,70 +487,6 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world)
         {
-            var c1 = world.GetAll<T1>();
-            var c2 = world.GetAll<T2>();
-            var c3 = world.GetAll<T3>();
-            var c4 = world.GetAll<T4>();
-            var c5 = world.GetAll<T5>();
-            var c6 = world.GetAll<T6>();
-            var c7 = world.GetAll<T7>();
-
-            int minSize = LuxCommon.Max(c1.Length, c2.Length, c3.Length, c4.Length, c5.Length, c6.Length, c7.Length);
-            minSize = GetMinSize(c1, minSize, out bool c1Singleton);
-            minSize = GetMinSize(c2, minSize, out bool c2Singleton);
-            minSize = GetMinSize(c3, minSize, out bool c3Singleton);
-            minSize = GetMinSize(c4, minSize, out bool c4Singleton);
-            minSize = GetMinSize(c5, minSize, out bool c5Singleton);
-            minSize = GetMinSize(c6, minSize, out bool c6Singleton);
-            minSize = GetMinSize(c7, minSize, out bool c7Singleton);
-
-            for (int i = 0; i < minSize; i++)
-            {
-                if (!IsComponentValid(c1[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c2[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c3[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c4[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c5[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c6[i]))
-                {
-                    continue;
-                }
-
-                if (!IsComponentValid(c7[i]))
-                {
-                    continue;
-                }
-
-                _system(
-                    c1[c1Singleton ? 0 : i],
-                    c2[c2Singleton ? 0 : i],
-                    c3[c3Singleton ? 0 : i],
-                    c4[c4Singleton ? 0 : i],
-                    c5[c5Singleton ? 0 : i],
-                    c6[c6Singleton ? 0 : i],
-                    c7[c7Singleton ? 0 : i]
-                );
-            }
         }
 
         protected override void RegisterComponents(World world)
@@ -850,16 +498,6 @@ namespace Lux.Framework.ECS
             RegisterComponent<T5>(world);
             RegisterComponent<T6>(world);
             RegisterComponent<T7>(world);
-            ComponentTypes = new Type[]
-            {
-                typeof(T1),
-                typeof(T2),
-                typeof(T3),
-                typeof(T4),
-                typeof(T5),
-                typeof(T6),
-                typeof(T7)
-            };
         }
 
         protected override MethodInfo GetMethodInfo()

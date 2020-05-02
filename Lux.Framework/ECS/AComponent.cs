@@ -1,30 +1,6 @@
 ﻿using System;
 namespace Lux.Framework.ECS
 {
-    /// <summary>
-    /// Wrap this in a component to get their previous state.
-    /// The system won't run if there's no previous state available
-    /// (e.g. if the component was only just created.)
-    /// </summary>
-    /// <typeparam name="T">The component type</typeparam>
-    //public interface IPrevious<T> : AComponent<IPrevious<T>> where T : AComponent<T>
-    //{
-    //    T Value { get; set; }
-    //}
-
-    //public interface IExclude
-    //{
-    //}
-
-    /// <summary>
-    /// Let's the API know that the real component is inside
-    /// </summary>
-    //public interface IWrapper<T>
-    //{
-    //    T Value { get; set; }
-    //}
-    //s
-
     public interface IComponent
     {
     }

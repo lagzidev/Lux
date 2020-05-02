@@ -21,6 +21,11 @@ namespace Lux.Framework.ECS
         private readonly ComponentMask[] _entityMasks;
 
         /// <summary>
+        /// Actions an entity invokes when destroyed
+        /// </summary>
+        private readonly Dictionary<int, List<Action>> _entitiesOnDestroy;
+
+        /// <summary>
         /// The handle correlated with this world.
         /// </summary>
         private readonly WorldHandle _worldHandle;
@@ -29,11 +34,6 @@ namespace Lux.Framework.ECS
         /// Manages entities' IDs
         /// </summary>
         private readonly EntityGenerator _entityGenerator;
-
-        /// <summary>
-        /// All of the components data
-        /// </summary>
-        private readonly Dictionary<int, IComponentsData> _componentsData;
 
         /// <summary>
         /// An entity that is globally accessible from any system.
@@ -46,9 +46,9 @@ namespace Lux.Framework.ECS
         {
             _entities = new Entity[HardCodedConfig.MAX_ENTITIES_PER_WORLD];
             _entityMasks = new ComponentMask[HardCodedConfig.MAX_ENTITIES_PER_WORLD];
+            _entitiesOnDestroy = new Dictionary<int, List<Action>>(HardCodedConfig.MAX_ENTITIES_PER_WORLD);
             _worldHandle = worldHandle;
             _entityGenerator = new EntityGenerator();
-            _componentsData = new Dictionary<int, IComponentsData>();
             _singletonEntity = CreateSingletonEntity();
         }
 
@@ -73,12 +73,15 @@ namespace Lux.Framework.ECS
         public Entity CreateEntity()
         {
             Entity entity = _entityGenerator.CreateEntity();
+
             _entities[entity.Index] = entity;
             _entityMasks[entity.Index] = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
+            _entitiesOnDestroy.Add(entity.Index, new List<Action>());
 
             // Add default components
             // TODO: Maybe get rid of this, just extra memory, there must be a better way
-            Register<EntityInfo>(); // TODO: Try removing registration (because of auto registration on get component) See if there are side effects
+            // TODO: Try removing registration (because of auto registration on get component) See if there are side effects
+            Register<EntityInfo>(); 
             AddComponent(entity, new EntityInfo(entity));
 
             return entity;
@@ -92,30 +95,21 @@ namespace Lux.Framework.ECS
         {
             Run(_worldHandle.OnDestroyEntitySystems, entity, new OnDestroyEntity());
 
-            // Remove entity's components
-            foreach (IComponentsData componentsData in _componentsData.Values)
+            // Execute cleanup actions (removing components, etc.)
+            for (int i = 0; i < _entitiesOnDestroy[entity.Index].Count; i++)
             {
-                RemoveComponent(entity, componentsData);
+                _entitiesOnDestroy[entity.Index][i].Invoke();
             }
 
+            _entitiesOnDestroy.Remove(entity.Index);
             _entityMasks[entity.Index].Reset();
 
-            // Destroy entity
             _entityGenerator.DestroyEntity(entity);
         }
 
         public bool Unpack<T>(Entity entity, out T outComponent) where T : IComponent
         {
-            // Get components data for the relevant component type
-            ComponentsData<T> foundcomponentsData = GetComponentsData<T>();
-
-            // Get component if it exists
-            if (!foundcomponentsData.GetComponent(entity, out outComponent))
-            {
-                return false;
-            }
-
-            return true;
+            return ComponentsData<T>.Get(entity, out outComponent);
         }
 
         /// <summary>
@@ -146,14 +140,17 @@ namespace Lux.Framework.ECS
         /// <returns>A view of all components</returns>
         public Span<T> GetAll<T>() where T : IComponent
         {
-            ComponentsData<T> componentsData = GetComponentsData<T>();
-            return componentsData.GetAll();
+            return ComponentsData<T>.GetAll();
         }
 
+        /// <summary>
+        /// Get all components of a certain type, readonly
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>A view of all components</returns>
         public ReadOnlySpan<T> GetAllReadonly<T>() where T : IComponent
         {
-            ComponentsData<T> componentsData = GetComponentsData<T>();
-            return componentsData.GetAllReadonly();
+            return ComponentsData<T>.GetAllReadonly();
         }
 
         /// <summary>
@@ -171,20 +168,21 @@ namespace Lux.Framework.ECS
                 return;
             }
 
-            // Get components data for the relevant component type
-            ComponentsData<T> foundcomponentsData = GetComponentsData<T>();
+            // Just in case (nothing happens if already registered)
+            Register<T>();
 
             // If component already exists
-            if (foundcomponentsData.GetComponent(entity, out _))
+            if (ComponentsData<T>.Get(entity, out _))
             {
                 LuxCommon.Assert(false); // Shouldn't happen, use RemoveComponent first
                 RemoveComponent<T>(entity);
             }
 
             // Add component to system
-            foundcomponentsData.AddComponent(entity, component);
+            ComponentsData<T>.Add(entity, component);
 
             _entityMasks[entity.Index].AddComponent<T>();
+            _entitiesOnDestroy[entity.Index].Add(() => RemoveComponent<T>(entity));
 
             // Call systems that subscribed to the OnAddComponent event
             // TODO: Maybe make OnAddComponent a struct to improve performance when calling new this often
@@ -214,17 +212,10 @@ namespace Lux.Framework.ECS
         /// <param name="entity">The entity that owns the component</param>
         public void RemoveComponent<T>(Entity entity) where T : IComponent
         {
-            ComponentsData<T> foundcomponentsData = GetComponentsData<T>();
+            Register<T>();
+            ComponentsData<T>.Remove(entity);
+
             _entityMasks[entity.Index].RemoveComponent<T>();
-            RemoveComponent(entity, foundcomponentsData);
-        }
-
-        private void RemoveComponent(Entity entity, IComponentsData componentsData)
-        {
-            componentsData.RemoveComponent(entity);
-
-            // Call systems that subscribed to the OnRemoveComponent event
-            //Run(_worldHandle.OnRemoveComponentSystems);
         }
 
         /// <summary>
@@ -235,14 +226,8 @@ namespace Lux.Framework.ECS
         /// <returns>The component type's ID for the world</returns>
         public void Register<T>(int maxComponentsPerType = HardCodedConfig.MAX_ENTITIES_PER_WORLD) where T : IComponent
         {
-            // Set the ComponentType for the component class
             AComponent<T>.SetComponentType();
-
-            // Add a components data for the type if doesn't exist
-            if (!_componentsData.ContainsKey(AComponent<T>.ComponentType))
-            {
-                _componentsData[AComponent<T>.ComponentType] = new ComponentsData<T>(maxComponentsPerType);
-            }
+            ComponentsData<T>.Init(maxComponentsPerType);
         }
 
         public void RegisterSingleton<T>() where T : IComponent
@@ -278,18 +263,6 @@ namespace Lux.Framework.ECS
             //    // a Dictionary<Entity, Dictionary<ComponentType, Component> might be lighter
             //    // then a componentsData, but might be more demanding performance wise.
             //}
-
-        private ComponentsData<T> GetComponentsData<T>() where T : IComponent
-        {
-            // Try getting the components data
-            if (!_componentsData.TryGetValue(AComponent<T>.ComponentType, out IComponentsData componentsData))
-            {
-                Register<T>();
-                componentsData = _componentsData[AComponent<T>.ComponentType];
-            }
-
-            return (ComponentsData<T>)componentsData;
-        }
 
         #region Serialization
 

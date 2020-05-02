@@ -16,7 +16,7 @@ namespace Lux.Benchmark
         private WorldHandle _twoComponentsSpan;
 
 #if DEBUG
-        public static int EntityCount = 1;
+        public static int EntityCount = 10;
 #else
         [Params(10, 100, 1000)]
         public static int EntityCount { get; set; }
@@ -55,6 +55,18 @@ namespace Lux.Benchmark
                 Entity entity = context.CreateEntity();
                 context.AddComponent(entity, new Position(0, 0));
                 context.AddComponent(entity, new Speed(1, 2));
+
+                if (i % 4 == 0)
+                {
+                    context.RemoveComponent<Position>(entity);
+
+                    Entity entity2 = context.CreateEntity();
+                    context.AddComponent(entity2, new Position(0, 0));
+                    context.AddComponent(entity2, new Speed(1, 2));
+
+                    context.AddComponent(entity, new Position(0, 0));
+                    i++;
+                }
             }
         }
 
