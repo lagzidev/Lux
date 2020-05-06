@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-// todo : test [MethodImpl(MethodImplOptions.AggressiveInlining)]
-
 namespace Lux.Framework.ECS
 {
     /// <summary>
@@ -58,12 +56,7 @@ namespace Lux.Framework.ECS
         /// <returns></returns>
         private Entity CreateSingletonEntity()
         {
-            Entity entity = CreateEntity();
-
-            RegisterSingleton<Context>();
-            AddComponent(entity, new Context(this));
-
-            return entity;
+            return CreateEntity();
         }
 
         /// <summary>
@@ -79,10 +72,7 @@ namespace Lux.Framework.ECS
             _entitiesOnDestroy.Add(entity.Index, new List<Action>());
 
             // Add default components
-            // TODO: Maybe get rid of this, just extra memory, there must be a better way
-            // TODO: Try removing registration (because of auto registration on get component) See if there are side effects
-            Register<EntityInfo>(); 
-            AddComponent(entity, new EntityInfo(entity));
+            AddComponent(entity, new Context(this, entity));
 
             return entity;
         }
@@ -105,6 +95,12 @@ namespace Lux.Framework.ECS
             _entityMasks[entity.Index].Reset();
 
             _entityGenerator.DestroyEntity(entity);
+        }
+
+        public T Unpack<T>(Entity entity) where T : IComponent
+        {
+            ComponentsData<T>.Get(entity, out T outComponent);
+            return outComponent;
         }
 
         public bool Unpack<T>(Entity entity, out T outComponent) where T : IComponent
@@ -168,7 +164,6 @@ namespace Lux.Framework.ECS
                 return;
             }
 
-            // Just in case (nothing happens if already registered)
             Register<T>();
 
             // If component already exists
@@ -181,11 +176,16 @@ namespace Lux.Framework.ECS
             // Add component to system
             ComponentsData<T>.Add(entity, component);
 
+            // Update mask and systems
             _entityMasks[entity.Index].AddComponent<T>();
+            _worldHandle.AddComponent<T>(entity, _entityMasks[entity.Index]);
+
+            // Add destroy action for the component
+            // TODO: Find a better solution. This gets invoked even if the component was already destroyed with RemoveComponent
             _entitiesOnDestroy[entity.Index].Add(() => RemoveComponent<T>(entity));
 
             // Call systems that subscribed to the OnAddComponent event
-            // TODO: Maybe make OnAddComponent a struct to improve performance when calling new this often
+            // TODO: new OnAddComponent is called too often, try finding a solution
             Run(_worldHandle.OnAddComponentSystems, entity, new OnAddComponent(typeof(T)));
         }
 
@@ -194,7 +194,7 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <typeparam name="T">The component type</typeparam>
         /// <param name="component">The component to add</param>
-        public void AddSingletonComponent<T>(T component) where T : IComponent, ISingleton
+        public void AddSingletonComponent<T>(T component) where T : IComponent
         {
             AddComponent(_singletonEntity, component);
         }
@@ -216,6 +216,7 @@ namespace Lux.Framework.ECS
             ComponentsData<T>.Remove(entity);
 
             _entityMasks[entity.Index].RemoveComponent<T>();
+            _worldHandle.RemoveComponent<T>(entity, _entityMasks[entity.Index]);
         }
 
         /// <summary>
@@ -235,6 +236,48 @@ namespace Lux.Framework.ECS
             Register<T>(1);
         }
 
+        public List<Entity> GetEntities<T1, T2>()
+            where T1 : IComponent
+            where T2 : IComponent
+        {
+            ReadOnlySpan<Entity> t1Entities = ComponentsData<T1>.Entities;
+            ReadOnlySpan<Entity> t2Entities = ComponentsData<T2>.Entities;
+
+            int minSize = LuxCommon.Min(
+                t1Entities.Length,
+                t2Entities.Length
+            );
+
+            List<Entity> entities = new List<Entity>(minSize);
+
+            if (ComponentsData<T1>.Count == minSize)
+            {
+                for (int i = 0; i < minSize; i++)
+                {
+                    if (0 != t2Entities.BinarySearch(t1Entities[i]))
+                    {
+                        continue;
+                    }
+
+                    entities.Add(t1Entities[i]);
+                }
+            }
+            else // T2
+            {
+                for (int i = 0; i < minSize; i++)
+                {
+                    if (0 != t1Entities.BinarySearch(t2Entities[i]))
+                    {
+                        continue;
+                    }
+
+                    entities.Add(t2Entities[i]);
+                }
+            }
+
+            return entities;
+        }
+
         ///// <summary>
         ///// Tells the world to keep track of the components' previous state.
         ///// </summary>
@@ -244,25 +287,25 @@ namespace Lux.Framework.ECS
         //    // Set the ComponentType in case it wasn't set already
         //    AComponent<T>.SetComponentType();
 
-            //    // Add a components data for the type if doesn't exist
-            //    if (!_previouscomponentsDatas.ContainsKey(AComponent<T>.ComponentType))
-            //    {
-            //        var componentsData = new componentsData<T>();
-            //        _previouscomponentsDatas[AComponent<T>.ComponentType] = componentsData;
-            //    }
-            //}
+        //    // Add a components data for the type if doesn't exist
+        //    if (!_previouscomponentsDatas.ContainsKey(AComponent<T>.ComponentType))
+        //    {
+        //        var componentsData = new componentsData<T>();
+        //        _previouscomponentsDatas[AComponent<T>.ComponentType] = componentsData;
+        //    }
+        //}
 
-            /// <summary>
-            /// Saves the current state of the components into a seperate dataset.
-            /// Only copies components for which KeepPreviousState was called.
-            /// </summary>
-            //private void SavePreviousState<T>(T component) where T : AComponent<T>
-            //{
-            //    // TODO: Save the component into _previouscomponentsData or alternatively,
-            //    // find a more lightweight data storage solution. Something dynamic like
-            //    // a Dictionary<Entity, Dictionary<ComponentType, Component> might be lighter
-            //    // then a componentsData, but might be more demanding performance wise.
-            //}
+        /// <summary>
+        /// Saves the current state of the components into a seperate dataset.
+        /// Only copies components for which KeepPreviousState was called.
+        /// </summary>
+        //private void SavePreviousState<T>(T component) where T : AComponent<T>
+        //{
+        //    // TODO: Save the component into _previouscomponentsData or alternatively,
+        //    // find a more lightweight data storage solution. Something dynamic like
+        //    // a Dictionary<Entity, Dictionary<ComponentType, Component> might be lighter
+        //    // then a componentsData, but might be more demanding performance wise.
+        //}
 
         #region Serialization
 
@@ -344,7 +387,7 @@ namespace Lux.Framework.ECS
 
         #endregion Serialization
 
-        public void Run(Systems systems, Entity? entity, IEntityFilter filter)
+        public void Run(Systems systems, Entity? entity, ISystemFilter filter)
         {
             // For every system
             for (int i = 0; i < systems.Count; i++)
@@ -355,12 +398,7 @@ namespace Lux.Framework.ECS
                     continue;
                 }
 
-                if (entity != null)
-                {
-                    // TODO
-                }
-
-                systems[i].Invoke(this);
+                systems[i].Invoke(this, entity);
             }
         }
 

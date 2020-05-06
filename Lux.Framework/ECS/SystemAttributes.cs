@@ -29,7 +29,7 @@ namespace Lux.Framework.ECS
         }
     }
 
-    public class OnAddComponent : ASystemAttribute, IEntityFilter
+    public class OnAddComponent : ASystemAttribute, ISystemFilter
     {
         public Type AddedComponentType;
 
@@ -55,7 +55,7 @@ namespace Lux.Framework.ECS
         }
     }
 
-    public class OnDestroyEntity : ASystemAttribute, IEntityFilter
+    public class OnDestroyEntity : ASystemAttribute, ISystemFilter
     {
         public bool Filter(ASystem system)
         {

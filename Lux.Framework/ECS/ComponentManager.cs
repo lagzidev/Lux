@@ -2,9 +2,30 @@
 
 namespace Lux.Framework.ECS
 {
-    public static class ComponentsData<T> where T : IComponent
+    /// <summary>
+    /// Contains the components data. This class is static for easy access
+    /// like so: ComponentData<Transform>.GetAll()
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    internal static class ComponentsData<T> where T : IComponent
     {
         private static SparseSet<T, Entity> _components;
+
+        public static int Count
+        {
+            get
+            {
+                return _components.Count;
+            }
+        }
+
+        public static ReadOnlySpan<Entity> Entities
+        {
+            get
+            {
+                return _components.Keys;
+            }
+        }
 
         public static void Init(int maxComponents)
         {

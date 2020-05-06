@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -140,18 +141,15 @@ namespace Lux.Framework.ECS
     /// </summary>
     public abstract class ASystem
     {
-        protected readonly ComponentMask _singletonMask;
-        //private readonly ComponentMask _optionalMask;
-
         public ASystemAttribute[] SystemAttributes;
-        public bool IsSingletonSystem;
+        protected HashSet<Entity> _registeredEntities;
+        private ComponentMask _componentMask;
 
         public ASystem()
         {
-            _singletonMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
-            //_optionalMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
             SystemAttributes = null;
-            IsSingletonSystem = true;
+            _registeredEntities = new HashSet<Entity>();
+            _componentMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
         }
 
         public bool HasAttribute<T>() where T : ASystemAttribute
@@ -167,11 +165,27 @@ namespace Lux.Framework.ECS
             return false;
         }
 
+        public void TryAddEntity(Entity entity, ComponentMask entityMask)
+        {
+            if (_componentMask.Matches(entityMask))
+            {
+                _registeredEntities.Add(entity);
+            }
+        }
+
+        public void TryRemoveEntity(Entity entity, ComponentMask entityMask)
+        {
+            if (!_componentMask.Matches(entityMask))
+            {
+                _registeredEntities.Remove(entity);
+            }
+        }
+
         /// <summary>
         /// Invokes the system method
         /// </summary>
         /// <param name="world">World the system operates in</param>
-        public abstract void Invoke(World world);
+        public abstract void Invoke(World world, Entity? entity);
 
         /// <summary>
         /// Registers all components used by the system to the world
@@ -194,6 +208,8 @@ namespace Lux.Framework.ECS
         /// <param name="world">System's world</param>
         protected void RegisterComponent<T>(World world) where T : IComponent
         {
+            _componentMask.AddComponent<T>();
+
             // If component is singleton
             if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
             {
@@ -202,7 +218,6 @@ namespace Lux.Framework.ECS
             else
             {
                 world.Register<T>();
-                IsSingletonSystem = false;
             }
 
             // Check if should add the component as required
@@ -253,7 +268,7 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world)
+        public override void Invoke(World world, Entity? entity)
         {
             _system();
         }
@@ -278,8 +293,14 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world)
+        public override void Invoke(World world, Entity? entity)
         {
+            if (entity != null)
+            {
+                _system(world.Unpack<T1>(entity.Value));
+                return;
+            }
+
             var c1 = world.GetAll<T1>();
 
             for (int i = 0; i < c1.Length; i++)
@@ -310,20 +331,25 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world)
+        public override void Invoke(World world, Entity? entity)
         {
-            //Span<Entity> entities = world.GetEntities<T1, T2>();
+            if (entity != null)
+            {
+                _system(
+                    world.Unpack<T1>(entity.Value),
+                    world.Unpack<T2>(entity.Value)
+                );
 
-            //for (int i = 0; i < entities.Length; i++)
-            //{
-            //    if (minSize == c1.Length)
-            //    {
-            //        _system(
-            //            c1[i],
-            //            world.Unpack<T2>(
-            //        );
-            //    }
-            //}
+                return;
+            }
+
+            foreach (Entity e in _registeredEntities)
+            {
+                _system(
+                    world.Unpack<T1>(e),
+                    world.Unpack<T2>(e)
+                );
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -350,9 +376,27 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world)
+        public override void Invoke(World world, Entity? entity)
         {
+            if (entity != null)
+            {
+                _system(
+                    world.Unpack<T1>(entity.Value),
+                    world.Unpack<T2>(entity.Value),
+                    world.Unpack<T3>(entity.Value)
+                );
 
+                return;
+            }
+
+            foreach (Entity e in _registeredEntities)
+            {
+                _system(
+                    world.Unpack<T1>(e),
+                    world.Unpack<T2>(e),
+                    world.Unpack<T3>(e)
+                );
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -381,9 +425,29 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world)
+        public override void Invoke(World world, Entity? entity)
         {
+            if (entity != null)
+            {
+                _system(
+                    world.Unpack<T1>(entity.Value),
+                    world.Unpack<T2>(entity.Value),
+                    world.Unpack<T3>(entity.Value),
+                    world.Unpack<T4>(entity.Value)
+                );
 
+                return;
+            }
+
+            foreach (Entity e in _registeredEntities)
+            {
+                _system(
+                    world.Unpack<T1>(e),
+                    world.Unpack<T2>(e),
+                    world.Unpack<T3>(e),
+                    world.Unpack<T4>(e)
+                );
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -414,8 +478,31 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world)
+        public override void Invoke(World world, Entity? entity)
         {
+            if (entity != null)
+            {
+                _system(
+                    world.Unpack<T1>(entity.Value),
+                    world.Unpack<T2>(entity.Value),
+                    world.Unpack<T3>(entity.Value),
+                    world.Unpack<T4>(entity.Value),
+                    world.Unpack<T5>(entity.Value)
+                );
+
+                return;
+            }
+
+            foreach (Entity e in _registeredEntities)
+            {
+                _system(
+                    world.Unpack<T1>(e),
+                    world.Unpack<T2>(e),
+                    world.Unpack<T3>(e),
+                    world.Unpack<T4>(e),
+                    world.Unpack<T5>(e)
+                );
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -448,9 +535,33 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world)
+        public override void Invoke(World world, Entity? entity)
         {
+            if (entity != null)
+            {
+                _system(
+                    world.Unpack<T1>(entity.Value),
+                    world.Unpack<T2>(entity.Value),
+                    world.Unpack<T3>(entity.Value),
+                    world.Unpack<T4>(entity.Value),
+                    world.Unpack<T5>(entity.Value),
+                    world.Unpack<T6>(entity.Value)
+                );
 
+                return;
+            }
+
+            foreach (Entity e in _registeredEntities)
+            {
+                _system(
+                    world.Unpack<T1>(e),
+                    world.Unpack<T2>(e),
+                    world.Unpack<T3>(e),
+                    world.Unpack<T4>(e),
+                    world.Unpack<T5>(e),
+                    world.Unpack<T6>(e)
+                );
+            }
         }
 
         protected override void RegisterComponents(World world)
@@ -485,8 +596,35 @@ namespace Lux.Framework.ECS
             _system = system;
         }
 
-        public override void Invoke(World world)
+        public override void Invoke(World world, Entity? entity)
         {
+            if (entity != null)
+            {
+                _system(
+                    world.Unpack<T1>(entity.Value),
+                    world.Unpack<T2>(entity.Value),
+                    world.Unpack<T3>(entity.Value),
+                    world.Unpack<T4>(entity.Value),
+                    world.Unpack<T5>(entity.Value),
+                    world.Unpack<T6>(entity.Value),
+                    world.Unpack<T7>(entity.Value)
+                );
+
+                return;
+            }
+
+            foreach (Entity e in _registeredEntities)
+            {
+                _system(
+                    world.Unpack<T1>(e),
+                    world.Unpack<T2>(e),
+                    world.Unpack<T3>(e),
+                    world.Unpack<T4>(e),
+                    world.Unpack<T5>(e),
+                    world.Unpack<T6>(e),
+                    world.Unpack<T7>(e)
+                );
+            }
         }
 
         protected override void RegisterComponents(World world)

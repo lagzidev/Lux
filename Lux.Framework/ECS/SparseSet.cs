@@ -31,6 +31,13 @@ namespace Lux.Framework.ECS
         /// Mirrors the value array.
         /// </summary>
         private readonly K[] _keyArr;
+        public ReadOnlySpan<K> Keys
+        {
+            get
+            {
+                return _keyArr.AsSpan(0, Count);
+            }
+        }
 
         /// <summary>
         /// Contains a list of indexes to valid values in the keys array.

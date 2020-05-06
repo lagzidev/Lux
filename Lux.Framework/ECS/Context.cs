@@ -7,11 +7,12 @@ namespace Lux.Framework.ECS
     /// </summary>
     /// TODO: Support Context for creating entities from inside systems
     /// TODO: Try extending Context with functions like CreateRandomMob(params MobTypes[] types)!
-    public class Context : IComponent, ISingleton
+    public class Context : IComponent
     {
+        public Entity Entity;
         private readonly World _world;
 
-        internal Context(World world)
+        internal Context(World world, Entity entity)
         {
             _world = world;
         }
@@ -21,9 +22,14 @@ namespace Lux.Framework.ECS
             return _world.CreateEntity();
         }
 
-        public void AddComponent<T>(Entity entity, T component) where T : IComponent
+        public void AddComponent<T>(T component, Entity entity) where T : IComponent
         {
             _world.AddComponent(entity, component);
+        }
+
+        public void AddComponent<T>(T component) where T : IComponent
+        {
+            AddComponent(component, Entity);
         }
 
         public void RemoveComponent<T>(Entity entity) where T : IComponent
@@ -31,9 +37,31 @@ namespace Lux.Framework.ECS
             _world.RemoveComponent<T>(entity);
         }
 
-        public void AddSingleton<T>(T component) where T : IComponent, ISingleton
+        public void RemoveComponent<T>() where T : IComponent
+        {
+            RemoveComponent<T>(Entity);
+        }
+
+        public void AddSingleton<T>(T component) where T : IComponent
         {
             _world.AddSingletonComponent(component);
+        }
+
+        // TODO: Implement RemoveSingletonComponent
+
+        public bool Unpack<T>(out T component, Entity entity) where T : IComponent
+        {
+            return _world.Unpack(entity, out component);
+        }
+
+        public bool Unpack<T>(out T component) where T : IComponent
+        {
+            return Unpack(out component, Entity);
+        }
+
+        public bool UnpackSingleton<T>(out T component) where T : IComponent
+        {
+            return _world.UnpackSingleton(out component);
         }
 
         // TODO: Delete this. it's flawed. The returned components are not ordered by entity

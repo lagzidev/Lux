@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Lux.Framework.ECS
 {
-    public interface IEntityFilter
+    public interface ISystemFilter
     {
         /// <summary>
         /// Applies a filter that determines if the system should run or not

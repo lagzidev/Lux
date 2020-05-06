@@ -32,6 +32,40 @@ namespace Lux.Framework.ECS
             _world = new World(this);
         }
 
+        internal void AddComponent<T>(Entity entity, ComponentMask entityMask) where T : IComponent
+        {
+            AddComponent<T>(entity, entityMask, _initSystems);
+            AddComponent<T>(entity, entityMask, _updateSystems);
+            AddComponent<T>(entity, entityMask, _updateFixedSystems);
+            AddComponent<T>(entity, entityMask, _drawSystems);
+        }
+
+        private void AddComponent<T>(Entity entity, ComponentMask entityMask, Systems systems) where T : IComponent
+        {
+            for (int i = 0; i < systems.Count; i++)
+            {
+                systems[i].TryAddEntity(entity, entityMask);
+            }
+        }
+
+        // TODO: Have easier access to iterating all systems[]
+
+        internal void RemoveComponent<T>(Entity entity, ComponentMask entityMask) where T : IComponent
+        {
+            RemoveComponent<T>(entity, entityMask, _initSystems);
+            RemoveComponent<T>(entity, entityMask, _updateSystems);
+            RemoveComponent<T>(entity, entityMask, _updateFixedSystems);
+            RemoveComponent<T>(entity, entityMask, _drawSystems);
+        }
+
+        private void RemoveComponent<T>(Entity entity, ComponentMask entityMask, Systems systems) where T : IComponent
+        {
+            for (int i = 0; i < systems.Count; i++)
+            {
+                systems[i].TryRemoveEntity(entity, entityMask);
+            }
+        }
+
         /// <summary>
         /// Asserts that the systems have the required attribute
         /// </summary>

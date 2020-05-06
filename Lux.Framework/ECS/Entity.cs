@@ -3,19 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Lux.Framework.ECS
 {
-    public class EntityInfo : IComponent
-    {
-        public Entity Entity;
-
-        public EntityInfo(Entity entity)
-        {
-            Entity = entity;
-        }
-    }
-
     [Serializable]
     [StructLayout(LayoutKind.Explicit)]
-    public struct Entity : IComparable, ISparseSetKey, IEquatable<Entity>
+    public struct Entity : ISparseSetKey, IEquatable<Entity>, IComparable<Entity>
     {
         [FieldOffset(0)] public Int32 Id;
 
@@ -49,6 +39,11 @@ namespace Lux.Framework.ECS
             return Id.Equals(otherEntity.Id);
         }
 
+        bool IEquatable<Entity>.Equals(Entity other)
+        {
+            return Id.Equals(other.Id);
+        }
+
         public static bool operator ==(Entity a, Entity b)
         {
             if (ReferenceEquals(a, b))
@@ -69,16 +64,14 @@ namespace Lux.Framework.ECS
             return Id.GetHashCode();
         }
 
-        public int CompareTo(object obj)
+        public int CompareTo(Entity other)
         {
-            if (obj == null)
+            if (other == null)
             {
                 return 1;
             }
 
-            Entity otherEntity = (Entity)obj;
-
-            int generationCompare = Generation.CompareTo(otherEntity.Generation);
+            int generationCompare = Generation.CompareTo(other.Generation);
 
             // If the generations are different, return that comparison
             if (0 != generationCompare)
@@ -87,12 +80,7 @@ namespace Lux.Framework.ECS
             }
 
             // If the generations are the same, compare indexes
-            return Index.CompareTo(otherEntity.Index);
-        }
-
-        bool IEquatable<Entity>.Equals(Entity other)
-        {
-            return Equals(other);
+            return Index.CompareTo(other.Index);
         }
     }
 }
