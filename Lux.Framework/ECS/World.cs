@@ -139,6 +139,12 @@ namespace Lux.Framework.ECS
             return ComponentsData<T>.GetAllReadonly();
         }
 
+        public ReadOnlySpan<T> GetAllReadonly<T>(out ReadOnlySpan<Entity> entities) where T : IComponent
+        {
+            entities = ComponentsData<T>.Entities;
+            return ComponentsData<T>.GetAllReadonly();
+        }
+
         /// <summary>
         /// Adds a component to an entity
         /// </summary>

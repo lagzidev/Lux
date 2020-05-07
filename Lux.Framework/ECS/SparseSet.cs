@@ -59,13 +59,21 @@ namespace Lux.Framework.ECS
         /// Initializes a new instance of the <see cref="SparseSet"/> class.
         /// </summary>
         /// <param name="maxSize">The maximal size of the set.</param>
-        public SparseSet(int maxSize)
+        /// <param name="maxIndex">Maximum index value of Key.Index</param>
+        public SparseSet(int maxSize, int maxIndex)
         {
             MaxSize = maxSize;
+
+            if (maxSize > maxIndex)
+            {
+                LuxCommon.Assert(false); // Waste of memory, maxIndex limits maxSize
+                MaxSize = maxIndex;
+            }
+
             Count = 0;
             _valueArr = new T[MaxSize];
             _keyArr = new K[MaxSize];
-            _sparseArr = new int[MaxSize];
+            _sparseArr = new int[maxIndex];
         }
 
         /// <summary>
@@ -79,7 +87,7 @@ namespace Lux.Framework.ECS
         /// </param>
         public void Add(K key, T value)
         {
-            if (key.Index < 0 || key.Index >= MaxSize)
+            if (key.Index < 0 || key.Index >= _sparseArr.Length)
             {
                 LuxCommon.Assert(false);
                 return;
@@ -127,7 +135,7 @@ namespace Lux.Framework.ECS
         /// </returns>
         public bool Contains(K key)
         {
-            if (key.Index >= MaxSize || key.Index < 0)
+            if (key.Index >= _sparseArr.Length || key.Index < 0)
             {
                 LuxCommon.Assert(false);
                 return false;

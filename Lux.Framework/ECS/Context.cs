@@ -65,7 +65,26 @@ namespace Lux.Framework.ECS
             return _world.UnpackSingleton(out component);
         }
 
-        // TODO: Delete this. it's flawed. The returned components are not ordered by entity
+        public bool UnpackUnique<T>(out T component) where T : IComponent
+        {
+            ReadOnlySpan<T> span = _world.GetAllReadonly<T>();
+
+            switch (span.Length)
+            {
+                case 0:
+                    component = default;
+                    return false;
+                case 1:
+                    break;
+                default:
+                    LuxCommon.Assert(false); // Unique can't have more then 1 component
+                    break;
+            }
+
+            component = span[0];
+            return true;
+        }
+
         public Span<T> GetAll<T>() where T : IComponent
         {
             return _world.GetAll<T>();
@@ -74,6 +93,11 @@ namespace Lux.Framework.ECS
         public ReadOnlySpan<T> GetAllReadonly<T>() where T : IComponent
         {
             return _world.GetAllReadonly<T>();
+        }
+
+        public ReadOnlySpan<T> GetAllReadonly<T>(out ReadOnlySpan<Entity> entities) where T : IComponent
+        {
+            return _world.GetAllReadonly<T>(out entities);
         }
     }
 }

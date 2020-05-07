@@ -17,12 +17,12 @@ namespace Lux.Framework.ECS
                 if (_components == null)
                 {
                     int maxComponents = HardCodedConfig.MAX_ENTITIES_PER_WORLD;
-                    if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
+                    if (typeof(IUnique).IsAssignableFrom(typeof(T)))
                     {
                         maxComponents = 1;
                     }
 
-                    _components = new SparseSet<T, Entity>(maxComponents);
+                    _components = new SparseSet<T, Entity>(maxComponents, HardCodedConfig.MAX_ENTITIES_PER_WORLD);
                 }
 
                 return _components;

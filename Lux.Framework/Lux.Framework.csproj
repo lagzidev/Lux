@@ -51,7 +51,7 @@
     <Compile Include="ECS\Context.cs" />
     <Compile Include="ECS\AComponent.cs" />
     <Compile Include="ECS\Entity.cs" />
-    <Compile Include="ECS\ComponentManager.cs" />
+    <Compile Include="ECS\ComponentsData.cs" />
     <Compile Include="ECS\SystemAttributes.cs" />
     <Compile Include="ECS\ComponentMask.cs" />
     <Compile Include="ECS\Components.cs" />
