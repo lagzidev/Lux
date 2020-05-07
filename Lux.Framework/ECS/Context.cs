@@ -15,6 +15,7 @@ namespace Lux.Framework.ECS
         internal Context(World world, Entity entity)
         {
             _world = world;
+            Entity = entity;
         }
 
         public Entity CreateEntity()

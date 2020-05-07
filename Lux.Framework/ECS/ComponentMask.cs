@@ -3,7 +3,7 @@ namespace Lux.Framework.ECS
 {
     public class ComponentMask
     {
-        private const int INT_SIZE = sizeof(int) * 8;
+        private readonly static int INT_SIZE = sizeof(int) * 8;
         private readonly int[] _mask;
 
         public ComponentMask(int maxComponents)

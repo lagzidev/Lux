@@ -10,12 +10,34 @@ namespace Lux.Framework.ECS
     internal static class ComponentsData<T> where T : IComponent
     {
         private static SparseSet<T, Entity> _components;
+        private static SparseSet<T, Entity> Components
+        {
+            get
+            {
+                if (_components == null)
+                {
+                    int maxComponents = HardCodedConfig.MAX_ENTITIES_PER_WORLD;
+                    if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
+                    {
+                        maxComponents = 1;
+                    }
+
+                    _components = new SparseSet<T, Entity>(maxComponents);
+                }
+
+                return _components;
+            }
+            set
+            {
+                _components = value;
+            }
+        }
 
         public static int Count
         {
             get
             {
-                return _components.Count;
+                return Components.Count;
             }
         }
 
@@ -23,22 +45,14 @@ namespace Lux.Framework.ECS
         {
             get
             {
-                return _components.Keys;
+                return Components.Keys;
             }
         }
 
-        public static void Init(int maxComponents)
-        {
-            if (_components == null)
-            {
-                _components = new SparseSet<T, Entity>(maxComponents);
-            }
-        }
-
-        public static void Init(SparseSet<T, Entity> components)
-        {
-            _components = components;
-        }
+        //public static void Init(SparseSet<T, Entity> components)
+        //{
+        //    Components = components;
+        //}
 
         /// <summary>
         /// Gets the component associated with the given entity
@@ -50,7 +64,7 @@ namespace Lux.Framework.ECS
         /// </returns>
         public static bool Get(Entity entity, out T outComponent)
         {
-            return _components.GetValue(entity, out outComponent);
+            return Components.GetValue(entity, out outComponent);
         }
 
         /// <summary>
@@ -59,7 +73,7 @@ namespace Lux.Framework.ECS
         /// <returns>All components</returns>
         public static Span<T> GetAll()
         {
-            return _components.GetAll();
+            return Components.GetAll();
         }
 
         /// <summary>
@@ -68,7 +82,7 @@ namespace Lux.Framework.ECS
         /// <returns>All components</returns>
         public static ReadOnlySpan<T> GetAllReadonly()
         {
-            return _components.GetAllReadonly();
+            return Components.GetAllReadonly();
         }
 
         /// <summary>
@@ -78,7 +92,7 @@ namespace Lux.Framework.ECS
         /// <param name="component">Component to add</param>
         public static void Add(Entity entity, T component)
         {
-            _components.Add(entity, component);
+            Components.Add(entity, component);
         }
 
         /// <summary>
@@ -87,7 +101,7 @@ namespace Lux.Framework.ECS
         /// <param name="entity">Entity that corresponds to the component</param>
         public static void Remove(Entity entity)
         {
-            _components.Remove(entity);
+            Components.Remove(entity);
         }
     }
 }

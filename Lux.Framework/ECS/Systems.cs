@@ -209,45 +209,6 @@ namespace Lux.Framework.ECS
         protected void RegisterComponent<T>(World world) where T : IComponent
         {
             _componentMask.AddComponent<T>();
-
-            // If component is singleton
-            if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
-            {
-                world.RegisterSingleton<T>();
-            }
-            else
-            {
-                world.Register<T>();
-            }
-
-            // Check if should add the component as required
-            //bool addRequiredComponent = true;
-            //for (int i = 0; i < SystemAttributes.Length; i++)
-            //{
-            //    if (SystemAttributes[i] is Optional optional)
-            //    {
-            //        if (optional.ComponentType == typeof(T))
-            //        {
-            //            //addRequiredComponent = false;
-            //            _optionalMask.AddComponent<T>();
-            //        }
-            //    }
-            //}
-
-            // If component is not optional, add it to mask
-            //if (addRequiredComponent)
-            //{
-            //    // If component is a singleton type
-            //    if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
-            //    {
-            //        _singletonMask.AddComponent<T>();
-            //    }
-            //    else
-            //    {
-            //        IsSingletonSystem = false;
-            //        _componentsMask.AddComponent<T>();
-            //    }
-            //}
         }
 
         /// <summary>

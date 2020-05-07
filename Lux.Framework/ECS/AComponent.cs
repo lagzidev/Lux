@@ -24,28 +24,26 @@ namespace Lux.Framework.ECS
     [Serializable]
     public sealed class AComponent<T> : AInternalComponent where T : IComponent
     {
-        public static int ComponentType = -1;
-
-        /// <summary>
-        /// Sets the component class' type. Does nothing if already set.
-        /// </summary>
-        internal static void SetComponentType()
+        private static int _componentType = -1;
+        public static int ComponentType
         {
-            // If component type already set
-            if (ComponentType != -1)
+            get
             {
-                return;
-            }
+                if (_componentType == -1)
+                {
+                    // If there are too many component types
+                    if (ComponentTypesCount >= HardCodedConfig.MAX_GAME_COMPONENT_TYPES)
+                    {
+                        LuxCommon.Assert(false); // TOOD: Log and maybe throw
+                        return _componentType;
+                    }
 
-            // If there are too many component types
-            if (ComponentTypesCount >= HardCodedConfig.MAX_GAME_COMPONENT_TYPES)
-            {
-                LuxCommon.Assert(false);
-                return;
-            }
+                    _componentType = ComponentTypesCount;
+                    ComponentTypesCount++;
+                }
 
-            ComponentType = ComponentTypesCount;
-            ComponentTypesCount++;
+                return _componentType;
+            }
         }
     }
 }

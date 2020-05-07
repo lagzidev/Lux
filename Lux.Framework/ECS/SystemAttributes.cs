@@ -7,27 +7,19 @@ namespace Lux.Framework.ECS
     }
 
     /// <summary>
-    /// Tells the system not to run if this component exists for the entity
+    /// Use this for components that are Unpacked rather than required as
+    /// a parameter.
     /// </summary>
-    public class Exclude : ASystemAttribute
+    public class Using : ASystemAttribute
     {
-        public Type ComponentType;
+        public Type[] ComponentTypes;
 
-        public Exclude(Type excludedComponentType)
+        public Using(params Type[] componentTypes)
         {
-            ComponentType = excludedComponentType;
+            ComponentTypes = componentTypes;
         }
     }
 
-    public class Optional : ASystemAttribute
-    {
-        public Type ComponentType;
-
-        public Optional(Type optionalComponentType)
-        {
-            ComponentType = optionalComponentType;
-        }
-    }
 
     public class OnAddComponent : ASystemAttribute, ISystemFilter
     {

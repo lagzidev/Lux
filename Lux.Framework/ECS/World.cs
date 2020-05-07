@@ -119,16 +119,6 @@ namespace Lux.Framework.ECS
             return Unpack(_singletonEntity, out outComponent);
         }
 
-        public bool UnpackEntityOrSingleton<T>(Entity entity, out T outComponent) where T : IComponent
-        {
-            if (typeof(ISingleton).IsAssignableFrom(typeof(T)))
-            {
-                return UnpackSingleton(out outComponent);
-            }
-
-            return Unpack(entity, out outComponent);
-        }
-
         /// <summary>
         /// Get all components of a certain type
         /// </summary>
@@ -163,8 +153,6 @@ namespace Lux.Framework.ECS
                 LuxCommon.Assert(false);
                 return;
             }
-
-            Register<T>();
 
             // If component already exists
             if (ComponentsData<T>.Get(entity, out _))
@@ -212,28 +200,10 @@ namespace Lux.Framework.ECS
         /// <param name="entity">The entity that owns the component</param>
         public void RemoveComponent<T>(Entity entity) where T : IComponent
         {
-            Register<T>();
             ComponentsData<T>.Remove(entity);
 
             _entityMasks[entity.Index].RemoveComponent<T>();
             _worldHandle.RemoveComponent<T>(entity, _entityMasks[entity.Index]);
-        }
-
-        /// <summary>
-        /// Registers a component type to a world. Does nothing if already registered.
-        /// </summary>
-        /// <typeparam name="T">Component type to register to the world</typeparam>
-        /// <param name="system">The system that is registering this component</param>
-        /// <returns>The component type's ID for the world</returns>
-        public void Register<T>(int maxComponentsPerType = HardCodedConfig.MAX_ENTITIES_PER_WORLD) where T : IComponent
-        {
-            AComponent<T>.SetComponentType();
-            ComponentsData<T>.Init(maxComponentsPerType);
-        }
-
-        public void RegisterSingleton<T>() where T : IComponent
-        {
-            Register<T>(1);
         }
 
         public List<Entity> GetEntities<T1, T2>()
