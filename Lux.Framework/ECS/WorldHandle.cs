@@ -10,6 +10,7 @@ namespace Lux.Framework.ECS
     public class WorldHandle
     {
         public readonly  Systems OnAddComponentSystems;
+        public readonly  Systems OnRemoveComponentSystems;
         public readonly  Systems OnDestroyEntitySystems;
 
         private readonly  Systems _initSystems;
@@ -23,6 +24,7 @@ namespace Lux.Framework.ECS
         internal WorldHandle()
         {
             OnAddComponentSystems = new Systems();
+            OnRemoveComponentSystems = new Systems();
             OnDestroyEntitySystems = new Systems();
             _initSystems = new  Systems();
             _updateSystems = new  Systems();
@@ -94,6 +96,9 @@ namespace Lux.Framework.ECS
             OnAddComponentSystems.Register(_world);
             AssertAttribute<OnAddComponent>(OnAddComponentSystems);
 
+            OnRemoveComponentSystems.Register(_world);
+            AssertAttribute<OnRemoveComponent>(OnRemoveComponentSystems);
+
             OnDestroyEntitySystems.Register(_world);
             AssertAttribute<OnDestroyEntity>(OnDestroyEntitySystems);
         }
@@ -129,12 +134,22 @@ namespace Lux.Framework.ECS
             }
 
             {
-                // Add systems subscribed to an event
+                // Add systems subscribed to an OnAddComponent event
                 var castFeature = feature as IOnAddComponent;
                 castFeature?.OnAddComponent(OnAddComponentSystems);
             }
 
-            
+            {
+                // Add systems subscribed to an OnRemoveComponent event
+                var castFeature = feature as IOnRemoveComponent;
+                castFeature?.OnRemoveComponent(OnRemoveComponentSystems);
+            }
+
+            {
+                // Add systems subscribed to an OnDestroyEntity event
+                var castFeature = feature as IOnDestroyEntity;
+                castFeature?.OnDestroyEntity(OnDestroyEntitySystems);
+            }
         }
 
         #region Phases

@@ -30,6 +30,11 @@
         void OnAddComponent(Systems systems);
     }
 
+    public interface IOnRemoveComponent
+    {
+        void OnRemoveComponent(Systems systems);
+    }
+
     public interface IOnDestroyEntity
     {
         void OnDestroyEntity(Systems systems);

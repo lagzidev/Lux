@@ -23,6 +23,16 @@ namespace Lux.Framework.ECS
             return _world.CreateEntity();
         }
 
+        public void DestroyEntity()
+        {
+            _world.DestroyEntity(Entity);
+        }
+
+        public void DestroyEntity(Entity entity)
+        {
+            _world.DestroyEntity(entity);
+        }
+
         public void AddComponent<T>(T component, Entity entity) where T : IComponent
         {
             _world.AddComponent(entity, component);
@@ -48,7 +58,10 @@ namespace Lux.Framework.ECS
             _world.AddSingletonComponent(component);
         }
 
-        // TODO: Implement RemoveSingletonComponent
+        public void RemoveSingleton<T>() where T : IComponent
+        {
+            _world.RemoveSingletonComponent<T>();
+        }
 
         public bool Unpack<T>(out T component, Entity entity) where T : IComponent
         {

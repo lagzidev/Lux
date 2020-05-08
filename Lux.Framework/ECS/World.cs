@@ -193,6 +193,15 @@ namespace Lux.Framework.ECS
             AddComponent(_singletonEntity, component);
         }
 
+        /// <summary>
+        /// Removes a component from the singleton entity.
+        /// </summary>
+        /// <typeparam name="T">The component type</typeparam>
+        public void RemoveSingletonComponent<T>() where T : IComponent
+        {
+            RemoveComponent<T>(_singletonEntity);
+        }
+
         // TODO: SET COMPONENT
         //public void SetComponent<T>(Entity entity, T component) where T : AComponent<T>
         //{
@@ -206,6 +215,8 @@ namespace Lux.Framework.ECS
         /// <param name="entity">The entity that owns the component</param>
         public void RemoveComponent<T>(Entity entity) where T : IComponent
         {
+            Run(_worldHandle.OnRemoveComponentSystems, entity, new OnRemoveComponent(typeof(T)));
+            
             ComponentsData<T>.Remove(entity);
 
             _entityMasks[entity.Index].RemoveComponent<T>();

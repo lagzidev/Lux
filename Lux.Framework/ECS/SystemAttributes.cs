@@ -47,6 +47,32 @@ namespace Lux.Framework.ECS
         }
     }
 
+    public class OnRemoveComponent : ASystemAttribute, ISystemFilter
+    {
+        public Type RemovedComponentType;
+
+        public OnRemoveComponent(Type removedType)
+        {
+            RemovedComponentType = removedType;
+        }
+
+        public bool Filter(ASystem system)
+        {
+            for (int i = 0; i < system.SystemAttributes.Length; i++)
+            {
+                if (system.SystemAttributes[i] is OnRemoveComponent onRemoveComponent)
+                {
+                    if (onRemoveComponent.RemovedComponentType == RemovedComponentType)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+    }
+
     public class OnDestroyEntity : ASystemAttribute, ISystemFilter
     {
         public bool Filter(ASystem system)
