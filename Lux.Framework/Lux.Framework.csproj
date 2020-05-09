@@ -21,7 +21,7 @@
       <CustomCommands>
         <Command>
           <type>BeforeBuild</type>
-          <command>python3 ${ProjectDir}/../Lux.Pipeline/CompileProtobuf.py "${ProjectDir}/../" "${ProjectDir}/../Lux.Protobuf/"</command>
+          <command>python3 "${ProjectDir}/../Lux.Pipeline/include/CompileProtobuf.py" "${ProjectDir}/../" "${ProjectDir}/../Lux.Protobuf/" "${ProjectDir}/../Lux.Pipeline/include/Protobuf/"</command>
         </Command>
       </CustomCommands>
     </CustomCommands>
