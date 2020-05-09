@@ -1,0 +1,38 @@
+﻿syntax = "proto3";
+package LuxProtobuf;
+
+
+message Sprite
+{
+    string Name = 1;
+    string TextureName = 2;
+    repeated Animation Animations = 3;
+}
+
+message Animation
+{
+    string Name = 1;
+    repeated AnimationFrame Frames = 2;
+}
+
+message AnimationFrame
+{
+    int32 Width = 1;
+    int32 Height = 2;
+    int32 TexturePositionX = 3;
+    int32 TexturePositionY = 4;
+    SpriteDepth SpriteDepth = 5;
+    int32 Duration = 6;
+}
+
+enum SpriteDepth
+{
+    Undefined = 0;
+    Min = 10;
+
+    OverCharacter = 30;
+    Character = 40;
+    BehindCharacter = 50;
+
+    Max = 90;
+}

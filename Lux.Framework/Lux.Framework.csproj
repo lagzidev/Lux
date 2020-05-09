@@ -17,6 +17,14 @@
     <DefineConstants>DEBUG;FNA;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CustomCommands>
+      <CustomCommands>
+        <Command>
+          <type>BeforeBuild</type>
+          <command>python3 ${ProjectDir}/../Lux.Pipeline/CompileProtobuf.py "${ProjectDir}/../" "${ProjectDir}/../Lux.Protobuf/"</command>
+        </Command>
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|anycpu' ">
     <Optimize>true</Optimize>
