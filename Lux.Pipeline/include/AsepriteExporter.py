@@ -24,7 +24,7 @@ class AsepriteExporter:
 			(png_path, aseprite_json) = aseprite_file.export(self.export_path)
 
 			# TODO: Add the texture to an atlas and provide the atlas' image path instead of png_path
-			game_json = aseprite_json_to_game_json(png_path, aseprite_json)
+			game_json = aseprite_json_to_game_json(os.path.splitext(filename)[0], aseprite_json)
 
 			json_path = os.path.join(self.export_path, aseprite_file.get_filename_no_extension() + '.json')
 
@@ -151,6 +151,6 @@ def aseprite_json_to_game_json(texture_name, aseprite_json):
 		# Add animation to sprite
 		sprite.Animations[current_tag['name']].Frames.extend(frames)
 
-	json_obj = MessageToJson(sprite, preserving_proto_field_name=True)
+	json_str = MessageToJson(sprite, preserving_proto_field_name=True)
 
-	return json_obj
+	return json.loads(json_str)
