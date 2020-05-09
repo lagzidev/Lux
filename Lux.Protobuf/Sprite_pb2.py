@@ -16,15 +16,15 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='Sprite.proto',
-  package='LuxProtobuf',
+  package='Lux.Protobuf',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x0cSprite.proto\x12\x0bLuxProtobuf\"W\n\x06Sprite\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12\x13\n\x0bTextureName\x18\x02 \x01(\t\x12*\n\nAnimations\x18\x03 \x03(\x0b\x32\x16.LuxProtobuf.Animation\"F\n\tAnimation\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12+\n\x06\x46rames\x18\x02 \x03(\x0b\x32\x1b.LuxProtobuf.AnimationFrame\"\xa4\x01\n\x0e\x41nimationFrame\x12\r\n\x05Width\x18\x01 \x01(\x05\x12\x0e\n\x06Height\x18\x02 \x01(\x05\x12\x18\n\x10TexturePositionX\x18\x03 \x01(\x05\x12\x18\n\x10TexturePositionY\x18\x04 \x01(\x05\x12-\n\x0bSpriteDepth\x18\x05 \x01(\x0e\x32\x18.LuxProtobuf.SpriteDepth\x12\x10\n\x08\x44uration\x18\x06 \x01(\x05*e\n\x0bSpriteDepth\x12\r\n\tUndefined\x10\x00\x12\x07\n\x03Min\x10\n\x12\x11\n\rOverCharacter\x10\x1e\x12\r\n\tCharacter\x10(\x12\x13\n\x0f\x42\x65hindCharacter\x10\x32\x12\x07\n\x03Max\x10Zb\x06proto3'
+  serialized_pb=b'\n\x0cSprite.proto\x12\x0cLux.Protobuf\"\xa3\x01\n\x06Sprite\x12\x13\n\x0bTextureName\x18\x01 \x01(\t\x12\x38\n\nAnimations\x18\x02 \x03(\x0b\x32$.Lux.Protobuf.Sprite.AnimationsEntry\x1aJ\n\x0f\x41nimationsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.Lux.Protobuf.Animation:\x02\x38\x01\"9\n\tAnimation\x12,\n\x06\x46rames\x18\x01 \x03(\x0b\x32\x1c.Lux.Protobuf.AnimationFrame\"\xa5\x01\n\x0e\x41nimationFrame\x12\r\n\x05Width\x18\x01 \x01(\x05\x12\x0e\n\x06Height\x18\x02 \x01(\x05\x12\x18\n\x10TexturePositionX\x18\x03 \x01(\x05\x12\x18\n\x10TexturePositionY\x18\x04 \x01(\x05\x12.\n\x0bSpriteDepth\x18\x05 \x01(\x0e\x32\x19.Lux.Protobuf.SpriteDepth\x12\x10\n\x08\x44uration\x18\x06 \x01(\x05*e\n\x0bSpriteDepth\x12\r\n\tUndefined\x10\x00\x12\x07\n\x03Min\x10\n\x12\x11\n\rOverCharacter\x10\x1e\x12\r\n\tCharacter\x10(\x12\x13\n\x0f\x42\x65hindCharacter\x10\x32\x12\x07\n\x03Max\x10Zb\x06proto3'
 )
 
 _SPRITEDEPTH = _descriptor.EnumDescriptor(
   name='SpriteDepth',
-  full_name='LuxProtobuf.SpriteDepth',
+  full_name='Lux.Protobuf.SpriteDepth',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -55,8 +55,8 @@ _SPRITEDEPTH = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=357,
-  serialized_end=458,
+  serialized_start=423,
+  serialized_end=524,
 )
 _sym_db.RegisterEnumDescriptor(_SPRITEDEPTH)
 
@@ -70,31 +70,24 @@ Max = 90
 
 
 
-_SPRITE = _descriptor.Descriptor(
-  name='Sprite',
-  full_name='LuxProtobuf.Sprite',
+_SPRITE_ANIMATIONSENTRY = _descriptor.Descriptor(
+  name='AnimationsEntry',
+  full_name='Lux.Protobuf.Sprite.AnimationsEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='Name', full_name='LuxProtobuf.Sprite.Name', index=0,
+      name='key', full_name='Lux.Protobuf.Sprite.AnimationsEntry.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='TextureName', full_name='LuxProtobuf.Sprite.TextureName', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='Animations', full_name='LuxProtobuf.Sprite.Animations', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='value', full_name='Lux.Protobuf.Sprite.AnimationsEntry.value', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -104,33 +97,32 @@ _SPRITE = _descriptor.Descriptor(
   nested_types=[],
   enum_types=[
   ],
-  serialized_options=None,
+  serialized_options=b'8\001',
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=29,
-  serialized_end=116,
+  serialized_start=120,
+  serialized_end=194,
 )
 
-
-_ANIMATION = _descriptor.Descriptor(
-  name='Animation',
-  full_name='LuxProtobuf.Animation',
+_SPRITE = _descriptor.Descriptor(
+  name='Sprite',
+  full_name='Lux.Protobuf.Sprite',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='Name', full_name='LuxProtobuf.Animation.Name', index=0,
+      name='TextureName', full_name='Lux.Protobuf.Sprite.TextureName', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='Frames', full_name='LuxProtobuf.Animation.Frames', index=1,
+      name='Animations', full_name='Lux.Protobuf.Sprite.Animations', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -139,6 +131,37 @@ _ANIMATION = _descriptor.Descriptor(
   ],
   extensions=[
   ],
+  nested_types=[_SPRITE_ANIMATIONSENTRY, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=31,
+  serialized_end=194,
+)
+
+
+_ANIMATION = _descriptor.Descriptor(
+  name='Animation',
+  full_name='Lux.Protobuf.Animation',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='Frames', full_name='Lux.Protobuf.Animation.Frames', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
   nested_types=[],
   enum_types=[
   ],
@@ -148,55 +171,55 @@ _ANIMATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=118,
-  serialized_end=188,
+  serialized_start=196,
+  serialized_end=253,
 )
 
 
 _ANIMATIONFRAME = _descriptor.Descriptor(
   name='AnimationFrame',
-  full_name='LuxProtobuf.AnimationFrame',
+  full_name='Lux.Protobuf.AnimationFrame',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='Width', full_name='LuxProtobuf.AnimationFrame.Width', index=0,
+      name='Width', full_name='Lux.Protobuf.AnimationFrame.Width', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='Height', full_name='LuxProtobuf.AnimationFrame.Height', index=1,
+      name='Height', full_name='Lux.Protobuf.AnimationFrame.Height', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='TexturePositionX', full_name='LuxProtobuf.AnimationFrame.TexturePositionX', index=2,
+      name='TexturePositionX', full_name='Lux.Protobuf.AnimationFrame.TexturePositionX', index=2,
       number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='TexturePositionY', full_name='LuxProtobuf.AnimationFrame.TexturePositionY', index=3,
+      name='TexturePositionY', full_name='Lux.Protobuf.AnimationFrame.TexturePositionY', index=3,
       number=4, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='SpriteDepth', full_name='LuxProtobuf.AnimationFrame.SpriteDepth', index=4,
+      name='SpriteDepth', full_name='Lux.Protobuf.AnimationFrame.SpriteDepth', index=4,
       number=5, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='Duration', full_name='LuxProtobuf.AnimationFrame.Duration', index=5,
+      name='Duration', full_name='Lux.Protobuf.AnimationFrame.Duration', index=5,
       number=6, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -214,11 +237,13 @@ _ANIMATIONFRAME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=191,
-  serialized_end=355,
+  serialized_start=256,
+  serialized_end=421,
 )
 
-_SPRITE.fields_by_name['Animations'].message_type = _ANIMATION
+_SPRITE_ANIMATIONSENTRY.fields_by_name['value'].message_type = _ANIMATION
+_SPRITE_ANIMATIONSENTRY.containing_type = _SPRITE
+_SPRITE.fields_by_name['Animations'].message_type = _SPRITE_ANIMATIONSENTRY
 _ANIMATION.fields_by_name['Frames'].message_type = _ANIMATIONFRAME
 _ANIMATIONFRAME.fields_by_name['SpriteDepth'].enum_type = _SPRITEDEPTH
 DESCRIPTOR.message_types_by_name['Sprite'] = _SPRITE
@@ -228,25 +253,34 @@ DESCRIPTOR.enum_types_by_name['SpriteDepth'] = _SPRITEDEPTH
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Sprite = _reflection.GeneratedProtocolMessageType('Sprite', (_message.Message,), {
+
+  'AnimationsEntry' : _reflection.GeneratedProtocolMessageType('AnimationsEntry', (_message.Message,), {
+    'DESCRIPTOR' : _SPRITE_ANIMATIONSENTRY,
+    '__module__' : 'Sprite_pb2'
+    # @@protoc_insertion_point(class_scope:Lux.Protobuf.Sprite.AnimationsEntry)
+    })
+  ,
   'DESCRIPTOR' : _SPRITE,
   '__module__' : 'Sprite_pb2'
-  # @@protoc_insertion_point(class_scope:LuxProtobuf.Sprite)
+  # @@protoc_insertion_point(class_scope:Lux.Protobuf.Sprite)
   })
 _sym_db.RegisterMessage(Sprite)
+_sym_db.RegisterMessage(Sprite.AnimationsEntry)
 
 Animation = _reflection.GeneratedProtocolMessageType('Animation', (_message.Message,), {
   'DESCRIPTOR' : _ANIMATION,
   '__module__' : 'Sprite_pb2'
-  # @@protoc_insertion_point(class_scope:LuxProtobuf.Animation)
+  # @@protoc_insertion_point(class_scope:Lux.Protobuf.Animation)
   })
 _sym_db.RegisterMessage(Animation)
 
 AnimationFrame = _reflection.GeneratedProtocolMessageType('AnimationFrame', (_message.Message,), {
   'DESCRIPTOR' : _ANIMATIONFRAME,
   '__module__' : 'Sprite_pb2'
-  # @@protoc_insertion_point(class_scope:LuxProtobuf.AnimationFrame)
+  # @@protoc_insertion_point(class_scope:Lux.Protobuf.AnimationFrame)
   })
 _sym_db.RegisterMessage(AnimationFrame)
 
 
+_SPRITE_ANIMATIONSENTRY._options = None
 # @@protoc_insertion_point(module_scope)

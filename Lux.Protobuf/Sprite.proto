@@ -1,18 +1,16 @@
 ﻿syntax = "proto3";
-package LuxProtobuf;
+package Lux.Protobuf;
 
 
 message Sprite
 {
-    string Name = 1;
-    string TextureName = 2;
-    repeated Animation Animations = 3;
+    string TextureName = 1;
+    map<string, Animation> Animations = 2;
 }
 
 message Animation
 {
-    string Name = 1;
-    repeated AnimationFrame Frames = 2;
+    repeated AnimationFrame Frames = 1;
 }
 
 message AnimationFrame

@@ -35,6 +35,12 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="..\Lux.Protobuf\Sprite_pb2.py">
+      <Link>Lux.Protobuf\Sprite_pb2.py</Link>
+    </None>
+    <None Include="..\Lux.Protobuf\Sprite.proto">
+      <Link>Lux.Protobuf\Sprite.proto</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Memory">
@@ -42,6 +48,9 @@
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
+    <Reference Include="Google.Protobuf">
+      <HintPath>..\..\..\packages\Google.Protobuf.3.11.4\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LuxGame.cs" />
@@ -63,6 +72,9 @@
     <Compile Include="ECS\SystemAttributes.cs" />
     <Compile Include="ECS\ComponentMask.cs" />
     <Compile Include="ECS\Components.cs" />
+    <Compile Include="..\Lux.Protobuf\Sprite.cs">
+      <Link>Lux.Protobuf\Sprite.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FNA\FNA.csproj">

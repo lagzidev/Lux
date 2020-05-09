@@ -78,7 +78,7 @@ namespace Lux.Framework.ECS
         {
             for (int i = 0; i < systems.Count; i++)
             {
-                if (!systems[i].HasAttribute<OnAddComponent>())
+                if (!systems[i].HasAttribute<T>())
                 {
                     LuxCommon.Assert(false); // The system doesn't have the required attribute
                     break;
