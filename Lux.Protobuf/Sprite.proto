@@ -5,7 +5,8 @@ package Lux.Protobuf;
 message Sprite
 {
     string TextureName = 1;
-    map<string, Animation> Animations = 2;
+    string DefaultAnimationName = 2;
+    map<string, Animation> Animations = 3;
 }
 
 message Animation

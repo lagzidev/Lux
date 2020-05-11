@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='Lux.Protobuf',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x0cSprite.proto\x12\x0cLux.Protobuf\"\xa3\x01\n\x06Sprite\x12\x13\n\x0bTextureName\x18\x01 \x01(\t\x12\x38\n\nAnimations\x18\x02 \x03(\x0b\x32$.Lux.Protobuf.Sprite.AnimationsEntry\x1aJ\n\x0f\x41nimationsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.Lux.Protobuf.Animation:\x02\x38\x01\"9\n\tAnimation\x12,\n\x06\x46rames\x18\x01 \x03(\x0b\x32\x1c.Lux.Protobuf.AnimationFrame\"\xa5\x01\n\x0e\x41nimationFrame\x12\r\n\x05Width\x18\x01 \x01(\x05\x12\x0e\n\x06Height\x18\x02 \x01(\x05\x12\x18\n\x10TexturePositionX\x18\x03 \x01(\x05\x12\x18\n\x10TexturePositionY\x18\x04 \x01(\x05\x12.\n\x0bSpriteDepth\x18\x05 \x01(\x0e\x32\x19.Lux.Protobuf.SpriteDepth\x12\x10\n\x08\x44uration\x18\x06 \x01(\x05*e\n\x0bSpriteDepth\x12\r\n\tUndefined\x10\x00\x12\x07\n\x03Min\x10\n\x12\x11\n\rOverCharacter\x10\x1e\x12\r\n\tCharacter\x10(\x12\x13\n\x0f\x42\x65hindCharacter\x10\x32\x12\x07\n\x03Max\x10Zb\x06proto3'
+  serialized_pb=b'\n\x0cSprite.proto\x12\x0cLux.Protobuf\"\xc1\x01\n\x06Sprite\x12\x13\n\x0bTextureName\x18\x01 \x01(\t\x12\x1c\n\x14\x44\x65\x66\x61ultAnimationName\x18\x02 \x01(\t\x12\x38\n\nAnimations\x18\x03 \x03(\x0b\x32$.Lux.Protobuf.Sprite.AnimationsEntry\x1aJ\n\x0f\x41nimationsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.Lux.Protobuf.Animation:\x02\x38\x01\"9\n\tAnimation\x12,\n\x06\x46rames\x18\x01 \x03(\x0b\x32\x1c.Lux.Protobuf.AnimationFrame\"\xa5\x01\n\x0e\x41nimationFrame\x12\r\n\x05Width\x18\x01 \x01(\x05\x12\x0e\n\x06Height\x18\x02 \x01(\x05\x12\x18\n\x10TexturePositionX\x18\x03 \x01(\x05\x12\x18\n\x10TexturePositionY\x18\x04 \x01(\x05\x12.\n\x0bSpriteDepth\x18\x05 \x01(\x0e\x32\x19.Lux.Protobuf.SpriteDepth\x12\x10\n\x08\x44uration\x18\x06 \x01(\x05*e\n\x0bSpriteDepth\x12\r\n\tUndefined\x10\x00\x12\x07\n\x03Min\x10\n\x12\x11\n\rOverCharacter\x10\x1e\x12\r\n\tCharacter\x10(\x12\x13\n\x0f\x42\x65hindCharacter\x10\x32\x12\x07\n\x03Max\x10Zb\x06proto3'
 )
 
 _SPRITEDEPTH = _descriptor.EnumDescriptor(
@@ -55,8 +55,8 @@ _SPRITEDEPTH = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=423,
-  serialized_end=524,
+  serialized_start=453,
+  serialized_end=554,
 )
 _sym_db.RegisterEnumDescriptor(_SPRITEDEPTH)
 
@@ -103,8 +103,8 @@ _SPRITE_ANIMATIONSENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=120,
-  serialized_end=194,
+  serialized_start=150,
+  serialized_end=224,
 )
 
 _SPRITE = _descriptor.Descriptor(
@@ -122,8 +122,15 @@ _SPRITE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='Animations', full_name='Lux.Protobuf.Sprite.Animations', index=1,
-      number=2, type=11, cpp_type=10, label=3,
+      name='DefaultAnimationName', full_name='Lux.Protobuf.Sprite.DefaultAnimationName', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='Animations', full_name='Lux.Protobuf.Sprite.Animations', index=2,
+      number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -141,7 +148,7 @@ _SPRITE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=31,
-  serialized_end=194,
+  serialized_end=224,
 )
 
 
@@ -171,8 +178,8 @@ _ANIMATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=196,
-  serialized_end=253,
+  serialized_start=226,
+  serialized_end=283,
 )
 
 
@@ -237,8 +244,8 @@ _ANIMATIONFRAME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=256,
-  serialized_end=421,
+  serialized_start=286,
+  serialized_end=451,
 )
 
 _SPRITE_ANIMATIONSENTRY.fields_by_name['value'].message_type = _ANIMATION

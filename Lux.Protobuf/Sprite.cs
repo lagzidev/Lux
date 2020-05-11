@@ -24,22 +24,23 @@ namespace Lux.Protobuf {
     static SpriteReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgxTcHJpdGUucHJvdG8SDEx1eC5Qcm90b2J1ZiKjAQoGU3ByaXRlEhMKC1Rl",
-            "eHR1cmVOYW1lGAEgASgJEjgKCkFuaW1hdGlvbnMYAiADKAsyJC5MdXguUHJv",
-            "dG9idWYuU3ByaXRlLkFuaW1hdGlvbnNFbnRyeRpKCg9BbmltYXRpb25zRW50",
-            "cnkSCwoDa2V5GAEgASgJEiYKBXZhbHVlGAIgASgLMhcuTHV4LlByb3RvYnVm",
-            "LkFuaW1hdGlvbjoCOAEiOQoJQW5pbWF0aW9uEiwKBkZyYW1lcxgBIAMoCzIc",
-            "Lkx1eC5Qcm90b2J1Zi5BbmltYXRpb25GcmFtZSKlAQoOQW5pbWF0aW9uRnJh",
-            "bWUSDQoFV2lkdGgYASABKAUSDgoGSGVpZ2h0GAIgASgFEhgKEFRleHR1cmVQ",
-            "b3NpdGlvblgYAyABKAUSGAoQVGV4dHVyZVBvc2l0aW9uWRgEIAEoBRIuCgtT",
-            "cHJpdGVEZXB0aBgFIAEoDjIZLkx1eC5Qcm90b2J1Zi5TcHJpdGVEZXB0aBIQ",
-            "CghEdXJhdGlvbhgGIAEoBSplCgtTcHJpdGVEZXB0aBINCglVbmRlZmluZWQQ",
-            "ABIHCgNNaW4QChIRCg1PdmVyQ2hhcmFjdGVyEB4SDQoJQ2hhcmFjdGVyECgS",
-            "EwoPQmVoaW5kQ2hhcmFjdGVyEDISBwoDTWF4EFpiBnByb3RvMw=="));
+            "CgxTcHJpdGUucHJvdG8SDEx1eC5Qcm90b2J1ZiLBAQoGU3ByaXRlEhMKC1Rl",
+            "eHR1cmVOYW1lGAEgASgJEhwKFERlZmF1bHRBbmltYXRpb25OYW1lGAIgASgJ",
+            "EjgKCkFuaW1hdGlvbnMYAyADKAsyJC5MdXguUHJvdG9idWYuU3ByaXRlLkFu",
+            "aW1hdGlvbnNFbnRyeRpKCg9BbmltYXRpb25zRW50cnkSCwoDa2V5GAEgASgJ",
+            "EiYKBXZhbHVlGAIgASgLMhcuTHV4LlByb3RvYnVmLkFuaW1hdGlvbjoCOAEi",
+            "OQoJQW5pbWF0aW9uEiwKBkZyYW1lcxgBIAMoCzIcLkx1eC5Qcm90b2J1Zi5B",
+            "bmltYXRpb25GcmFtZSKlAQoOQW5pbWF0aW9uRnJhbWUSDQoFV2lkdGgYASAB",
+            "KAUSDgoGSGVpZ2h0GAIgASgFEhgKEFRleHR1cmVQb3NpdGlvblgYAyABKAUS",
+            "GAoQVGV4dHVyZVBvc2l0aW9uWRgEIAEoBRIuCgtTcHJpdGVEZXB0aBgFIAEo",
+            "DjIZLkx1eC5Qcm90b2J1Zi5TcHJpdGVEZXB0aBIQCghEdXJhdGlvbhgGIAEo",
+            "BSplCgtTcHJpdGVEZXB0aBINCglVbmRlZmluZWQQABIHCgNNaW4QChIRCg1P",
+            "dmVyQ2hhcmFjdGVyEB4SDQoJQ2hhcmFjdGVyECgSEwoPQmVoaW5kQ2hhcmFj",
+            "dGVyEDISBwoDTWF4EFpiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Lux.Protobuf.SpriteDepth), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Lux.Protobuf.Sprite), global::Lux.Protobuf.Sprite.Parser, new[]{ "TextureName", "Animations" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Lux.Protobuf.Sprite), global::Lux.Protobuf.Sprite.Parser, new[]{ "TextureName", "DefaultAnimationName", "Animations" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Lux.Protobuf.Animation), global::Lux.Protobuf.Animation.Parser, new[]{ "Frames" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Lux.Protobuf.AnimationFrame), global::Lux.Protobuf.AnimationFrame.Parser, new[]{ "Width", "Height", "TexturePositionX", "TexturePositionY", "SpriteDepth", "Duration" }, null, null, null, null)
           }));
@@ -86,6 +87,7 @@ namespace Lux.Protobuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Sprite(Sprite other) : this() {
       textureName_ = other.textureName_;
+      defaultAnimationName_ = other.defaultAnimationName_;
       animations_ = other.animations_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -106,10 +108,21 @@ namespace Lux.Protobuf {
       }
     }
 
+    /// <summary>Field number for the "DefaultAnimationName" field.</summary>
+    public const int DefaultAnimationNameFieldNumber = 2;
+    private string defaultAnimationName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string DefaultAnimationName {
+      get { return defaultAnimationName_; }
+      set {
+        defaultAnimationName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "Animations" field.</summary>
-    public const int AnimationsFieldNumber = 2;
+    public const int AnimationsFieldNumber = 3;
     private static readonly pbc::MapField<string, global::Lux.Protobuf.Animation>.Codec _map_animations_codec
-        = new pbc::MapField<string, global::Lux.Protobuf.Animation>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Lux.Protobuf.Animation.Parser), 18);
+        = new pbc::MapField<string, global::Lux.Protobuf.Animation>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Lux.Protobuf.Animation.Parser), 26);
     private readonly pbc::MapField<string, global::Lux.Protobuf.Animation> animations_ = new pbc::MapField<string, global::Lux.Protobuf.Animation>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::MapField<string, global::Lux.Protobuf.Animation> Animations {
@@ -130,6 +143,7 @@ namespace Lux.Protobuf {
         return true;
       }
       if (TextureName != other.TextureName) return false;
+      if (DefaultAnimationName != other.DefaultAnimationName) return false;
       if (!Animations.Equals(other.Animations)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -138,6 +152,7 @@ namespace Lux.Protobuf {
     public override int GetHashCode() {
       int hash = 1;
       if (TextureName.Length != 0) hash ^= TextureName.GetHashCode();
+      if (DefaultAnimationName.Length != 0) hash ^= DefaultAnimationName.GetHashCode();
       hash ^= Animations.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -156,6 +171,10 @@ namespace Lux.Protobuf {
         output.WriteRawTag(10);
         output.WriteString(TextureName);
       }
+      if (DefaultAnimationName.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(DefaultAnimationName);
+      }
       animations_.WriteTo(output, _map_animations_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -167,6 +186,9 @@ namespace Lux.Protobuf {
       int size = 0;
       if (TextureName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(TextureName);
+      }
+      if (DefaultAnimationName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(DefaultAnimationName);
       }
       size += animations_.CalculateSize(_map_animations_codec);
       if (_unknownFields != null) {
@@ -182,6 +204,9 @@ namespace Lux.Protobuf {
       }
       if (other.TextureName.Length != 0) {
         TextureName = other.TextureName;
+      }
+      if (other.DefaultAnimationName.Length != 0) {
+        DefaultAnimationName = other.DefaultAnimationName;
       }
       animations_.Add(other.animations_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -200,6 +225,10 @@ namespace Lux.Protobuf {
             break;
           }
           case 18: {
+            DefaultAnimationName = input.ReadString();
+            break;
+          }
+          case 26: {
             animations_.AddEntriesFrom(input, _map_animations_codec);
             break;
           }
