@@ -2,7 +2,7 @@ import json
 import sys
 import subprocess
 import os
-from AsepriteExporter import AsepriteHandler
+from Handlers import AsepriteHandler, MapsHandler
 from CSProj import CSProj, CONTENT_DIR_NAME
 
 class PipelineFileObject(object):
@@ -55,7 +55,8 @@ def main():
 
 	# Create file handlers
 	handlers = [
-		AsepriteHandler(pipeline_files_dir_path, content_dir)
+		AsepriteHandler.AsepriteHandler(pipeline_files_dir_path, content_dir),
+		MapsHandler.MapsHandler(pipeline_files_dir_path, content_dir)
 	]
 
 	# Run handle_file for every file in pipeline files dir
