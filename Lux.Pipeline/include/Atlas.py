@@ -22,8 +22,8 @@ class Atlas(object):
             '"{}"'.format(','.join(self.input_images)),
             '--premultiply',
             '--json',
-            '--trim',
-            '--unique',
+            #'--trim',
+            #'--unique',
             '--size4096',
             '--pad1',
         ])

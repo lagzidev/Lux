@@ -3,7 +3,7 @@ import sys
 import subprocess
 import json
 from Protobuf import Sprite_pb2
-from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import MessageToJson, Parse
 from Handlers.ContentFileHandler import ContentFileHandler
 from Atlas import Atlas
 
@@ -20,7 +20,7 @@ class AsepriteHandler(ContentFileHandler):
 
 	def _handle_file(self, input_filepath, output_filepath):
 		# Export aseprite to png and get the json descriptor
-		png_output_path = ContentFileHandler.change_extension(input_filepath, '.tmp.png')
+		png_output_path = ContentFileHandler.change_extension(input_filepath, '.png')
 		aseprite_json = self._export_aseprite(input_filepath, png_output_path)
 
 		# Add dir to list for when we create the atlas
@@ -41,8 +41,39 @@ class AsepriteHandler(ContentFileHandler):
 
 
 	def _post_file_handling(self, content_dir, lux_pipeline_path):
-		atlas = Atlas(os.path.join(content_dir, "Textures", "atlas"), self.temp_png_output_paths, lux_pipeline_path)
+		output_path_no_extension = os.path.join(content_dir, "Textures", "atlas")
+		atlas = Atlas(output_path_no_extension, self.temp_png_output_paths, lux_pipeline_path)
 		atlas.generate_atlas()
+
+		atlas_json_path = output_path_no_extension + '.json'
+		with open(atlas_json_path, 'r') as f:
+			atlas_json = json.load(f)
+
+		for texture in atlas_json['textures']:
+			for image in texture['images']:
+				sprite_json_path = os.path.join(content_dir, "Textures", image['n'] + '.json')
+				with open(sprite_json_path, 'r') as f:
+					sprite_json = json.load(f)
+				
+				sprite = Sprite_pb2.Sprite()
+				Parse(json.dumps(sprite_json), sprite)
+
+				sprite.TextureName = texture['name']
+
+				for animation_key in sprite.Animations:
+					for frame in sprite.Animations[animation_key].Frames:
+						#frame.Width = image['w']
+						#frame.Height = image['h']
+						frame.TexturePositionX += image['x']
+						frame.TexturePositionY += image['y']
+
+				with open(sprite_json_path, 'w', encoding='utf-8') as f:
+					json_obj = json.loads(MessageToJson(sprite, preserving_proto_field_name=True, including_default_value_fields=True))
+					json.dump(json_obj, f, ensure_ascii=False, indent=4)
+					f.truncate()
+
+		# Remove atlas.json
+		#os.remove(atlas_json_path)
 
 		for temp_png in self.temp_png_output_paths:
 			os.remove(temp_png)
@@ -104,7 +135,7 @@ class AsepriteHandler(ContentFileHandler):
 			sprite.Animations[current_tag['name']].Frames.extend(frames)
 
 
-		json_str = MessageToJson(sprite, preserving_proto_field_name=True)
+		json_str = MessageToJson(sprite, preserving_proto_field_name=True, including_default_value_fields=True)
 
 		return json.loads(json_str)
 
