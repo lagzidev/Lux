@@ -12,6 +12,10 @@ class ContentFileHandler(object):
 		raise NotImplementedError()
 
 	
+	def _post_file_handling(self, content_dir, lux_pipeline_path):
+		pass
+
+
 	@staticmethod
 	def change_extension(filepath, new_extension):
 		return os.path.splitext(filepath)[0] + new_extension
@@ -22,6 +26,7 @@ class ContentFileHandler(object):
 		base = os.path.basename(filepath)
 		return os.path.splitext(base)[0]
 
+
 	def handle(self, filepath):
 		(_, extension) = os.path.splitext(filepath)
 		if extension not in self.SUPPORTED_EXTENSIONS:
@@ -31,3 +36,7 @@ class ContentFileHandler(object):
 		mirrored_content_filepath = os.path.join(self.root_output_dir, relative_filepath)
 
 		self._handle_file(filepath, mirrored_content_filepath)
+
+
+	def post_file_handling(self, content_dir, lux_pipeline_path):
+		self._post_file_handling(content_dir, lux_pipeline_path)

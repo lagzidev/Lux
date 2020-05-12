@@ -41,6 +41,9 @@
     <None Include="..\Lux.Protobuf\Sprite.proto">
       <Link>Lux.Protobuf\Sprite.proto</Link>
     </None>
+    <None Include="..\Lux.Protobuf\Tileset.proto">
+      <Link>Lux.Protobuf\Tileset.proto</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Memory">
@@ -74,6 +77,9 @@
     <Compile Include="ECS\Components.cs" />
     <Compile Include="..\Lux.Protobuf\Sprite.cs">
       <Link>Lux.Protobuf\Sprite.cs</Link>
+    </Compile>
+    <Compile Include="..\Lux.Protobuf\Tileset.cs">
+      <Link>Lux.Protobuf\Tileset.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -5,29 +5,47 @@ import json
 from Protobuf import Sprite_pb2
 from google.protobuf.json_format import MessageToJson
 from Handlers.ContentFileHandler import ContentFileHandler
+from Atlas import Atlas
 
+TEXTURE_PADDING = 1
 
 class AsepriteHandler(ContentFileHandler):
 	SUPPORTED_EXTENSIONS = ['.aseprite', '.ase']
 
 	def __init__(self, root_input_dir, root_output_dir):
 		ContentFileHandler.__init__(self, root_input_dir, root_output_dir)
+		self.json_output_paths = []
+		self.temp_png_output_paths = set()
+
 
 	def _handle_file(self, input_filepath, output_filepath):
 		# Export aseprite to png and get the json descriptor
-		png_output_path = ContentFileHandler.change_extension(output_filepath, '.png')
+		png_output_path = ContentFileHandler.change_extension(input_filepath, '.tmp.png')
 		aseprite_json = self._export_aseprite(input_filepath, png_output_path)
+
+		# Add dir to list for when we create the atlas
+		self.temp_png_output_paths.add(png_output_path)
 
 		# TODO: Add the texture to an atlas and provide the atlas' image path instead of png_path
 		filename = ContentFileHandler.get_filename(output_filepath)
 		game_json = self._aseprite_json_to_game_json(filename, aseprite_json)
 
-		json_output_path = ContentFileHandler.change_extension(output_filepath, '.json')
-
 		# Create game json file in content directory
+		json_output_path = ContentFileHandler.change_extension(output_filepath, '.json')
 		with open(json_output_path, 'w') as f:
 			json.dump(game_json, f)
 			f.truncate()
+
+		# Add to list to later update the texture path to the atlas one
+		self.json_output_paths.append(json_output_path)
+
+
+	def _post_file_handling(self, content_dir, lux_pipeline_path):
+		atlas = Atlas(os.path.join(content_dir, "Textures", "atlas"), self.temp_png_output_paths, lux_pipeline_path)
+		atlas.generate_atlas()
+
+		for temp_png in self.temp_png_output_paths:
+			os.remove(temp_png)
 
 
 	def _export_aseprite(self, aseprite_filepath, dest_png_path, dest_json_path=None):
@@ -42,8 +60,8 @@ class AsepriteHandler(ContentFileHandler):
 			'--sheet', dest_png_path, 
 			'--data', dest_json_path, 
 			'--list-tags', 
-			'--shape-padding', '1',
-			'--border-padding', '1',
+			'--shape-padding', '${TEXTURE_PADDING}',
+			'--border-padding', '${TEXTURE_PADDING}',
 			'--sheet-width', '2048',
 		])
 
