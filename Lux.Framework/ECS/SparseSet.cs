@@ -82,24 +82,32 @@ namespace Lux.Framework.ECS
         /// Fails silently if key is outside the valid range.
         /// </summary>
         /// <param name="key">The key of the corresponding value to add</param>
-        /// <param name="outStatus">
-        /// <see cref="SparseSet.Contains"/>
-        /// </param>
-        public void Add(K key, T value)
+        /// <returns><c>true</c> if successfully added the value. <c>false</c> otherwise</returns>
+        public bool Add(K key, T value)
         {
             if (key.Index < 0 || key.Index >= _sparseArr.Length)
             {
-                LuxCommon.Assert(false);
-                return;
+                LuxCommon.Assert(false); // TODO: Maybe return status here.
+                return false;
             }
 
-            // Insert new value in the dense array
-            _keyArr[Count] = key;
-            _valueArr[Count] = value;
+            // If key already exists, override the value
+            if (Contains(key))
+            {
+                _valueArr[_sparseArr[key.Index]] = value;
+            }
+            else
+            {
+                // Otherwise, insert new value in the dense array
+                _keyArr[Count] = key;
+                _valueArr[Count] = value;
 
-            // Link it to the sparse array
-            _sparseArr[key.Index] = Count;
-            Count++;
+                // Link it to the sparse array
+                _sparseArr[key.Index] = Count;
+                Count++;
+            }
+
+            return true;
         }
 
         /// <summary>

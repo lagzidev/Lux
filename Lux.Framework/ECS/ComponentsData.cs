@@ -49,10 +49,17 @@ namespace Lux.Framework.ECS
             }
         }
 
-        //public static void Init(SparseSet<T, Entity> components)
-        //{
-        //    Components = components;
-        //}
+        /// <summary>
+        /// Returns whether the component exists for the entity
+        /// </summary>
+        /// <param name="entity">Entity that owns the component</param>
+        /// <returns>
+        /// <c>true</c> if component exists for the entity; <c>false</c> otherwise.
+        /// </returns>
+        public static bool Contains(Entity entity)
+        {
+            return Components.Contains(entity);
+        }
 
         /// <summary>
         /// Gets the component associated with the given entity
@@ -90,9 +97,10 @@ namespace Lux.Framework.ECS
         /// </summary>
         /// <param name="entity">Entity that owns the component</param>
         /// <param name="component">Component to add</param>
-        public static void Add(Entity entity, T component)
+        /// <returns><c>true</c> if successfully added the component. <c>false</c> otherwise</returns>
+        public static bool Add(Entity entity, T component)
         {
-            Components.Add(entity, component);
+            return Components.Add(entity, component);
         }
 
         /// <summary>

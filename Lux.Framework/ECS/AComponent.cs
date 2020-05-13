@@ -52,5 +52,10 @@ namespace Lux.Framework.ECS
                 return _componentType;
             }
         }
+
+        public static bool IsComponentTypeSet()
+        {
+            return _componentType != -1;
+        }
     }
 }

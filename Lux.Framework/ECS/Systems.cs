@@ -143,7 +143,7 @@ namespace Lux.Framework.ECS
     {
         public ASystemAttribute[] SystemAttributes;
         protected HashSet<Entity> _registeredEntities;
-        private ComponentMask _componentMask;
+        protected ComponentMask _componentMask;
 
         public ASystem()
         {
@@ -256,7 +256,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world, Entity? entity)
         {
-            if (entity != null)
+            if (entity != null && _componentMask.Matches(world.GetEntityMask(entity.Value)))
             {
                 _system(world.Unpack<T1>(entity.Value));
                 return;
@@ -294,7 +294,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world, Entity? entity)
         {
-            if (entity != null)
+            if (entity != null && _componentMask.Matches(world.GetEntityMask(entity.Value)))
             {
                 _system(
                     world.Unpack<T1>(entity.Value),
@@ -339,7 +339,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world, Entity? entity)
         {
-            if (entity != null)
+            if (entity != null && _componentMask.Matches(world.GetEntityMask(entity.Value)))
             {
                 _system(
                     world.Unpack<T1>(entity.Value),
@@ -388,7 +388,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world, Entity? entity)
         {
-            if (entity != null)
+            if (entity != null && _componentMask.Matches(world.GetEntityMask(entity.Value)))
             {
                 _system(
                     world.Unpack<T1>(entity.Value),
@@ -441,7 +441,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world, Entity? entity)
         {
-            if (entity != null)
+            if (entity != null && _componentMask.Matches(world.GetEntityMask(entity.Value)))
             {
                 _system(
                     world.Unpack<T1>(entity.Value),
@@ -498,7 +498,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world, Entity? entity)
         {
-            if (entity != null)
+            if (entity != null && _componentMask.Matches(world.GetEntityMask(entity.Value)))
             {
                 _system(
                     world.Unpack<T1>(entity.Value),
@@ -559,7 +559,7 @@ namespace Lux.Framework.ECS
 
         public override void Invoke(World world, Entity? entity)
         {
-            if (entity != null)
+            if (entity != null && _componentMask.Matches(world.GetEntityMask(entity.Value)))
             {
                 _system(
                     world.Unpack<T1>(entity.Value),

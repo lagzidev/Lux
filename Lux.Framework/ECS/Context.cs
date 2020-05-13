@@ -38,9 +38,19 @@ namespace Lux.Framework.ECS
             _world.AddComponent(entity, component);
         }
 
-        public void AddComponent<T>(T component) where T : IComponent
+        public void AddComponentToCurrentEntity<T>(T component) where T : IComponent
         {
             AddComponent(component, Entity);
+        }
+
+        public void SetComponent<T>(T component, Entity entity) where T : IComponent
+        {
+            _world.SetComponent(entity, component);
+        }
+
+        public void SetComponentOfCurrentEntity<T>(T component) where T : IComponent
+        {
+            SetComponent(component, Entity);
         }
 
         public void RemoveComponent<T>(Entity entity) where T : IComponent
@@ -48,7 +58,7 @@ namespace Lux.Framework.ECS
             _world.RemoveComponent<T>(entity);
         }
 
-        public void RemoveComponent<T>() where T : IComponent
+        public void RemoveComponentFromCurrentEntity<T>() where T : IComponent
         {
             RemoveComponent<T>(Entity);
         }

@@ -81,6 +81,7 @@
     <Compile Include="..\Lux.Protobuf\Tileset.cs">
       <Link>Lux.Protobuf\Tileset.cs</Link>
     </Compile>
+    <Compile Include="ECS\Previous.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FNA\FNA.csproj">

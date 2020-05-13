@@ -12,7 +12,6 @@ TEXTURE_PADDING = 1
 
 class AsepriteHandler(ContentFileHandler):
 	SUPPORTED_EXTENSIONS = ['.aseprite', '.ase']
-	PERSISTENT_DIRS = ['Tilesets']
 
 	def __init__(self, root_input_dir, root_output_dir):
 		ContentFileHandler.__init__(self, root_input_dir, root_output_dir)
@@ -84,9 +83,8 @@ class AsepriteHandler(ContentFileHandler):
 		# Remove atlas.json
 		#os.remove(atlas_json_path)
 
-		for temp_png in self.temp_png_output_paths:
-			if os.path.basename(os.path.dirname(temp_png)) not in self.PERSISTENT_DIRS:
-				os.remove(temp_png)
+		#for temp_png in self.temp_png_output_paths:
+			#os.remove(temp_png)
 
 
 	def _export_aseprite(self, aseprite_filepath, dest_png_path, dest_json_path=None):

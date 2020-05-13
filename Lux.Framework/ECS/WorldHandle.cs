@@ -9,14 +9,15 @@ namespace Lux.Framework.ECS
     /// </summary>
     public class WorldHandle
     {
-        public readonly  Systems OnAddComponentSystems;
-        public readonly  Systems OnRemoveComponentSystems;
-        public readonly  Systems OnDestroyEntitySystems;
+        public readonly Systems OnAddComponentSystems;
+        public readonly Systems OnRemoveComponentSystems;
+        public readonly Systems OnDestroyEntitySystems;
+        public readonly Systems OnSetComponentSystems;
 
-        private readonly  Systems _initSystems;
-        private readonly  Systems _updateSystems;
-        private readonly  Systems _updateFixedSystems;
-        private readonly  Systems _drawSystems;
+        private readonly Systems _initSystems;
+        private readonly Systems _updateSystems;
+        private readonly Systems _updateFixedSystems;
+        private readonly Systems _drawSystems;
 
         private readonly World _world;
 
@@ -26,6 +27,7 @@ namespace Lux.Framework.ECS
             OnAddComponentSystems = new Systems();
             OnRemoveComponentSystems = new Systems();
             OnDestroyEntitySystems = new Systems();
+            OnSetComponentSystems = new Systems();
             _initSystems = new  Systems();
             _updateSystems = new  Systems();
             _updateFixedSystems = new  Systems();
@@ -101,6 +103,9 @@ namespace Lux.Framework.ECS
 
             OnDestroyEntitySystems.Register(_world);
             AssertAttribute<OnDestroyEntity>(OnDestroyEntitySystems);
+
+            OnSetComponentSystems.Register(_world);
+            AssertAttribute<OnSetComponent>(OnSetComponentSystems);
         }
 
         /// <summary>
@@ -143,6 +148,12 @@ namespace Lux.Framework.ECS
                 // Add systems subscribed to an OnRemoveComponent event
                 var castFeature = feature as IOnRemoveComponent;
                 castFeature?.OnRemoveComponent(OnRemoveComponentSystems);
+            }
+
+            {
+                // Add systems subscribed to an OnSetComponent event
+                var castFeature = feature as IOnSetComponent;
+                castFeature?.OnSetComponent(OnSetComponentSystems);
             }
 
             {
