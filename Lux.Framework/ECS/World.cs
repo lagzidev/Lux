@@ -159,7 +159,7 @@ namespace Lux.Framework.ECS
             if (AComponent<Previous<T>>.IsComponentTypeSet())
             {
                 // Save the previous state of the component
-                ComponentsData<Previous<T>>.Add(entity, new Previous<T>(component));
+                SetComponent(entity, new Previous<T>(component));
             }
 
             bool didExistBefore = ComponentsData<T>.Contains(entity);
