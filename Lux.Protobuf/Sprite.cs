@@ -29,19 +29,20 @@ namespace Lux.Protobuf {
             "EjgKCkFuaW1hdGlvbnMYAyADKAsyJC5MdXguUHJvdG9idWYuU3ByaXRlLkFu",
             "aW1hdGlvbnNFbnRyeRpKCg9BbmltYXRpb25zRW50cnkSCwoDa2V5GAEgASgJ",
             "EiYKBXZhbHVlGAIgASgLMhcuTHV4LlByb3RvYnVmLkFuaW1hdGlvbjoCOAEi",
-            "OQoJQW5pbWF0aW9uEiwKBkZyYW1lcxgBIAMoCzIcLkx1eC5Qcm90b2J1Zi5B",
-            "bmltYXRpb25GcmFtZSKlAQoOQW5pbWF0aW9uRnJhbWUSDQoFV2lkdGgYASAB",
-            "KAUSDgoGSGVpZ2h0GAIgASgFEhgKEFRleHR1cmVQb3NpdGlvblgYAyABKAUS",
-            "GAoQVGV4dHVyZVBvc2l0aW9uWRgEIAEoBRIuCgtTcHJpdGVEZXB0aBgFIAEo",
-            "DjIZLkx1eC5Qcm90b2J1Zi5TcHJpdGVEZXB0aBIQCghEdXJhdGlvbhgGIAEo",
-            "BSplCgtTcHJpdGVEZXB0aBINCglVbmRlZmluZWQQABIHCgNNaW4QChIRCg1P",
-            "dmVyQ2hhcmFjdGVyEB4SDQoJQ2hhcmFjdGVyECgSEwoPQmVoaW5kQ2hhcmFj",
-            "dGVyEDISBwoDTWF4EFpiBnByb3RvMw=="));
+            "XwoJQW5pbWF0aW9uEiwKBkZyYW1lcxgBIAMoCzIcLkx1eC5Qcm90b2J1Zi5B",
+            "bmltYXRpb25GcmFtZRISCgpJbmRleFN0YXJ0GAIgASgFEhAKCEluZGV4RW5k",
+            "GAMgASgFIqUBCg5BbmltYXRpb25GcmFtZRINCgVXaWR0aBgBIAEoBRIOCgZI",
+            "ZWlnaHQYAiABKAUSGAoQVGV4dHVyZVBvc2l0aW9uWBgDIAEoBRIYChBUZXh0",
+            "dXJlUG9zaXRpb25ZGAQgASgFEi4KC1Nwcml0ZURlcHRoGAUgASgOMhkuTHV4",
+            "LlByb3RvYnVmLlNwcml0ZURlcHRoEhAKCER1cmF0aW9uGAYgASgFKmUKC1Nw",
+            "cml0ZURlcHRoEg0KCVVuZGVmaW5lZBAAEgcKA01pbhAKEhEKDU92ZXJDaGFy",
+            "YWN0ZXIQHhINCglDaGFyYWN0ZXIQKBITCg9CZWhpbmRDaGFyYWN0ZXIQMhIH",
+            "CgNNYXgQWmIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Lux.Protobuf.SpriteDepth), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Lux.Protobuf.Sprite), global::Lux.Protobuf.Sprite.Parser, new[]{ "TextureName", "DefaultAnimationName", "Animations" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Lux.Protobuf.Animation), global::Lux.Protobuf.Animation.Parser, new[]{ "Frames" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Lux.Protobuf.Animation), global::Lux.Protobuf.Animation.Parser, new[]{ "Frames", "IndexStart", "IndexEnd" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Lux.Protobuf.AnimationFrame), global::Lux.Protobuf.AnimationFrame.Parser, new[]{ "Width", "Height", "TexturePositionX", "TexturePositionY", "SpriteDepth", "Duration" }, null, null, null, null)
           }));
     }
@@ -264,6 +265,8 @@ namespace Lux.Protobuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Animation(Animation other) : this() {
       frames_ = other.frames_.Clone();
+      indexStart_ = other.indexStart_;
+      indexEnd_ = other.indexEnd_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -282,6 +285,28 @@ namespace Lux.Protobuf {
       get { return frames_; }
     }
 
+    /// <summary>Field number for the "IndexStart" field.</summary>
+    public const int IndexStartFieldNumber = 2;
+    private int indexStart_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int IndexStart {
+      get { return indexStart_; }
+      set {
+        indexStart_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "IndexEnd" field.</summary>
+    public const int IndexEndFieldNumber = 3;
+    private int indexEnd_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int IndexEnd {
+      get { return indexEnd_; }
+      set {
+        indexEnd_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Animation);
@@ -296,6 +321,8 @@ namespace Lux.Protobuf {
         return true;
       }
       if(!frames_.Equals(other.frames_)) return false;
+      if (IndexStart != other.IndexStart) return false;
+      if (IndexEnd != other.IndexEnd) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -303,6 +330,8 @@ namespace Lux.Protobuf {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= frames_.GetHashCode();
+      if (IndexStart != 0) hash ^= IndexStart.GetHashCode();
+      if (IndexEnd != 0) hash ^= IndexEnd.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -317,6 +346,14 @@ namespace Lux.Protobuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       frames_.WriteTo(output, _repeated_frames_codec);
+      if (IndexStart != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(IndexStart);
+      }
+      if (IndexEnd != 0) {
+        output.WriteRawTag(24);
+        output.WriteInt32(IndexEnd);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -326,6 +363,12 @@ namespace Lux.Protobuf {
     public int CalculateSize() {
       int size = 0;
       size += frames_.CalculateSize(_repeated_frames_codec);
+      if (IndexStart != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(IndexStart);
+      }
+      if (IndexEnd != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(IndexEnd);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -338,6 +381,12 @@ namespace Lux.Protobuf {
         return;
       }
       frames_.Add(other.frames_);
+      if (other.IndexStart != 0) {
+        IndexStart = other.IndexStart;
+      }
+      if (other.IndexEnd != 0) {
+        IndexEnd = other.IndexEnd;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -351,6 +400,14 @@ namespace Lux.Protobuf {
             break;
           case 10: {
             frames_.AddEntriesFrom(input, _repeated_frames_codec);
+            break;
+          }
+          case 16: {
+            IndexStart = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            IndexEnd = input.ReadInt32();
             break;
           }
         }

@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+import errno
 import json
 from Protobuf import Sprite_pb2
 from google.protobuf.json_format import MessageToJson, Parse
@@ -11,10 +12,11 @@ TEXTURE_PADDING = 1
 
 class AsepriteHandler(ContentFileHandler):
 	SUPPORTED_EXTENSIONS = ['.aseprite', '.ase']
+	PERSISTENT_DIRS = ['Tilesets']
 
 	def __init__(self, root_input_dir, root_output_dir):
 		ContentFileHandler.__init__(self, root_input_dir, root_output_dir)
-		self.json_output_paths = []
+		self.json_output_paths = {}
 		self.temp_png_output_paths = set()
 
 
@@ -30,14 +32,21 @@ class AsepriteHandler(ContentFileHandler):
 		filename = ContentFileHandler.get_filename(output_filepath)
 		game_json = self._aseprite_json_to_game_json(filename, aseprite_json)
 
-		# Create game json file in content directory
 		json_output_path = ContentFileHandler.change_extension(output_filepath, '.json')
+
+		try:
+			os.makedirs(os.path.dirname(json_output_path))
+		except OSError as e:
+			if e.errno != errno.EEXIST:
+				raise
+
+		# Create game json file in content directory
 		with open(json_output_path, 'w') as f:
 			json.dump(game_json, f)
 			f.truncate()
 
 		# Add to list to later update the texture path to the atlas one
-		self.json_output_paths.append(json_output_path)
+		self.json_output_paths[filename] = json_output_path
 
 
 	def _post_file_handling(self, content_dir, lux_pipeline_path):
@@ -51,7 +60,7 @@ class AsepriteHandler(ContentFileHandler):
 
 		for texture in atlas_json['textures']:
 			for image in texture['images']:
-				sprite_json_path = os.path.join(content_dir, "Textures", image['n'] + '.json')
+				sprite_json_path = self.json_output_paths[image['n']]
 				with open(sprite_json_path, 'r') as f:
 					sprite_json = json.load(f)
 				
@@ -76,7 +85,8 @@ class AsepriteHandler(ContentFileHandler):
 		#os.remove(atlas_json_path)
 
 		for temp_png in self.temp_png_output_paths:
-			os.remove(temp_png)
+			if os.path.basename(os.path.dirname(temp_png)) not in self.PERSISTENT_DIRS:
+				os.remove(temp_png)
 
 
 	def _export_aseprite(self, aseprite_filepath, dest_png_path, dest_json_path=None):
@@ -133,6 +143,8 @@ class AsepriteHandler(ContentFileHandler):
 
 			# Add animation to sprite
 			sprite.Animations[current_tag['name']].Frames.extend(frames)
+			sprite.Animations[current_tag['name']].IndexStart = current_tag['from']
+			sprite.Animations[current_tag['name']].IndexEnd = current_tag['to']
 
 
 		json_str = MessageToJson(sprite, preserving_proto_field_name=True, including_default_value_fields=True)

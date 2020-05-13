@@ -12,6 +12,8 @@ message Sprite
 message Animation
 {
     repeated AnimationFrame Frames = 1;
+    int32 IndexStart = 2;
+    int32 IndexEnd = 3;
 }
 
 message AnimationFrame
