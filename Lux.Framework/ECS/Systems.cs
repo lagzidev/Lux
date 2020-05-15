@@ -141,15 +141,28 @@ namespace Lux.Framework.ECS
     /// </summary>
     public abstract class ASystem
     {
+        public bool IsLocked;
         public ASystemAttribute[] SystemAttributes;
         protected HashSet<Entity> _registeredEntities;
         protected ComponentMask _componentMask;
 
         public ASystem()
         {
+            IsLocked = false;
             SystemAttributes = null;
             _registeredEntities = new HashSet<Entity>();
             _componentMask = new ComponentMask(HardCodedConfig.MAX_GAME_COMPONENT_TYPES);
+        }
+
+        public void Lock()
+        {
+            LuxCommon.Assert(!IsLocked); // Can't take the lock of an already locked system
+            IsLocked = true;
+        }
+
+        public void Unlock()
+        {
+            IsLocked = false;
         }
 
         public bool HasAttribute<T>() where T : ASystemAttribute

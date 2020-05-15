@@ -159,7 +159,8 @@ namespace Lux.Framework.ECS
             if (AComponent<Previous<T>>.IsComponentTypeSet())
             {
                 // Save the previous state of the component
-                SetComponent(entity, new Previous<T>(component));
+                ComponentsData<T>.Get(entity, out T oldComponent);
+                SetComponent(entity, new Previous<T>(oldComponent));
             }
 
             bool didExistBefore = ComponentsData<T>.Contains(entity);
@@ -332,16 +333,40 @@ namespace Lux.Framework.ECS
 
         public void Run(Systems systems, Entity? entity, ISystemFilter filter)
         {
-            // For every system
+            // TODO: Optimization: Only do the shouldRun trick for systems that are evented (OnSetComponent, etc.)
+
+            bool[] shouldRun = new bool[systems.Count];
+
+            // Lock all systems we're about to run
             for (int i = 0; i < systems.Count; i++)
             {
-                // Should run the system
+                shouldRun[i] = false;
+
+                // If there's a filter, use it to determine if should run
                 if (filter != null && !filter.Filter(systems[i]))
                 {
                     continue;
                 }
 
-                systems[i].Invoke(this, entity);
+                // If locked, don't run
+                if (systems[i].IsLocked)
+                {
+                    continue;
+                }
+
+                shouldRun[i] = true;
+                systems[i].Lock();
+            }
+
+
+            // For every system
+            for (int i = 0; i < systems.Count; i++)
+            {
+                if (shouldRun[i])
+                {
+                    systems[i].Invoke(this, entity);
+                    systems[i].Unlock();
+                }
             }
         }
 
