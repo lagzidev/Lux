@@ -20,5 +20,12 @@ namespace Lux.Framework
         public const string DEFAULT_TEXTURES_FOLDER_NAME = "Textures";
         public const string DEFAULT_MAPS_FOLDER_NAME = "Maps";
         public const string DEFAULT_TILESETS_FOLDER_NAME = "Tilesets";
+
+        // Preprocessor definitions
+
+        /// <summary>
+        /// Defined when the system is NOT a console
+        /// </summary>
+        public const string NCONSOLE = "NCONSOLE";
     }
 }
