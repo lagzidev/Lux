@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Lux.Framework.ECS;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -20,9 +19,9 @@ namespace Lux.Framework
         public static LuxGame Instance;
 
         /// <summary>
-        /// Content manager for managing assets (textures, audio, etc.)
+        /// Content manager for managing global assets (textures, audio, etc.)
         /// </summary>
-        //public new static LuxContentManager Content;
+        public new static LuxContentManager Content;
 
         /// <summary>
         /// Provides easy access to the GraphicsDevice
@@ -51,32 +50,43 @@ namespace Lux.Framework
         }
 
         /// <summary>
-        /// ECS feature that is responsible for all game logic.
+        /// Current scene
         /// </summary>
-        private static ECS.ECS _ecs;
+        public static Scene Scene
+        {
+            get => _scene;
+            set
+            {
+                Assert.IsNotNull(value, "Scene cannot be set to null."); 
+                _nextScene = value;
+            }
+        }
+        private static Scene _scene;
+
+        /// <summary>
+        /// Next scene to load.
+        /// When this scene is set, we load it and set it to null.
+        /// </summary>
+        private static Scene _nextScene;
 
 
-        public LuxGame(int width, int height, string windowTitle, bool fullscreen)
+        public LuxGame(int width, int height, string windowTitle, bool fullscreen, string contentDirectory = "Content")
         {
             Instance = this;
-
             Window.Title = Title = windowTitle;
-
-            _ecs = new ECS.ECS();
 
             Screen.Initialize(new GraphicsDeviceManager(this), width, height, fullscreen);
 
-            Content.RootDirectory = @"Content";
+            base.Content.RootDirectory = contentDirectory;
+            Content = new LuxContentManager(Services, base.Content.RootDirectory);
 
             IsMouseVisible = false;
             IsFixedTimeStep = false;
 
             //GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
-            // TODO: support scanodes ? https://github.com/FNA-XNA/FNA/wiki/7:-FNA-Environment-Variables#fna_graphics_backbuffer_scale_nearest
         }
         
 
-        // TODO onactivated
         //protected override void OnActivated(object sender, EventArgs args)
         //{
         //    base.OnActivated(sender, args);
@@ -88,15 +98,6 @@ namespace Lux.Framework
         //}
 
         /// <summary>
-        /// Creates a new ECS world
-        /// </summary>
-        /// <returns>The newly created ECS world</returns>
-        protected static WorldHandle CreateWorld()
-        {
-            return _ecs.CreateWorld();
-        }
-
-        /// <summary>
         /// This function is automatically called when the game launches to initialize any non-graphic variables.
         /// </summary>
         protected override void Initialize()
@@ -105,10 +106,8 @@ namespace Lux.Framework
 
             // Set the static graphics device
             GraphicsDevice = base.GraphicsDevice;
-
-            // Call all ECS systems' initializers
-            _ecs.Initialize();
         }
+
 
         // TODO: We got rid of loadcontent so make sure it's working on device reset in monogame.
         // TODO: Handle buffer overflow with recycled entities' generation int
@@ -120,19 +119,25 @@ namespace Lux.Framework
         protected override void Update(GameTime gameTime)
         {
             Time.Update(gameTime.TotalGameTime.TotalSeconds);
-            _ecs.Update();
 
-            // If accumulated enough time to run a tick, start ticking
+            // If should change scenes
+            if (_nextScene != null)
+            {
+                ChangeToNextScene();
+            }
+
+            Scene.Update();
+
+            // If accumulated enough time to run a tick, run ticks
             while (Time.Accumulator >= Time.Timestep)
             {
                 Time.Tick();
-                _ecs.UpdateFixed();
+                Scene.UpdateFixed();
             }
 
 #if FNA
-            // We don't call base.Update so we do this.
             // MonoGame only updates old-school XNA Components in Update which we dont care about. FNA's core FrameworkDispatcher needs
-            // Update called though so we do so here.
+            // base.Update called though so we do so here.
             FrameworkDispatcher.Update();
 #endif
         }
@@ -143,7 +148,23 @@ namespace Lux.Framework
         protected override void Draw(GameTime gameTime)
         {
             Time.Draw(gameTime.ElapsedGameTime.TotalSeconds);
-            _ecs.Draw();
+            Scene.Draw();
+        }
+
+        private void ChangeToNextScene()
+        {
+            _scene?.End();
+
+            // Change nextScene to be the current scene
+            _scene = _nextScene;
+            _nextScene = null;
+
+            // Update time
+            Time.SceneChanged();
+            _scene.Begin();
+
+            // A good opportunity to garbage collect
+            GC.Collect();
         }
     }
 }

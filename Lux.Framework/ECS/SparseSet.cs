@@ -66,7 +66,8 @@ namespace Lux.Framework.ECS
 
             if (maxSize > maxIndex)
             {
-                LuxCommon.Assert(false); // Waste of memory, maxIndex limits maxSize
+                // Waste of memory, maxIndex limits maxSize
+                Assert.Fail("SparseSet would've used more memory then it could've used! {0} > {1}", maxSize, maxIndex);
                 MaxSize = maxIndex;
             }
 
@@ -87,7 +88,7 @@ namespace Lux.Framework.ECS
         {
             if (key.Index < 0 || key.Index >= _sparseArr.Length)
             {
-                LuxCommon.Assert(false); // TODO: Maybe return status here.
+                Assert.Fail("Can't add key that is out of the range of the SparseSet. 0 < {0} > {1}", key.Index, _sparseArr.Length); // TODO: Maybe return status here.
                 return false;
             }
 
@@ -145,7 +146,7 @@ namespace Lux.Framework.ECS
         {
             if (key.Index >= _sparseArr.Length || key.Index < 0)
             {
-                LuxCommon.Assert(false);
+                Assert.Fail("SparseSet.Contains given a key out of range! {0}", key.Index);
                 return false;
             }
 

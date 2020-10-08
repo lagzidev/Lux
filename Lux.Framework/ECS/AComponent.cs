@@ -41,7 +41,7 @@ namespace Lux.Framework.ECS
                     // If there are too many component types
                     if (ComponentTypesCount >= HardCodedConfig.MAX_GAME_COMPONENT_TYPES)
                     {
-                        LuxCommon.Assert(false); // TOOD: Log and maybe throw
+                        Assert.Fail("Too many component types are registered!"); // TOOD: Log and maybe throw
                         return _componentType;
                     }
 

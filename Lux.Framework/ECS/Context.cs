@@ -100,7 +100,7 @@ namespace Lux.Framework.ECS
                 case 1:
                     break;
                 default:
-                    LuxCommon.Assert(false); // Unique can't have more then 1 component
+                    Assert.Fail("Unique component type can't have more then 1 component. Did you mean to use context.Unpack()?");
                     break;
             }
 

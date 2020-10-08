@@ -84,6 +84,9 @@
     <Compile Include="ECS\Previous.cs" />
     <Compile Include="Assets\LuxContentManager.cs" />
     <Compile Include="Screen.cs" />
+    <Compile Include="Scene.cs" />
+    <Compile Include="Assert.cs" />
+    <Compile Include="ReflectionUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FNA\FNA.csproj">

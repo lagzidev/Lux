@@ -151,7 +151,7 @@ namespace Lux.Framework.ECS
             // TODO: Try removing this, I think it's taken care of in ComponentData<T>
             if (entity != _singletonEntity && component is ISingleton)
             {
-                LuxCommon.Assert(false);
+                Assert.Fail("Can't add a Singleton compoent to an entity that is not the Singleton Entity.");
                 return;
             }
 
@@ -205,7 +205,7 @@ namespace Lux.Framework.ECS
             // If component already exists
             if (ComponentsData<T>.Contains(entity))
             {
-                LuxCommon.Assert(false); // Shouldn't happen, use SetComponent
+                Assert.Fail("Can't add a component that is already added. If this is intentional, use SetComponent instead.");
                 RemoveComponent<T>(entity);
             }
 

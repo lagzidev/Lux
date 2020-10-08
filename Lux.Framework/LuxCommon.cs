@@ -6,21 +6,6 @@ namespace Lux.Framework
 {
     public static class LuxCommon
     {
-#if DEBUG
-        public static bool IsDebug = true;
-#else
-        public static bool IsDebug = false;
-#endif
-
-        [Conditional("DEBUG")]
-        public static void Assert(bool statement)
-        {
-            if (!statement)
-            {
-                Debugger.Break();
-            }
-        }
-
         public static int Min(int number, params int[] otherNumbers)
         {
             int min = number;

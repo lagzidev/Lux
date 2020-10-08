@@ -49,7 +49,7 @@ namespace Lux.Framework.ECS
         {
             if (_registrationDone)
             {
-                LuxCommon.Assert(false); // Can't register more systems at this point
+                Assert.Fail("Can't register more systems at this point.");
                 return this;
             }
 
@@ -156,7 +156,7 @@ namespace Lux.Framework.ECS
 
         public void Lock()
         {
-            LuxCommon.Assert(!IsLocked); // Can't take the lock of an already locked system
+            Assert.IsFalse(IsLocked, "Can't take the lock of an already locked system.");
             IsLocked = true;
         }
 

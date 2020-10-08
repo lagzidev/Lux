@@ -11,19 +11,23 @@ namespace Lux.Framework
     {
 		/// <summary>
 		/// Total amount of seconds the game has been running,
-		/// Not for physics calculations.
 		/// </summary>
 		public static double TotalGameTime;
 
 		/// <summary>
-        /// Duration of a tick in seconds.
+		/// Total amount of seconds the scene has been running,
+		/// </summary>
+		public static double TimeSinceSceneBegin = 0;
+
+		/// <summary>
+		/// Duration of a tick in seconds.
 		/// Unscaled version of DeltaTime. Not affected by TimeScale
 		/// </summary>
 		public static readonly float Timestep = 1f / HardCodedConfig.TICKS_PER_SECOND;
 
 		/// <summary>
-		/// Delta time from the previous tick to the current, scaled by TimeScale.
-        /// Measured in seconds.
+		/// Seconds since the previous tick, scaled by TimeScale.
+        /// Use in UpdateFixed()
 		/// </summary>
 		public static float TickDeltaTime
         {
@@ -40,8 +44,8 @@ namespace Lux.Framework
 		public static float UnscaledDeltaTime { get; private set; }
 
 		/// <summary>
-		/// Delta time from the previous frame to the current, scaled by TimeScale.
-		/// Measured in seconds.
+		/// Seconds since the previous frame, scaled by TimeScale.
+		/// Use in Update()
 		/// </summary>
 		public static float DeltaTime
 		{
@@ -101,9 +105,11 @@ namespace Lux.Framework
 
         internal static void Update(double totalSeconds)
 		{
-			// Add time since last update to accumulator
 			UnscaledDeltaTime = (float)(totalSeconds - TotalGameTime);
-			Accumulator += (float)(totalSeconds - TotalGameTime);
+
+			// Add time since last update
+			Accumulator += UnscaledDeltaTime;
+			TimeSinceSceneBegin += UnscaledDeltaTime;
 
 			// Update total time
 			TotalGameTime = totalSeconds;
@@ -128,5 +134,10 @@ namespace Lux.Framework
 				_fpsSecondsCounter -= 1;
 			}
 		}
+
+        internal static void SceneChanged()
+        {
+			TimeSinceSceneBegin = 0f;
+        }
 	}
 }

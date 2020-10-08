@@ -82,7 +82,7 @@ namespace Lux.Framework.ECS
             {
                 if (!systems[i].HasAttribute<T>())
                 {
-                    LuxCommon.Assert(false); // The system doesn't have the required attribute
+                    Assert.Fail("The system doesn't have the required attribute");
                     break;
                 }
             }

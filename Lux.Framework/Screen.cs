@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Lux.Framework
 {
+    /// <summary>
+    /// Represents the game's screen and provides resolution information.
+    /// </summary>
     public static class Screen
     {
         private static GraphicsDeviceManager _graphicsManager;

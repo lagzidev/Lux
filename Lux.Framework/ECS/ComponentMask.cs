@@ -58,10 +58,10 @@ namespace Lux.Framework.ECS
                 return false;
             }
 
-            // Masks should be the same size when compared
+            // Masks should be the same size
             if (_mask.Length != otherMask._mask.Length)
             {
-                LuxCommon.Assert(false);
+                Assert.Fail("Component masks should be the same size when compared. {0} != {1}", _mask.Length, otherMask._mask.Length);
                 return false;
             }
 
